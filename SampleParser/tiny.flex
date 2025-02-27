@@ -1,4 +1,5 @@
 /*
+<<<<<<< HEAD
   Created By: Fei Song
   File Name: tiny.flex
   To Build: jflex tiny.flex
@@ -15,6 +16,22 @@ import java_cup.runtime.*;
    
 /* -----------------Options and Declarations Section----------------- */
    
+=======
+   Created By: Fei Song
+   Modified By: Jessica Nguyen
+   File Name: tiny.flex
+   
+   To Build (no Parser): jflex tiny.flex
+   To Build (with Parser): javac Lexer.java
+*/
+   
+/* --------------------------Usercode Section------------------------ */
+import java_cup.runtime.*;
+      
+%%
+
+/* -----------------Options and Declarations Section----------------- */
+>>>>>>> 1938bde796532e1c332faed5ea00766c7769c42a
 /* 
    The name of the class JFlex will create will be Lexer.
    Will write the code to the file Lexer.java. 
@@ -47,76 +64,88 @@ import java_cup.runtime.*;
   scanner actions.  
 */
 %{   
-    /* To create a new java_cup.runtime.Symbol with information about
-       the current token, the token will have no value in this
-       case. */
-    private Symbol symbol(int type) {
-        return new Symbol(type, yyline, yycolumn);
-    }
+   /* To create a new java_cup.runtime.Symbol with information about
+      the current token, the token will have no value in this case. */
+   private Symbol symbol(int type) {
+      return new Symbol(type, yyline, yycolumn);
+   }
     
-    /* Also creates a new java_cup.runtime.Symbol with information
-       about the current token, but this object has a value. */
-    private Symbol symbol(int type, Object value) {
-        return new Symbol(type, yyline, yycolumn, value);
-    }
+   /* Also creates a new java_cup.runtime.Symbol with information
+      about the current token, but this object has a value. */
+   private Symbol symbol(int type, Object value) {
+      return new Symbol(type, yyline, yycolumn, value);
+   }
 %}
-   
 
 /*
-  Macro Declarations
-  
-  These declarations are regular expressions that will be used latter
-  in the Lexical Rules Section.  
+   Macro Declarations
+   These declarations are regular expressions that will be used latter
+   in the Lexical Rules Section.  
 */
    
-/* A line terminator is a \r (carriage return), \n (line feed), or
-   \r\n. */
-LineTerminator = \r|\n|\r\n
+/* A line terminator is a \r (carriage return), \n (line feed), or \r\n. */
+lineTerminator = \r|\n|\r\n
    
-/* White space is a line terminator, space, tab, or form feed. */
-WhiteSpace     = {LineTerminator} | [ \t\f]
-   
-/* A literal integer is is a number beginning with a number between
-   one and nine followed by zero or more numbers between zero and nine
-   or just a zero.  */
-digit = [0-9]
-number = {digit}+
+/* White space is a line terminator, blank, tab, or newline. */
+whiteSpace     = {lineTerminator} | [ \t\n]
    
 /* A identifier integer is a word beginning a letter between A and
    Z, a and z, or an underscore followed by zero or more letters
    between A and Z, a and z, zero and nine, or an underscore. */
-letter = [a-zA-Z]
-identifier = {letter}+
+identifier = [_a-zA-Z][_a-zA-Z0-9]*
+
+/* A literal integer is a number beginning with a number between
+   one and nine followed by zero or more numbers between zero and nine
+   or just a zero.  */
+number = [0-9]+
+
+/* A truth value is a boolean value that can be either false or true */
+truth = "false" | "true"
    
 %%
 /* ------------------------Lexical Rules Section---------------------- */
-   
 /*
    This section contains regular expressions and actions, i.e. Java
    code, that will be executed when the scanner matches the associated
-   regular expression. */
-   
-"if"               { return symbol(sym.IF); }
-"then"             { return symbol(sym.THEN); }
+   regular expression. 
+*/   
+
+"bool"             { return symbol(sym.BOOL); }
 "else"             { return symbol(sym.ELSE); }
-"end"              { return symbol(sym.END); }
-"repeat"           { return symbol(sym.REPEAT); }
-"until"            { return symbol(sym.UNTIL); }
-"read"             { return symbol(sym.READ); }
-"write"            { return symbol(sym.WRITE); }
-":="               { return symbol(sym.ASSIGN); }
-"="                { return symbol(sym.EQ); }
-"<"                { return symbol(sym.LT); }
-">"                { return symbol(sym.GT); }
+"if"               { return symbol(sym.IF); }
+"int"              { return symbol(sym.INT); }
+"return"           { return symbol(sym.RETURN); }
+"void"             { return symbol(sym.VOID); }
+"while"            { return symbol(sym.WHILE); }
+{truth}            { return symbol(sym.TRUTH, yytext()); }
+
 "+"                { return symbol(sym.PLUS); }
 "-"                { return symbol(sym.MINUS); }
 "*"                { return symbol(sym.TIMES); }
 "/"                { return symbol(sym.OVER); }
+"<"                { return symbol(sym.LT); }
+"<="               { return symbol(sym.LTEQ); }
+">"                { return symbol(sym.GT); }
+">="               { return symbol(sym.GTEQ); }
+"=="               { return symbol(sym.EQ); }
+"!="               { return symbol(sym.NEQ); }
+"~"                { return symbol(sym.APPROX); }
+"||"               { return symbol(sym.OR); }
+"&&"               { return symbol(sym.AND); }
+"="                { return symbol(sym.ASSIGN); }
+";"                { return symbol(sym.SEMI); }
+","                { return symbol(sym.COMMA); }
 "("                { return symbol(sym.LPAREN); }
 ")"                { return symbol(sym.RPAREN); }
-";"                { return symbol(sym.SEMI); }
-{number}           { return symbol(sym.NUM, yytext()); }
+"["                { return symbol(sym.LBRACK); }
+"]"                { return symbol(sym.RBRACK); }
+"{"                { return symbol(sym.LCURLBRACK); }
+"}"                { return symbol(sym.RCURLBRACK); }
+
 {identifier}       { return symbol(sym.ID, yytext()); }
-{WhiteSpace}+      { /* skip whitespace */ }   
+{number}           { return symbol(sym.NUM, yytext()); }
+
+{whiteSpace}+      { /* skip whitespace */ }   
 "{"[^\}]*"}"       { /* skip comments */ }
+
 .                  { return symbol(sym.ERROR); }

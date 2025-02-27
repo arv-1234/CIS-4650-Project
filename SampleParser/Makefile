@@ -1,11 +1,12 @@
 JAVA=java
 JAVAC=javac
-#JFLEX=jflex
+JFLEX=jflex
+#JFLEX=~/Projects/jflex/bin/jflex
+#CLASSPATH=-cp ~/Projects/java-cup-11b.jar:.
+CLASSPATH=/home/jmanpalmer/CIS-4650-Project/SampleParser/java-cup-11b.jar:.
 #CLASSPATH=-cp /usr/share/java/cup.jar:.
-#CUP=cup
-JFLEX=~/Projects/jflex/bin/jflex
-CLASSPATH=-cp ~/Projects/java-cup-11b.jar:.
-CUP=$(JAVA) $(CLASSPATH) java_cup.Main
+CUP=$(JAVA) -cp $(CLASSPATH) java_cup.Main
+
 
 all: Main.class
 
