@@ -62,3 +62,14 @@ parser code {:
 
 :};
 
+
+/* ------------Declaration of Terminals and Non Terminals Section----------- */
+
+terminal ASSIGN, EQ, LT, GT, PLUS, MINUS, TIMES, OVER, LPAREN, RPAREN, SEMI;
+terminal String ID, NUM;
+terminal ERROR;
+
+
+
+/* ----------------------------Grammar Section-------------------- */
+   
