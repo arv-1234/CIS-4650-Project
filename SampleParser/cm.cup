@@ -70,6 +70,8 @@ terminal String ID, NUM;
 terminal ERROR;
 
 
+non terminal DecList program, declaration_list;
 
 /* ----------------------------Grammar Section-------------------- */
    
+start with program;
