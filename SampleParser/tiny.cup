@@ -71,14 +71,14 @@ parser code {:
    
    
 /* ------------Declaration of Terminals and Non Terminals Section----------- */
-terminal BOOL, INT, VOID, OR, AND, NOT, LT, LTEQ, GT, GTEQ, NEQ, EQ, TRUTH, NUM;
+terminal BOOL, INT, VOID, OR, AND, LT, LTEQ, GT, GTEQ, NEQ, EQ, TRUTH, NUM, ASSIGN;
 terminal TIMES, OVER, PLUS, MINUS,ID,LPAREN,RPAREN,LBRACK,RBRACK, COMMA;
-terminal LCURLBRACK, RCURLBRACK, APPROX;
+terminal LCURLBRACK, RCURLBRACK, APPROX, SEMI, RETURN, IF, ELSE, WHILE;
 
    
-non terminal program, declaration_list,fun_declaration,fun_prototype, type_spec;
-non terminal params, param_list, param, compound_stmt, local_decs, selec_stmt, iter_stmt, return_stmt;
-non terminal exp_stmt, var, obool_exp, abool_exp, ubool_exp, simple_exp, relop, add_exp, addop;
+non terminal program, declaration_list, declaration, fun_declaration, var_declaration, fun_prototype, type_spec;
+non terminal params, param_list, param, compound_stmt, local_decs, selec_stmt, iter_stmt, return_stmt, stmt_list;
+non terminal stmt, exp, exp_stmt, var, obool_exp, abool_exp, ubool_exp, simple_exp, relop, add_exp, addop;
 non terminal term, mulop, sign_fac, factor, call, args, arg_list ;
 
 
@@ -96,8 +96,8 @@ declaration	          ::= var_declaration
                         | fun_prototype
                         ;
 
-var_declaration	      ::= type_spec ID ;
-                        | type_spec ID LBRACK NUM RBRACK ;
+var_declaration	      ::= type_spec ID SEMI
+                        | type_spec ID LBRACK NUM RBRACK SEMI
                         ;
 
 type_spec             ::= BOOL
@@ -108,11 +108,11 @@ type_spec             ::= BOOL
 fun_declaration       ::= type_spec ID LPAREN params RPAREN compound_stmt
                         ;
 
-fun_prototype         ::= type_spec ID LPAREN params RPAREN ;
+fun_prototype         ::= type_spec ID LPAREN params RPAREN SEMI
                         ;
 
 params                ::= param_list
-                        | void 
+                        | VOID 
                         ;
                       
 param_list            ::= param_list COMMA param
@@ -141,22 +141,22 @@ stmt                  ::= exp_stmt
                         | return_stmt
                         ;
 
-exp_stmt              ::= exp ;
-                        |
+exp_stmt              ::= exp SEMI
+                        | SEMI
                         ;
 
-selec_stmt            ::= if LPAREN exp RPAREN stmt 
-                        | if LPAREN exp RPAREN stmt else stmt 
+selec_stmt            ::= IF LPAREN exp RPAREN stmt 
+                        | IF LPAREN exp RPAREN stmt ELSE stmt 
                         ;
 
-iter_stmt             ::= while LPAREN exp RPAREN stmt
+iter_stmt             ::= WHILE LPAREN exp RPAREN stmt
                         ;
 
-return_stmt           ::= return exp ;
-                        | return ;
+return_stmt           ::= RETURN exp SEMI
+                        | RETURN SEMI
                         ;
 
-exp                   ::= var = exp 
+exp                   ::= var ASSIGN exp 
                         | obool_exp
                         ;
 
