@@ -1,5 +1,6 @@
 /*
   Created by: Fei Song
+  Modified by: Justin Palmer
   File Name: tiny.cup
 */
    
@@ -70,114 +71,157 @@ parser code {:
    
    
 /* ------------Declaration of Terminals and Non Terminals Section----------- */
+terminal BOOL, INT, VOID, OR, AND, NOT, LT, LTEQ, GT, GTEQ, NEQ, EQ, TRUTH, NUM;
+terminal TIMES, OVER, PLUS, MINUS,ID,LPAREN,RPAREN,LBRACK,RBRACK, COMMA;
+terminal LCURLBRACK, RCURLBRACK, APPROX;
+
    
-terminal IF, THEN, ELSE, END, REPEAT, UNTIL, READ, WRITE;
-terminal ASSIGN, EQ, LT, GT, PLUS, MINUS, TIMES, OVER, LPAREN, RPAREN, SEMI;
-terminal String ID, NUM;
-terminal ERROR;
-   
-non terminal Exp program1;
-non terminal ExpList program, stmt_seq;
-non terminal Exp stmt, if_stmt, repeat_stmt, assign_stmt, read_stmt, write_stmt;
-non terminal Exp exp, simple_exp, term, signed_factor, factor;   
+non terminal program, declaration_list,fun_declaration,fun_prototype, type_spec;
+non terminal params, param_list, param, compound_stmt, local_decs, selec_stmt, iter_stmt, return_stmt;
+non terminal exp_stmt, var, obool_exp, abool_exp, ubool_exp, simple_exp, relop, add_exp, addop;
+non terminal term, mulop, sign_fac, factor, call, args, arg_list ;
+
 
 /* ----------------------------Grammar Section-------------------- */
    
-start with program;
+program	             ::= declaration_list
+                        ;
 
-program1     ::= exp:e 
-                 {: RESULT = e; :}
-               ;
+declaration_list	    ::= declaration_list declaration
+                        | declaration
+                        ;
+                  
+declaration	          ::= var_declaration
+                        | fun_declaration
+                        | fun_prototype
+                        ;
 
-program	     ::= stmt_seq:s
-                 {: RESULT = s; :}
-               ;
+var_declaration	      ::= type_spec ID ;
+                        | type_spec ID LBRACK NUM RBRACK ;
+                        ;
 
-stmt_seq     ::= stmt_seq:s1 SEMI stmt:s2 
-                 {: ExpList t = s1;
-                    while( t.tail != null )
-                      t = t.tail;
-                    t.tail = new ExpList(s2, null);
-                    RESULT = s1;
-                 :}
-               | stmt:s
-                 {: RESULT = new ExpList(s, null); :}
-               | error SEMI stmt:s
-                 {: parser.report_error("invalid", null); 
-                    RESULT = new ExpList(s, null); 
-                 :}
-               ;
+type_spec             ::= BOOL
+                        | INT
+                        | VOID 
+                        ;
 
-stmt         ::= if_stmt:i
-                 {: RESULT = i; :}
-               | repeat_stmt:r
-                 {: RESULT = r; :}
-               | assign_stmt:a
-                 {: RESULT = a; :}
-               | read_stmt:r
-                 {: RESULT = r; :}
-               | write_stmt:w
-                 {: RESULT = w; :}
-               ;
+fun_declaration       ::= type_spec ID LPAREN params RPAREN compound_stmt
+                        ;
 
-if_stmt      ::= IF:i exp:e THEN stmt_seq:s END
-                 {: RESULT = new IfExp(ileft, iright, e, s, null); :}
-               | IF:i exp:e THEN stmt_seq:s1 ELSE stmt_seq:s2 END
-                 {: RESULT = new IfExp(ileft, iright, e, s1, s2); :}
-               ;
+fun_prototype         ::= type_spec ID LPAREN params RPAREN ;
+                        ;
 
-repeat_stmt  ::= REPEAT:r stmt_seq:s UNTIL exp:e
-                 {: RESULT = new RepeatExp(rleft, rright, s, e); :}
-               ;
+params                ::= param_list
+                        | void 
+                        ;
+                      
+param_list            ::= param_list COMMA param
+                        | param 
+                        ;
+                      
+param                 ::= type_spec ID 
+                        | type_spec ID LBRACK RBRACK
+                        ;
 
-assign_stmt  ::= ID:i ASSIGN exp:e
-                 {: RESULT = new AssignExp(ileft, iright, new VarExp(ileft, iright, i), e); :} 
-               ;
+compound_stmt         ::= LCURLBRACK local_decs stmt_list RCURLBRACK
+                        ;
+                      
+local_decs            ::= local_decs var_declaration
+                        |
+                        ;
 
-read_stmt    ::= READ:r ID:i
-                 {: RESULT = new ReadExp(rleft, rright, new VarExp(rleft, rright, i)); :}
-               ;
+stmt_list             ::= stmt_list stmt 
+                        |
+                        ;
 
-write_stmt   ::= WRITE:w exp:e
-                 {: RESULT = new WriteExp(wleft, wright, e); :}
-               ;
+stmt                  ::= exp_stmt
+                        | compound_stmt 
+                        | selec_stmt 
+                        | iter_stmt 
+                        | return_stmt
+                        ;
 
-exp          ::= simple_exp:s1 LT simple_exp:s2
-                 {: RESULT = new OpExp(s1left, s1right, s1, OpExp.LT, s2); :}
-               | simple_exp:s1 GT simple_exp:s2
-                 {: RESULT = new OpExp(s1left, s1right, s1, OpExp.GT, s2); :}
-               | simple_exp:s1 EQ simple_exp:s2
-                 {: RESULT = new OpExp(s1left, s1right, s1, OpExp.EQ, s2); :}
-               | simple_exp:s
-                 {: RESULT = s; :}
-               ;
+exp_stmt              ::= exp ;
+                        |
+                        ;
 
-simple_exp   ::= simple_exp:s PLUS term:t
-                 {: RESULT = new OpExp(sleft, sright, s, OpExp.PLUS, t); :}
-               | simple_exp:s MINUS term:t
-                 {: RESULT = new OpExp(sleft, sright, s, OpExp.MINUS, t); :}
-               | term:t
-                 {: RESULT = t; :}
-               ;
+selec_stmt            ::= if LPAREN exp RPAREN stmt 
+                        | if LPAREN exp RPAREN stmt else stmt 
+                        ;
 
-term         ::= term:t TIMES signed_factor:f
-                 {: RESULT = new OpExp(tleft, tright, t, OpExp.TIMES, f); :}
-               | term:t OVER signed_factor:f
-                 {: RESULT = new OpExp(tleft, tright, t, OpExp.OVER, f); :}
-               | signed_factor:f
-                 {: RESULT = f; :}
-               ;
+iter_stmt             ::= while LPAREN exp RPAREN stmt
+                        ;
 
-signed_factor ::= MINUS:m signed_factor:f
-                  {: RESULT = new OpExp(mleft, mright, null, OpExp.UMINUS, f); :}
-               |  factor:f
-                  {: RESULT = f; :}
-               ;
+return_stmt           ::= return exp ;
+                        | return ;
+                        ;
 
-factor       ::= LPAREN exp:e RPAREN
-                 {: RESULT = e; :}
-               | NUM:n
-                 {: RESULT = new IntExp(nleft, nright, n); :}
-               | ID:i
-                 {: RESULT = new VarExp(ileft, iright, i); :}
-               ;
+exp                   ::= var = exp 
+                        | obool_exp
+                        ;
+
+var                   ::= ID 
+                        | ID LBRACK exp RBRACK
+                        ;
+
+obool_exp             ::= obool_exp OR abool_exp
+                        | abool_exp
+                        ;
+
+abool_exp             ::= abool_exp AND ubool_exp
+                        | ubool_exp 
+                        ;
+      
+ubool_exp             ::= APPROX ubool_exp 
+                        | simple_exp
+                        ;
+
+simple_exp            ::= add_exp relop add_exp 
+                        | add_exp
+                        ;
+
+relop                 ::= LTEQ
+                        | LT
+                        | GT
+                        | GTEQ
+                        | EQ
+                        | NEQ
+                        ;
+
+add_exp               ::= add_exp addop term
+                        | term
+                        ;
+
+addop                 ::= PLUS
+                        | MINUS
+                        ;
+
+term                  ::= term mulop sign_fac 
+                        | sign_fac
+                        ;
+
+mulop                 ::= TIMES 
+                        | OVER 
+                        ;
+
+sign_fac              ::= MINUS sign_fac 
+                        | factor 
+                        ;
+
+factor                ::= LPAREN exp RPAREN 
+                        | var
+                        | call
+                        | NUM
+                        | TRUTH
+                        ;
+
+call                  ::= ID LPAREN args RPAREN
+                        ;
+
+args                  ::= arg_list
+                        |
+                        ;
+
+arg_list              ::= arg_list COMMA exp
+                        | exp
+                        ;
