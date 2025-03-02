@@ -81,23 +81,16 @@ terminal LPAREN,RPAREN,LBRACK,RBRACK, COMMA, LCURLBRACK, RCURLBRACK, SEMI;
 terminal RETURN, IF, ELSE, WHILE;
 
 
-non terminal DecList program, declaration_list;
+non terminal DecList program, declaration_list, params, compound_stmt;
 non terminal VarDecL param_list, local_decL;
-non terminal ExpList stmt_list, arg_list, args;
+non terminal ExpList stmt_list, arg_list, args, call;
 
-non terminal Var var;
-non terminal Exp varExp,  
-non terminal Dec declaration, fun_declaration;
-non terminal VarDec var_declaration, param;
-
-
+non terminal Exp varExp, exp, exp_stmt, simple_exp, selec_stmt, iter_stmt, return_stmt, stmt;  
+non terminal Dec declaration, fun_declaration, fun_prototype;
+non terminal VarDec var_declaration, param, var;
+non terminal TypeName type_spec;
 
 
-
-non terminal   var_declaration, fun_prototype, type_spec;
-non terminal params, param, compound_stmt, selec_stmt, iter_stmt, return_stmt, stmt_list;
-non terminal stmt, exp, exp_stmt, var, obool_exp, abool_exp, ubool_exp, simple_exp, relop, add_exp, addop;
-non terminal term, mulop, sign_fac, factor, call, args, arg_list ;
 
 
 /* ----------------------------Grammar Section-------------------- */
@@ -141,7 +134,8 @@ fun_declaration       ::= type_spec:ts ID:id LPAREN params:ps RPAREN compound_st
                         {: Result = new FunDec(tsleft,tsright,ts,id,ps); :}
                         ;
 
-fun_prototype         ::= type_spec ID LPAREN params RPAREN SEMI
+fun_prototype         ::= type_spec:ts ID:id LPAREN params:ps RPAREN SEMI
+                        {: Result = new FunDec(tsleft,tsright,ts,id,null); :}
                         ;
 
 params                ::= param_list:pl 
@@ -172,7 +166,6 @@ compound_stmt         ::= LCURLBRACK local_decL stmt_list RCURLBRACK
                         ;
                       
 local_decL            ::= local_decL:ld var_declaration:vd
-                        {}
                         |
                         ;
 
@@ -209,8 +202,8 @@ exp                   ::= var ASSIGN exp
                         | exp OVER exp 
                         | exp LT exp 
                         | exp GT exp 
-                        | exp GTE exp 
-                        | exp LTE exp 
+                        | exp GTEQ exp 
+                        | exp LTEQ exp 
                         | exp EQ exp 
                         | APPROX exp
                         | exp OR exp 

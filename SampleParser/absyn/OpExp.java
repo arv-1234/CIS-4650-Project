@@ -8,9 +8,9 @@ public class OpExp extends Exp {
   public final static int OVER   = 3;
   public final static int EQ     = 4;
   public final static int LT     = 5;
-  public final static int LTE     = 6;
+  public final static int LTEQ     = 6;
   public final static int GT     = 7;
-  public final static int GTE     = 8;
+  public final static int GTEQ     = 8;
   public final static int NEQ     = 9;
   public final static int UMINUS = 10;
   public final static int AND = 11;
