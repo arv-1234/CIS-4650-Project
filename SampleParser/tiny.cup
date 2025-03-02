@@ -130,33 +130,49 @@ var_declaration	    ::= type_spec:ts ID:id SEMI
                         ;
 
 type_spec             ::= BOOL:b 
-                        {: Result = b;:}
-                        | INT
-                        | VOID 
+                        {: Result = new TypeName(bleft,bright,TypeName.BOOL);:}
+                        | INT:i
+                        {: Result = new TypeName(ileft,iright,TypeName.INT);:}
+                        | VOID:v 
+                        {: Result = new TypeName(vleft,vright,TypeName.VOID);:}
                         ;
 
-fun_declaration       ::= type_spec ID LPAREN params RPAREN compound_stmt
+fun_declaration       ::= type_spec:ts ID:id LPAREN params:ps RPAREN compound_stmt:ct 
+                        {: Result = new FunDec(tsleft,tsright,ts,id,ps); :}
                         ;
 
 fun_prototype         ::= type_spec ID LPAREN params RPAREN SEMI
                         ;
 
-params                ::= param_list
-                        | VOID 
+params                ::= param_list:pl 
+                        {: Result = pl; :}
+                        | VOID:v 
+                        {: Result = new TypeName(vleft,vright,TypeName.VOID);:}
                         ;
                       
-param_list            ::= param_list COMMA param
-                        | param 
+param_list            ::= param_list:pl COMMA param:p
+                        {: DecList tempList = pl;
+                           while(tempList.next!=null)
+                              tempList = tempList.next;
+                           tempList.next = new DecList(p,null);
+                           Result = pl;
+                        :}
+                        | param:p
+                        {: Result = p; :}
                         ;
                       
-param                 ::= type_spec ID 
-                        | type_spec ID LBRACK RBRACK
+param                 ::= type_spec:ts ID:id
+                        {: Result = new SingleDec(tsleft,tsright,ts,id);:}
+                        | type_spec:ts ID:id LBRACK RBRACK
+                        {: Result = new DecArr(tsleft,tsright,ts,id,0);:}
                         ;
 
 compound_stmt         ::= LCURLBRACK local_decL stmt_list RCURLBRACK
+                        {:  :}
                         ;
                       
-local_decL            ::= local_decL var_declaration
+local_decL            ::= local_decL:ld var_declaration:vd
+                        {}
                         |
                         ;
 
