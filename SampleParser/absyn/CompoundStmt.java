@@ -2,13 +2,14 @@ package absyn;
 
 public class CompoundStmt extends absyn {
   public String value;
-  public DecList declarations;
-  public DecList statementList;
+  public DecList LocalDeclarations;
+  public ExpList statementList;
 
-  public IntExp( int row, int col, String value ) {
+  public CompoundStmt( int row, int col, DecList decs, ExpList stmts ) {
     this.row = row;
     this.col = col;
-    this.value = value;
+    this.LocalDeclarations = decs;
+    this.statementList = stmts;
   }
 
   public void accept( AbsynVisitor visitor, int level ) {

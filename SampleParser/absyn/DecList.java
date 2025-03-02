@@ -1,6 +1,4 @@
-package absyn;
-
-public class DecList extends Absyn {
+public class DecList extends Dec {
     public Dec head;
     public DecList tail;
 

@@ -183,14 +183,14 @@ local_decL            ::= local_decL:ld var_declaration:vd
 
 stmt_list             ::= stmt_list:sl stmt:s 
                          {: if(sl==null){
-                              sl = new DecList(ldleft,ldright,s,null);
+                              sl = new ExpList(ldleft,ldright,s,null);
                               Result = sl;
                            }
                            else{
                               DecList tempList = sl;
                               while(tempList.next!=null)
                                  tempList = tempList.next;
-                              tempList.next = new DecList(s,null);
+                              tempList.next = new ExpList(s,null);
                               Result = sl;
                            } :}
                         |
@@ -199,22 +199,29 @@ stmt_list             ::= stmt_list:sl stmt:s
 
 stmt                  ::= exp_stmt:es
                         {: Result = es; :}
-                        | compound_stmt
-                        {: Result = new CompoundStmt(esleft, esright, ):} 
-                        | selec_stmt 
-                        | iter_stmt 
-                        | return_stmt
+                        | compound_stmt:cs
+                        {: Result = cs; :} 
+                        | selec_stmt:ss
+                        {: Result = ss; :} 
+                        | iter_stmt:is
+                        {: Result= is; :} 
+                        | return_stmt:rs
+                        {: Result = rs; :}
                         ;
 
-exp_stmt              ::= exp SEMI
+exp_stmt              ::= exp:e SEMI
+                        {: Result = e; :}
                         | SEMI
                         ;
 
-selec_stmt            ::= IF LPAREN exp RPAREN stmt 
-                        | IF LPAREN exp RPAREN stmt ELSE stmt 
+selec_stmt            ::= IF:i LPAREN exp:e RPAREN stmt:s 
+                        {: Result = new IfExp(ileft,irigh,e,s,null); :}
+                        | IF:i LPAREN exp:e RPAREN stmt:s1 ELSE stmt:s2 
+                        {: Result = new IfExp(ileft,irigh,e,s1,s2); :}
                         ;
 
-iter_stmt             ::= WHILE LPAREN exp RPAREN stmt
+iter_stmt             ::= WHILE:w LPAREN exp:e RPAREN stmt:s
+                        {: Result = new RepeatExp(wleft,wright,e,s):}
                         ;
 
 return_stmt           ::= RETURN exp SEMI
