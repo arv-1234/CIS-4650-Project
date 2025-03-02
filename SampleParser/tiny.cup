@@ -71,36 +71,66 @@ parser code {:
    
    
 /* ------------Declaration of Terminals and Non Terminals Section----------- */
-terminal BOOL, INT, VOID, OR, AND, LT, LTEQ, GT, GTEQ, NEQ, EQ, TRUTH, NUM, ASSIGN;
-terminal TIMES, OVER, PLUS, MINUS,ID,LPAREN,RPAREN,LBRACK,RBRACK, COMMA;
-terminal LCURLBRACK, RCURLBRACK, APPROX, SEMI, RETURN, IF, ELSE, WHILE;
+terminal String ID, NUM;
+terminal BOOL, INT, VOID;
+terminal OR,AND, APPROX; 
+terminal LT, LTEQ, GT, GTEQ, NEQ, EQ;
+terminal TRUTH;
+terminal TIMES, OVER, PLUS, MINUS, ASSIGN;
+terminal LPAREN,RPAREN,LBRACK,RBRACK, COMMA, LCURLBRACK, RCURLBRACK, SEMI;
+terminal RETURN, IF, ELSE, WHILE;
 
-   
-non terminal program, declaration_list, declaration, fun_declaration, var_declaration, fun_prototype, type_spec;
-non terminal params, param_list, param, compound_stmt, local_decs, selec_stmt, iter_stmt, return_stmt, stmt_list;
+
+non terminal DecList program, declaration_list;
+non terminal VarDecL param_list, local_decL;
+non terminal ExpList stmt_list, arg_list, args;
+
+non terminal Var var;
+non terminal Exp varExp,  
+non terminal Dec declaration, fun_declaration;
+non terminal VarDec var_declaration, param;
+
+
+
+
+
+non terminal   var_declaration, fun_prototype, type_spec;
+non terminal params, param, compound_stmt, selec_stmt, iter_stmt, return_stmt, stmt_list;
 non terminal stmt, exp, exp_stmt, var, obool_exp, abool_exp, ubool_exp, simple_exp, relop, add_exp, addop;
 non terminal term, mulop, sign_fac, factor, call, args, arg_list ;
 
 
 /* ----------------------------Grammar Section-------------------- */
    
-program	             ::= declaration_list
+program	             ::= declaration_list:s
+                        {: RESULT=s; :}
                         ;
 
-declaration_list	    ::= declaration_list declaration
-                        | declaration
+declaration_list	    ::= declaration_list:dl declaration:d 
+                        {: DecList tempList = dl;
+                           while(t.tail!=null)
+                              t=t.tail;
+                           t.tail = new DecList(d,null);
+                           Result = dl;
+                        :}
+                        | declaration:d
+                        {: Result = new DecList(d,null);:}
                         ;
                   
-declaration	          ::= var_declaration
-                        | fun_declaration
-                        | fun_prototype
+declaration	          ::= var_declaration:vd
+                        {: Result = vd; :}
+                        | fun_declaration:fd
+                        {: Result = fd;:}
                         ;
 
-var_declaration	      ::= type_spec ID SEMI
-                        | type_spec ID LBRACK NUM RBRACK SEMI
+var_declaration	    ::= type_spec:ts ID:id SEMI
+                        {: Result = new SingleDec( tsleft, tsright, ts, id) :}                        
+                        | type_spec:ts ID:id LBRACK NUM:n RBRACK SEMI
+                        {: Result = new DecArr(tsleft,tsright,ts,id,n); :}
                         ;
 
-type_spec             ::= BOOL
+type_spec             ::= BOOL:b 
+                        {: Result = b;:}
                         | INT
                         | VOID 
                         ;
@@ -123,10 +153,10 @@ param                 ::= type_spec ID
                         | type_spec ID LBRACK RBRACK
                         ;
 
-compound_stmt         ::= LCURLBRACK local_decs stmt_list RCURLBRACK
+compound_stmt         ::= LCURLBRACK local_decL stmt_list RCURLBRACK
                         ;
                       
-local_decs            ::= local_decs var_declaration
+local_decL            ::= local_decL var_declaration
                         |
                         ;
 
@@ -157,63 +187,29 @@ return_stmt           ::= RETURN exp SEMI
                         ;
 
 exp                   ::= var ASSIGN exp 
-                        | obool_exp
+                        | exp PLUS exp
+                        | exp MINUS exp
+                        | exp TIMES exp 
+                        | exp OVER exp 
+                        | exp LT exp 
+                        | exp GT exp 
+                        | exp GTE exp 
+                        | exp LTE exp 
+                        | exp EQ exp 
+                        | APPROX exp
+                        | exp OR exp 
+                        | exp AND exp
+                        | APPROX exp 
+                        | LPAREN exp RPAREN
+                        | var
+                        | NUM
+                        | TRUTH
                         ;
 
 var                   ::= ID 
                         | ID LBRACK exp RBRACK
                         ;
 
-obool_exp             ::= obool_exp OR abool_exp
-                        | abool_exp
-                        ;
-
-abool_exp             ::= abool_exp AND ubool_exp
-                        | ubool_exp 
-                        ;
-      
-ubool_exp             ::= APPROX ubool_exp 
-                        | simple_exp
-                        ;
-
-simple_exp            ::= add_exp relop add_exp 
-                        | add_exp
-                        ;
-
-relop                 ::= LTEQ
-                        | LT
-                        | GT
-                        | GTEQ
-                        | EQ
-                        | NEQ
-                        ;
-
-add_exp               ::= add_exp addop term
-                        | term
-                        ;
-
-addop                 ::= PLUS
-                        | MINUS
-                        ;
-
-term                  ::= term mulop sign_fac 
-                        | sign_fac
-                        ;
-
-mulop                 ::= TIMES 
-                        | OVER 
-                        ;
-
-sign_fac              ::= MINUS sign_fac 
-                        | factor 
-                        ;
-
-factor                ::= LPAREN exp RPAREN 
-                        | var
-                        | call
-                        | NUM
-                        | TRUTH
-                        ;
 
 call                  ::= ID LPAREN args RPAREN
                         ;
