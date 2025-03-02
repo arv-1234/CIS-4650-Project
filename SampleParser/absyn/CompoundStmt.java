@@ -3,7 +3,7 @@ package absyn;
 public class CompoundStmt extends absyn {
   public String value;
   public DecList declarations;
-  public 
+  public DecList statementList;
 
   public IntExp( int row, int col, String value ) {
     this.row = row;

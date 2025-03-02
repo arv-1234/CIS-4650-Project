@@ -152,7 +152,7 @@ param_list            ::= param_list:pl COMMA param:p
                            Result = pl;
                         :}
                         | param:p
-                        {: Result = p; :}
+                        {: Result = new DecList(p,null); :}
                         ;
                       
 param                 ::= type_spec:ts ID:id
@@ -161,20 +161,46 @@ param                 ::= type_spec:ts ID:id
                         {: Result = new DecArr(tsleft,tsright,ts,id,0);:}
                         ;
 
-compound_stmt         ::= LCURLBRACK local_decL stmt_list RCURLBRACK
-                        {:  :}
+compound_stmt         ::= LCURLBRACK local_decL:ld stmt_list:sl RCURLBRACK
+                        {: Result = new CompoundStmt(ldleft,ldright, ld,sl); :}
                         ;
                       
 local_decL            ::= local_decL:ld var_declaration:vd
-                        |
+                        {: if(ld==null){
+                              ld = new DecList(ldleft,ldright,vd,null);
+                              Result = ld;
+                           }
+                           else{
+                              DecList tempList = ld;
+                              while(tempList.next!=null)
+                                 tempList = tempList.next;
+                              tempList.next = new DecList(vd,null);
+                              Result = ld;
+                           } :}
+                        | 
+                        {: Result = null; :}
                         ;
 
-stmt_list             ::= stmt_list stmt 
+stmt_list             ::= stmt_list:sl stmt:s 
+                         {: if(sl==null){
+                              sl = new DecList(ldleft,ldright,s,null);
+                              Result = sl;
+                           }
+                           else{
+                              DecList tempList = sl;
+                              while(tempList.next!=null)
+                                 tempList = tempList.next;
+                              tempList.next = new DecList(s,null);
+                              Result = sl;
+                           } :}
                         |
+                        {: Result=null; :}
                         ;
 
-stmt                  ::= exp_stmt
-                        | compound_stmt 
+stmt                  ::= exp_stmt:es
+                        {: Result = es; :}
+                        | compound_stmt
+                        {: Result = new CompoundStmt(esleft, esright, ):} 
                         | selec_stmt 
                         | iter_stmt 
                         | return_stmt
@@ -205,7 +231,6 @@ exp                   ::= var ASSIGN exp
                         | exp GTEQ exp 
                         | exp LTEQ exp 
                         | exp EQ exp 
-                        | APPROX exp
                         | exp OR exp 
                         | exp AND exp
                         | APPROX exp 
