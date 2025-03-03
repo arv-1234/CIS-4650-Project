@@ -150,3 +150,80 @@ public class ShowTreeVisitor implements AbsynVisitor {
   }
 
 }
+
+
+
+public void visit( NameTy type, int level ){
+  indent( level );
+  if(type.typeVal == 0){
+    System.out.println( "NameTy: INT" );
+  }
+  else if(type.typeVal == 1){
+    System.out.println( "NameTy: VOID" );
+  }
+  else if(type.typeVal == 2){
+    System.out.println( "NameTy: NULL" );
+  }
+  else if(type.typeVal == 3){
+    System.out.println( "NameTy: BOOL" );
+  }
+}
+
+public void visit( NilExp exp, int level ){
+  indent( level );
+  System.out.println( "NilExp: NULL" );
+
+}
+
+public void visit( ReturnExp exp, int level ){
+  indent( level );
+  System.out.println( "ReturnExp:" );
+
+  if(exp.exp!=null){//if we have an expression to go with the return, envoke that expression visit function
+    level++; //go down a level further
+    exp.exp.accept(this,level);
+  }
+
+}
+
+public void visit( SimpleDec dec, int level ){
+  indent( level );
+  System.out.println( "SimpleDec:" );
+  //go down a level and print the type along with the name
+  level++;
+  
+  indent( level );
+  if(dec.typ.typeVal == 0){
+    System.out.println( "NameTy: INT" );
+  }
+  else if(dec.typ.typeVal == 1){
+    System.out.println( "NameTy: VOID" );
+  }
+  else if(dec.typ.typeVal == 2){
+    System.out.println( "NameTy: NULL" );
+  }
+  else if(dec.typ.typeVal == 3){
+    System.out.println( "NameTy: BOOL" );
+  }
+
+  indent( level );
+  System.out.println( "Name: " + dec.name );
+
+}
+
+public void visit( SimpleVar var, int level ){
+  indent( level );
+  System.out.println( "SimpleVar: " + var.name );
+
+}
+
+public void visit( VarDecList varDecList, int level ){
+  VarDecList tempList = varDecList;
+
+  //loop through and print each node in the list, similar to ExpList
+  while(varDecList!=null){
+    varDecList.head.accept(this,level);
+    varDecList = varDecList.tail;
+  }
+
+}
