@@ -16,6 +16,7 @@ public class OpExp extends Exp {
   public final static int AND = 11;
   public final static int OR = 12;
   public final static int NOT = 13;
+  public final static int UMINUS = 14;
 
   //left is the LHS of the exp and right is the RHS of the exp
   public Exp left;

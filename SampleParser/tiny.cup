@@ -86,7 +86,7 @@ non terminal ExpList stmt_list, arg_list, args, call;
 non terminal Exp varExp, exp, exp_stmt, simple_exp, selec_stmt, iter_stmt, return_stmt, stmt;  
 non terminal Dec declaration, fun_declaration, fun_prototype;
 non terminal VarDec var_declaration, param, var;
-non terminal TypeName type_spec;
+non terminal NameTy type_spec;
 
 precedence left OVER,TIMES, PLUS, MINUS;
 precedence nonassoc AND, OR, EQ, NEQ, LT, LTEQ, GT, GTEQ;
@@ -99,9 +99,9 @@ program	             ::= declaration_list:s
 
 declaration_list	    ::= declaration_list:dl declaration:d 
                         {: DecList tempList = dl;
-                           while(t.tail!=null)
-                              t=t.tail;
-                           t.tail = new DecList(d,null);
+                           while(tempList.tail!=null)
+                              tempList=tempList.tail;
+                           tempList.tail = new DecList(d,null);
                            RESULT = dl;
                         :}
                         | declaration:d
@@ -143,10 +143,10 @@ params                ::= param_list:pl
                         ;
                       
 param_list            ::= param_list:pl COMMA param:p
-                        {: DecList tempList = pl;
-                           while(tempList.next!=null)
-                              tempList = tempList.next;
-                           tempList.next = new DecList(p,null);
+                        {: VarDecList tempList = pl;
+                           while(tempList.tail!=null)
+                              tempList = tempList.tail;
+                           tempList.tail = new DecList(p,null);
                            RESULT = pl;
                         :}
                         | param:p
