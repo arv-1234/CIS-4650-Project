@@ -1,22 +1,4 @@
 /*
-<<<<<<< HEAD
-  Created By: Fei Song
-  File Name: tiny.flex
-  To Build: jflex tiny.flex
-
-  and then after the parser is created
-    javac Lexer.java
-*/
-   
-/* --------------------------Usercode Section------------------------ */
-   
-import java_cup.runtime.*;
-      
-%%
-   
-/* -----------------Options and Declarations Section----------------- */
-   
-=======
    Created By: Fei Song
    Modified By: Jessica Nguyen
    File Name: tiny.flex
@@ -31,7 +13,6 @@ import java_cup.runtime.*;
 %%
 
 /* -----------------Options and Declarations Section----------------- */
->>>>>>> 1938bde796532e1c332faed5ea00766c7769c42a
 /* 
    The name of the class JFlex will create will be Lexer.
    Will write the code to the file Lexer.java. 
