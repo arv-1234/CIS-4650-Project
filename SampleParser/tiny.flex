@@ -100,7 +100,7 @@ identifier = [_a-zA-Z][_a-zA-Z0-9]*
 number = [0-9]+
 
 /* A truth value is a boolean value that can be either false or true */
-truth = "false" | "true"
+truth = false | true
    
 %%
 /* ------------------------Lexical Rules Section---------------------- */

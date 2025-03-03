@@ -4,7 +4,6 @@
   File Name: tiny.cup
 */
    
-   
 /* ----------------------Preliminary Declarations Section--------------------*/
    
 import absyn.*;
@@ -73,13 +72,12 @@ parser code {:
 /* ------------Declaration of Terminals and Non Terminals Section----------- */
 terminal String ID, NUM;
 terminal BOOL, INT, VOID;
-terminal OR,AND, APPROX; 
+terminal OR, AND, APPROX; 
 terminal LT, LTEQ, GT, GTEQ, NEQ, EQ;
 terminal TRUTH;
 terminal TIMES, OVER, PLUS, MINUS, ASSIGN;
-terminal LPAREN,RPAREN,LBRACK,RBRACK, COMMA, LCURLBRACK, RCURLBRACK, SEMI;
+terminal LPAREN, RPAREN, LBRACK, RBRACK, COMMA, LCURLBRACK, RCURLBRACK, SEMI;
 terminal RETURN, IF, ELSE, WHILE;
-
 
 non terminal DecList program, declaration_list, params, compound_stmt;
 non terminal VarDecL param_list, local_decL;
@@ -90,11 +88,10 @@ non terminal Dec declaration, fun_declaration, fun_prototype;
 non terminal VarDec var_declaration, param, var;
 non terminal TypeName type_spec;
 
-
-
+//precedence nonassoc EQ, NEQ;
+//precedence left PLUS, MINUS;
 
 /* ----------------------------Grammar Section-------------------- */
-   
 program	             ::= declaration_list:s
                         {: RESULT=s; :}
                         ;
@@ -135,7 +132,7 @@ fun_declaration       ::= type_spec:ts ID:id LPAREN params:ps RPAREN compound_st
                         ;
 
 fun_prototype         ::= type_spec:ts ID:id LPAREN params:ps RPAREN SEMI
-                        {: Result = new FunDec(tsleft,tsright,ts,id,null); :}
+                        {: Result = new FunDec(tsleft,tsright,ts,id,new NilExp(tsleft,tsright)); :}
                         ;
 
 params                ::= param_list:pl 
@@ -215,7 +212,7 @@ exp_stmt              ::= exp:e SEMI
                         ;
 
 selec_stmt            ::= IF:i LPAREN exp:e RPAREN stmt:s 
-                        {: Result = new IfExp(ileft,irigh,e,s,null); :}
+                        {: Result = new IfExp(ileft,irigh,e,s,new NilExp(ileft,irigh)); :}
                         | IF:i LPAREN exp:e RPAREN stmt:s1 ELSE stmt:s2 
                         {: Result = new IfExp(ileft,irigh,e,s1,s2); :}
                         ;
