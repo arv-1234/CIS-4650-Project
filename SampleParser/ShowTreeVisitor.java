@@ -217,6 +217,51 @@ public class ShowTreeVisitor implements AbsynVisitor {
 
   }
 
+  public void visit( IndexVar var, int level ){
+    indent( level );
+    System.out.println( "IndexVar: " + var.name );
+    level++;
+    var.index.accept(this,level);
+  }
+
+  public void visit( FunctionDec FunDec, int level ){
+    indent( level );
+    System.out.println( "FunctionDec:");
+
+    //Print the return type
+    level++;
+    indent( level );
+    if(FunDec.result.typeVal == 0){
+      System.out.println( "NameTy: INT" );
+    }
+    else if(FunDec.result.typeVal == 1){
+      System.out.println( "NameTy: VOID" );
+    }
+    else if(FunDec.result.typeVal == 2){
+      System.out.println( "NameTy: NULL" );
+    }
+    else if(FunDec.result.typeVal == 3){
+      System.out.println( "NameTy: BOOL" );
+    }
+
+    //print function name next
+    indent( level );
+    System.out.println( "func: " + FunDec.func );
+
+    VarDecList tempList = FunDec.parameters;
+    while(tempList!=null && tempList.tail!=null){
+      tempList.head.accept(this,level);
+      tempList = tempList.tail;
+    }
+
+    //if it has a body print that out too
+    if( FunDec.body != null ) {
+      FunDec.body.accept( this, level );
+    }
+
+
+  }
+
 }
 
   
