@@ -1,11 +1,11 @@
-public class SingleDec extends Dec {
-    public NameTy decType;
+package absyn;
+
+public class SimpleVar extends Var {
     public String name;
 
-    public SingleDec ( int row, int col, NameTy decType, String name ) {
+    public SimpleVar ( int row, int col, String name ) {
         this.row = row;
         this.col = col;
-        this.decType = decType;
         this.name = name;
     }
 

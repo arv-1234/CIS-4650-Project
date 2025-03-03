@@ -1,15 +1,17 @@
-public class FunDec extends Dec {
-    public NameTy decType;
+package absyn;
+
+public class ArrayDec extends Dec {
+    public NameTy typ;
     public String name;
-    public DecList parameters;
+    public int size;
     
     //Arrays need a name, set length and a type, row and cols are needed for all objects
-    public FunDec ( int row, int col, NameTy decType, String name, DecList dl ) {
+    public ArrayDec ( int row, int col, NameTy decType, String name, int len ) {
         this.row = row;
         this.col = col;
-        this.decType = decType;
+        this.typ = decType;
         this.name = name;
-        this.parameters = dl;
+        this.size = len;
     }
 
     public void accept( AbsynVisitor visitor, int level ) {

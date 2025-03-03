@@ -1,5 +1,6 @@
 package absyn;
-public class TypeName extends Absyn {
+
+public class NameTy extends Absyn {
     
     public final static int INT = 0;
     public final static int VOID = 1;
@@ -8,7 +9,7 @@ public class TypeName extends Absyn {
 
     public int typeVal;
     
-    public SingleDec ( int row, int col, int type) {
+    public NameTy ( int row, int col, int type) {
         this.row = row;
         this.col = col;
         this.typeVal = type;

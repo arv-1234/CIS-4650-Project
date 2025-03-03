@@ -1,10 +1,10 @@
 package absyn;
 
-public class DecList extends Absyn {
-    public Dec head;
-    public DecList tail;
+public class VarDecList extends Absyn {
+    public VarDec head;
+    public VarDecList tail;
 
-    public DecList(Dec head, DecList tail) {
+    public VarDecList(VarDec head, VarDecList tail) {
         this.head = head;
         this.tail = tail;
     }

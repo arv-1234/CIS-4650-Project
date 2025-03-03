@@ -12,7 +12,7 @@ public class OpExp extends Exp {
   public final static int GT     = 7;
   public final static int GTEQ     = 8;
   public final static int NEQ     = 9;
-  public final static int UMINUS = 10;
+  public final static int APPROX = 10;
   public final static int AND = 11;
   public final static int OR = 12;
   public final static int NOT = 13;
