@@ -176,8 +176,8 @@ local_decL            ::= local_decL:ld var_declaration:v
                            }
                            else{
    
-                              while(tempList.tail!=null){
-                                 tempListLocal = tempList.tail;
+                              while(tempListLocal.tail!=null){
+                                 tempListLocal = tempListLocal.tail;
                               }
                               tempList.tail = new VarDecList(v,null);
                               RESULT = ld;
@@ -194,9 +194,11 @@ stmt_list             ::= stmt_list:sl stmt:s
                               RESULT = sl;
                            }
                            else{
-                              while(tempList.next!=null)
-                                 tempList = tempList.next;
-                              tempList.next = new ExpList(s,null);
+                              while(tempList.tail!=null){
+                                 tempList = tempList.tail;
+                              }
+                           
+                              tempList.tail = new ExpList(s,null);
                               RESULT = sl;
                            } :}
                         |
