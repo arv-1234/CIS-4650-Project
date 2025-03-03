@@ -163,16 +163,19 @@ compound_stmt         ::= LCURLBRACK local_decL:ld stmt_list:sl RCURLBRACK
                         {: RESULT = new CompoundExp(ldleft,ldright, ld,sl); :}
                         ;
                       
-local_decL            ::= local_decL:ld var_declaration:vd
-                        {: if(ld==null){
-                              ld = new VarDecList(ldleft,ldright,vd,null);
+local_decL            ::= local_decL:ld var_declaration:v
+                        {: VarDecList tempListLocal = ld;
+
+                           if(tempListLocal == null){
+                              ld = new VarDecList(v, null);
                               RESULT = ld;
                            }
                            else{
-                              VarDecList tempList = ld;
-                              while(tempList.next!=null)
-                                 tempList = tempList.next;
-                              tempList.next = new VarDecList(vd,null);
+   
+                              while(tempList.tail!=null){
+                                 tempListLocal = tempList.tail;
+                              }
+                              tempList.tail = new VarDecList(v,null);
                               RESULT = ld;
                            } :}
                         | 

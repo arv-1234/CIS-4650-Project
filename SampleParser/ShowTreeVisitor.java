@@ -77,9 +77,14 @@ public class ShowTreeVisitor implements AbsynVisitor {
   }
 
 
-  public void visit( VarExp exp, int level ) {
+  public void visit( VarExp expVar, int level ) {
     indent( level );
-    System.out.println( "VarExp: " + exp.name );
+
+    System.out.println( "VarExp:");
+
+    level++;
+    
+    expVar.variable.accept(this, level);
   }
 
   public void visit(ArrayDec arrayDec, int level )
