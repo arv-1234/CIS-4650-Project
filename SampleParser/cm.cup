@@ -122,6 +122,26 @@ var_declaration	    ::= type_spec:ts ID:id SEMI
                         {: RESULT = new SimpleDec( tsleft, tsright, ts, id); :}                        
                         | type_spec:ts ID:id LBRACK NUM:n RBRACK SEMI
                         {: RESULT = new ArrayDec(tsleft,tsright,ts,id,Integer.parseInt(n)); :}
+                        | type_spec:ts ID:id LBRACK NUM:n error:e SEMI
+                        {: parser.report_error("Array not declared properly. Missing right bracket after size", e);
+                           RESULT = new SimpleDec(tsleft, tsright, ts, null);
+                        :}
+                        | type_spec:ts ID:id error:e NUM:n RBRACK SEMI
+                        {: parser.report_error("Array not declared properly. Missing left bracket before size", e);
+                           RESULT = new SimpleDec(tsleft, tsright, ts, null);
+                        :}
+                        | type_spec:ts error:e SEMI
+                        {: parser.report_error("Variable not declared properly. invalid variable name", e);
+                           RESULT = new SimpleDec(tsleft, tsright, ts, null);
+                        :}
+                        | type_spec:ts ID:id error:e SEMI
+                        {: parser.report_error("Variable not declared properly. argument after variable name is unexpected", e);
+                           RESULT = new SimpleDec(tsleft, tsright, ts, null);
+                        :}
+                        | error:e SEMI
+                        {: parser.report_error("Variable not named properly. The variable name was invlaid",e);
+                           RESULT = new SimpleDec(eleft, 0, new NameTy(eleft,0,NameTy.NULL), null);
+                        :}
                         ;
 
 type_spec             ::= BOOL:b 
