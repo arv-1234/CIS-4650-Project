@@ -142,4 +142,11 @@ public class ShowTreeVisitor implements AbsynVisitor {
     }
   }
 
+  public void visit(SimpleDec decSimple, int level)
+  {
+    indent( level );
+
+    
+  }
+
 }

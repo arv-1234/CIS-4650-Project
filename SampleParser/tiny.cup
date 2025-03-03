@@ -74,19 +74,23 @@ terminal String ID, NUM;
 terminal BOOL, INT, VOID;
 terminal OR, AND, APPROX; 
 terminal LT, LTEQ, GT, GTEQ, NEQ, EQ;
-terminal TRUTH;
+terminal String TRUTH;
 terminal TIMES, OVER, PLUS, MINUS, ASSIGN;
 terminal LPAREN, RPAREN, LBRACK, RBRACK, COMMA, LCURLBRACK, RCURLBRACK, SEMI;
 terminal RETURN, IF, ELSE, WHILE;
+terminal ERROR;
 
-non terminal DecList program, declaration_list, params, compound_stmt;
-non terminal VarDecList param_list, local_decL;
+non terminal DecList program, declaration_list;
+non terminal VarDecList param_list, local_decL, params;
 non terminal ExpList stmt_list, arg_list, args, call;
 
-non terminal Exp varExp, exp, exp_stmt, simple_exp, selec_stmt, iter_stmt, return_stmt, stmt;  
-non terminal Dec declaration, fun_declaration, fun_prototype;
-non terminal VarDec var_declaration, param, var;
+non terminal Exp varExp, exp, exp_stmt, simple_exp, selec_stmt, iter_stmt, return_stmt, stmt, compound_stmt;  
+non terminal Dec declaration, fun_prototype;
+non terminal VarDec var_declaration, param;
+non terminal Var var;
 non terminal NameTy type_spec;
+non terminal FunctionDec fun_declaration;
+
 
 precedence left OVER,TIMES, PLUS, MINUS;
 precedence nonassoc AND, OR, EQ, NEQ, LT, LTEQ, GT, GTEQ;
@@ -117,15 +121,15 @@ declaration	          ::= var_declaration:vd
 var_declaration	    ::= type_spec:ts ID:id SEMI
                         {: RESULT = new SimpleDec( tsleft, tsright, ts, id); :}                        
                         | type_spec:ts ID:id LBRACK NUM:n RBRACK SEMI
-                        {: RESULT = new ArrayDec(tsleft,tsright,ts,id,n); :}
+                        {: RESULT = new ArrayDec(tsleft,tsright,ts,id,Integer.parseInt(n)); :}
                         ;
 
 type_spec             ::= BOOL:b 
                         {: RESULT = new NameTy(bleft,bright,NameTy.BOOL);:}
                         | INT:i
                         {: RESULT = new NameTy(ileft,iright,NameTy.INT);:}
-                        | VOID:v 
-                        {: RESULT = new NameTy(vleft,vright,NameTy.VOID);:}
+                        | VOID:vo 
+                        {: RESULT = new NameTy(voleft,voright,NameTy.VOID);:}
                         ;
 
 fun_declaration       ::= type_spec:ts ID:id LPAREN params:ps RPAREN compound_stmt:ct 
@@ -133,7 +137,7 @@ fun_declaration       ::= type_spec:ts ID:id LPAREN params:ps RPAREN compound_st
                         ;
 
 fun_prototype         ::= type_spec:ts ID:id LPAREN params:ps RPAREN SEMI
-                        {: RESULT = new FunctionDec(tsleft,tsright,ts,id,new NilExp(tsleft,tsright)); :}
+                        {: RESULT = new FunctionDec(tsleft,tsright,ts,id,ps,new NilExp(tsleft,tsright)); :}
                         ;
 
 params                ::= param_list:pl 
@@ -146,7 +150,7 @@ param_list            ::= param_list:pl COMMA param:p
                         {: VarDecList tempList = pl;
                            while(tempList.tail!=null)
                               tempList = tempList.tail;
-                           tempList.tail = new DecList(p,null);
+                           tempList.tail = new VarDecList(p,null);
                            RESULT = pl;
                         :}
                         | param:p
@@ -218,9 +222,9 @@ exp_stmt              ::= exp:e SEMI
                         ;
 
 selec_stmt            ::= IF:i LPAREN exp:e RPAREN stmt:s 
-                        {: RESULT = new IfExp(ileft,irigh,e,s,new NilExp(ileft,iright)); :}
+                        {: RESULT = new IfExp(ileft,iright,e,s,new NilExp(ileft,iright)); :}
                         | IF:i LPAREN exp:e RPAREN stmt:s1 ELSE stmt:s2 
-                        {: RESULT = new IfExp(ileft,irigh,e,s1,s2); :}
+                        {: RESULT = new IfExp(ileft,iright,e,s1,s2); :}
                         ;
 
 iter_stmt             ::= WHILE:w LPAREN exp:e RPAREN stmt:s
@@ -257,8 +261,6 @@ exp                   ::= var:v ASSIGN:a exp:e
                         {: RESULT= new OpExp(e1left,e1right,e1,OpExp.OR,e2); :}
                         | exp:e1 AND exp:e2
                         {: RESULT= new OpExp(e1left,e1right,e1,OpExp.AND,e2); :}
-                        | APPROX:a exp:e 
-                        {: RESULT= new OpExp(aleft,aright,e1,OpExp.APPROX,new NilExp(aleft,aright)); :}
                         | LPAREN:lp exp:e RPAREN:rp
                         {: RESULT = e; :}
                         | var:v
@@ -287,9 +289,9 @@ args                  ::= arg_list:al
 
 arg_list              ::= arg_list:al COMMA exp:e
                         {: ExpList tempList = al;
-                           while(tempList.next!=null)
-                              tempList = tempList.next;
-                           tempList.next = new ExpList(e,null);
+                           while(tempList.tail!=null)
+                              tempList = tempList.tail;
+                           tempList.tail = new ExpList(e,null);
                            RESULT = al;
                         :}
                         | exp:e
