@@ -262,6 +262,53 @@ public class ShowTreeVisitor implements AbsynVisitor {
 
   }
 
+
+  public void visit( CompoundExp exp, int level ){
+    indent( level );
+    System.out.println( "CompoundExp: " );
+    level++;
+
+    //print out the Var Decs
+    VarDecList tempVarDecList = exp.decs;
+    while( tempVarDecList  != null ) {
+      tempVarDecList.head.accept( this, level );
+      tempVarDecList  = tempVarDecList.tail;
+    }
+
+    //Next print out the exps
+    ExpList tempList = exp.exps;
+    while( tempList != null ) {
+      tempList.head.accept( this, level );
+      tempList = tempList.tail;
+    }
+
+  }
+
+  public void visit( DecList decList, int level ){
+
+    //print out the decs stored
+    DecList tempDecList = decList;
+    while( tempDecList   != null ) {
+      tempDecList.head.accept( this, level );
+      tempDecList   = tempDecList.tail;
+    }
+
+  }
+
+
+  public void visit( WhileExp exp, int level ){
+    indent( level );
+    System.out.println( "WhileExp:" );
+    level++;
+
+    if(exp.test!=null){
+      exp.test.accept(this,level);
+    }
+    exp.body.accept(this, level);
+
+  }
+
+
 }
 
   

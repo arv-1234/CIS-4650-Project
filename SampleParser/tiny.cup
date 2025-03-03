@@ -143,7 +143,6 @@ fun_prototype         ::= type_spec:ts ID:id LPAREN params:ps RPAREN SEMI
 params                ::= param_list:pl 
                         {: RESULT = pl; :}
                         | VOID:v 
-                        {: RESULT = new NameTy(vleft,vright,NameTy.VOID);:}
                         ;
                       
 param_list            ::= param_list:pl COMMA param:p
