@@ -154,6 +154,22 @@ type_spec             ::= BOOL:b
 
 fun_declaration       ::= type_spec:ts ID:id LPAREN params:ps RPAREN compound_stmt:ct 
                         {: RESULT = new FunctionDec(tsleft,tsright,ts,id,ps,ct); :}
+                        | type_spec:ts ID:id error:e params:ps RPAREN compound_stmt:ct
+                        {: parser.report_error("Function was not delcared properly. Missing left parenthesis",e);
+                           RESULT = new FunctionDec(tsleft, tsright, ts, id, null, ct);
+                        :}
+                        | type_spec:ts ID:id LPAREN params:ps error:e compound_stmt:ct
+                        {: parser.report_error("Function was not delcared properly. Missing right parenthesis",e);
+                           RESULT = new FunctionDec(tsleft, tsright, ts, id, null, ct);
+                        :}
+                        | error:e ID:id LPAREN params:ps RPAREN compound_stmt:ct
+                        {: parser.report_error("Function was not delcared properly. Missing type specifier",e);
+                           RESULT = new FunctionDec(eleft, 0, new NameTy(eleft,0,NameTy.NULL) ,id, ps, ct);
+                        :}
+                        | type_spec:ts error:e LPAREN params:ps RPAREN compound_stmt:ct
+                        {: parser.report_error("Function was not delcared properly. Missing function name",e);
+                           RESULT = new FunctionDec(tsleft, tsright, ts , null, ps, ct);
+                        :}
                         ;
 
 fun_prototype         ::= type_spec:ts ID:id LPAREN params:ps RPAREN SEMI
