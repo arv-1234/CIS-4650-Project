@@ -1,4 +1,4 @@
-package abysn;
+package absyn;
 
 public class NilExp extends Exp {
     public NilExp( int row, int col ) {
