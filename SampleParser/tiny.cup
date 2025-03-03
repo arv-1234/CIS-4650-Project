@@ -82,7 +82,7 @@ terminal ERROR;
 
 non terminal DecList program, declaration_list;
 non terminal VarDecList param_list, local_decL, params;
-non terminal ExpList stmt_list, arg_list, args, call;
+non terminal ExpList stmt_list, arg_list, args;
 
 non terminal Exp varExp, exp, exp_stmt, simple_exp, selec_stmt, iter_stmt, return_stmt, stmt, compound_stmt;  
 non terminal Dec declaration, fun_prototype;
@@ -154,7 +154,7 @@ param_list            ::= param_list:pl COMMA param:p
                            RESULT = pl;
                         :}
                         | param:p
-                        {: RESULT = new DecList(p,null); :}
+                        {: RESULT = new VarDecList(p,null); :}
                         ;
                       
 param                 ::= type_spec:ts ID:id
@@ -179,7 +179,7 @@ local_decL            ::= local_decL:ld var_declaration:v
                               while(tempListLocal.tail!=null){
                                  tempListLocal = tempListLocal.tail;
                               }
-                              tempList.tail = new VarDecList(v,null);
+                              tempListLocal.tail = new VarDecList(v,null);
                               RESULT = ld;
                            } :}
                         | 
@@ -265,6 +265,8 @@ exp                   ::= var:v ASSIGN:a exp:e
                         {: RESULT= new OpExp(e1left,e1right,e1,OpExp.AND,e2); :}
                         | LPAREN:lp exp:e RPAREN:rp
                         {: RESULT = e; :}
+                        |ID:i LPAREN args:a RPAREN
+                        {: RESULT = new CallExp(ileft,iright,i,a); :}
                         | var:v
                         {: RESULT = new VarExp(vleft,vright,v); :}
                         | NUM:n
@@ -279,10 +281,6 @@ var                   ::= ID:i
                         {: RESULT = new IndexVar(ileft,iright,i,e); :}
                         ;
 
-
-call                  ::= ID:i LPAREN args:a RPAREN
-                        {: RESULT = new CallExp(ileft,iright,i,a); :}
-                        ;
 
 args                  ::= arg_list:al
                         {: RESULT = al; :}
