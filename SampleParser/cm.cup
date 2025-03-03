@@ -97,6 +97,8 @@ precedence nonassoc AND, OR, EQ, NEQ, LT, LTEQ, GT, GTEQ;
 
 
 /* ----------------------------Grammar Section-------------------- */
+start with program;
+
 program	             ::= declaration_list:s
                         {: RESULT=s; :}
                         ;
@@ -135,7 +137,7 @@ var_declaration	    ::= type_spec:ts ID:id SEMI
                            RESULT = new SimpleDec(tsleft, tsright, ts, null);
                         :}
                         | type_spec:ts ID:id error:e SEMI
-                        {: parser.report_error("Variable not declared properly. Line:" + (tsleft + 1) + " Column:" + (tsright + 1) + " argument after variable name is unexpected", e);
+                        {: parser.report_error("Variable not declared properly. Line:" + (tsleft + 1) + " Column:" + (tsright + 1) + " Argument after identifier", e);
                            RESULT = new SimpleDec(tsleft, tsright, ts, null);
                         :}
                         | error:e SEMI
