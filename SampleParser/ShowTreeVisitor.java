@@ -76,12 +76,6 @@ public class ShowTreeVisitor implements AbsynVisitor {
        exp.right.accept( this, level );
   }
 
-  public void visit( ReadExp exp, int level ) {
-    indent( level );
-    System.out.println( "ReadExp:" );
-    exp.input.accept( this, ++level );
-  }
-
   public void visit( RepeatExp exp, int level ) {
     indent( level );
     System.out.println( "RepeatExp:" );
@@ -95,11 +89,5 @@ public class ShowTreeVisitor implements AbsynVisitor {
     System.out.println( "VarExp: " + exp.name );
   }
 
-  public void visit( WriteExp exp, int level ) {
-    indent( level );
-    System.out.println( "WriteExp:" );
-    if (exp.output != null)
-       exp.output.accept( this, ++level );
-  }
 
 }
