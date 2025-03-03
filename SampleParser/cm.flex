@@ -127,6 +127,6 @@ truth = false | true
 {number}           { return symbol(sym.NUM, yytext()); }
 
 {whiteSpace}+      { /* skip whitespace */ }   
-"{"[^\}]*"}"       { /* skip comments */ }
+"\/\*([^*]|\*+[^\/])*\*\/" { /* skip comments */ }
 
 .                  { return symbol(sym.ERROR); }
