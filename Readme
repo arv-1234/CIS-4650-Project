@@ -43,9 +43,10 @@ pattern; and tiny.cup.ordered simplifies the grammar with precedence directives 
 You are encouraged to follow these steps to build your parser incrementaly for Checkpoint
 One implementation.
 
-
+---
 
 **TO RUN:
-1. in the makefile make sure the proper class path is uncommented, this will vary from person to person but make sure we leave it at the one that works on nomachine/socs-server
-2. type make into the terminal when its in the respective folder
-3. type in the command java -cp /Path/to/java-cup-11b.jar:. Main <Test file name>   
+1. In the makefile, make sure the proper class path is uncommented, this will vary from person to person but make sure we leave it at the one that works on nomachine/socs-server.
+2. Type make into the terminal when it's in the respective folder.
+3. Drag the <Test file name> into the c1 folder.
+4. Type in the command, java -cp /Path/to/java-cup-11b.jar:. Main <Test file name>
