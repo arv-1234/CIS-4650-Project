@@ -1,18 +1,9 @@
-/* 
- * This program contains multiple syntax and lexical errors:
- * - Invalid function declaration
- * - Missing semicolon
- * - Undeclared variable
- * - Unexpected token usage
- */
+/* Use mutual recursion and added additional variable declarations at  line 4 and a function prototype at line 7*/
 
+
+
+x = 10
 int main(  // Error: Missing closing parenthesis
-    int x;
-    x = 10   // Error: Missing semicolon
-
-    if (x == 10) {  
-        y = 20;  // Error: 'y' is undeclared
-        output(x
-    }  // Error: Missing closing parenthesis in output statement
+   
 
     return 0;

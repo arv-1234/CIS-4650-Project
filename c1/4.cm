@@ -1,4 +1,4 @@
-/* This is a simple test file that deals with functions and an incorrect function definition to see if the error recovery is working */
+/* This is a simple test file that deals with functions and an incorrect function definition to see if the error recovery is working line 9 */
 
 void main(void){
     int a;

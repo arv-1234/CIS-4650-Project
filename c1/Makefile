@@ -3,10 +3,8 @@ JAVAC=javac
 JFLEX=jflex
 #JFLEX=~/Projects/jflex/bin/jflex
 #CLASSPATH=-cp ~/Projects/java-cup-11b.jar:.
-#CLASSPATH=-cp .:/home/jmanpalmer/CIS-4650-Project/c1/java-cup-11b.jar:.
-CLASSPATH=-cp .:/home/undergrad/2/jnguye27/Desktop/Compilers/jnguye27_a2/CIS-4650-Project/c1/java-cup-11b.jar:.
-#CLASSPATH=-cp /usr/share/java/cup.jar:.
-#CLASSPATH=-cp /root/CIS4650/java-cup-11b.jar:.
+CLASSPATH=-cp /usr/share/java/cup.jar:.
+#CLASSPATH=-cp /root/CIS4650/CIS-4650-Project/c1/java-cup-11b.jar:.
 CUP=$(JAVA) $(CLASSPATH) java_cup.Main
 
 

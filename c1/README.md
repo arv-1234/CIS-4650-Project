@@ -1,3 +1,5 @@
+Names: Arvind Palakkal (1141879), Justin Palmer (1102541), Jessica Nguyen (1169812)
+
 Acknowledgment: I used C1-Package's SampleScanner code and modified it for my implementation.
 
 **Intro and compilation**
@@ -17,6 +19,14 @@ In this package the parser for checkpoint 1 is defined. To run the program you m
 - cm.flex defines our scanner
 - The test files should also be located within the same c1 directory as cm.cup, there are 5 simple test files labled num.cm where num is a number from   1-5
 - ShowTreeVisitor holds the definition for the visitor function and is mostly in charge as to what is printed out in the abstract syntax tree
+
+**Limitations**
+- Our error recovery does not work very well. That is why our test files are limited. We have to improve on it before moving to c2
+
+**Test Plan**
+- To test the program we created 5 test file 1.cm, 2.cm, 3.cm, 4.cm, 5.cm,
+- The types of errors that will be present in each file will be mentioned in the file in a comment
+- However as mentioned before our error recovery does not really work properly so the amount of errors it can catch is limited
 
 
 **(ALSO NOTE WE HAD TO MANUALLY PLACE java-cup-11b.jar into the project)**
