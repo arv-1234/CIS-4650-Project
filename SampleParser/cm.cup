@@ -347,6 +347,9 @@ return_stmt           ::= RETURN:r exp:e SEMI
 
 exp                   ::= var:v ASSIGN:a exp:e
                         {: RESULT = new AssignExp(vleft,vright, new VarExp(vleft,vright,v), e); :}
+                        |var:v ASSIGN:a error:e
+                        {: parser.report_error("Incorrect assignment operator. Line:" + (vleft + 1) + " Column:" + (vright + 1) + " No right hand side",e);  
+                           RESULT = new AssignExp(vleft,vright, new VarExp(vleft,vright,v), new NilExp(vleft,vright)); :}
                         | exp:e1 PLUS exp:e2
                         {: RESULT= new OpExp(e1left,e1right,e1,OpExp.PLUS,e2); :}
                         | exp:e1 MINUS exp:e2

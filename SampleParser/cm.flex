@@ -82,7 +82,9 @@ number = [0-9]+
 
 /* A truth value is a boolean value that can be either false or true */
 truth = false | true
-   
+
+comments = \/\*[^*]*\*\/
+
 %%
 /* ------------------------Lexical Rules Section---------------------- */
 /*
@@ -127,6 +129,6 @@ truth = false | true
 {number}           { return symbol(sym.NUM, yytext()); }
 
 {whiteSpace}+      { /* skip whitespace */ }   
-"\/\*([^*]|\*+[^\/])*\*\/" { /* skip comments */ }
+{comments} { /* skip comments */ }
 
 .                  { return symbol(sym.ERROR); }
