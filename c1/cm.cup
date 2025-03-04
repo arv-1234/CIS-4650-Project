@@ -143,7 +143,7 @@ var_declaration	    ::= type_spec:ts ID:id SEMI
                            RESULT = new SimpleDec(tsleft, tsright, ts, null);
                         :}
                         | error:e SEMI
-                        {: parser.report_error("Variable not named properly. Line:" + (eleft + 1) + " Column:" + (0) + " The variable name was invlaid",e);
+                        {: parser.report_error("Variable not named properly. Line:" + (eleft + 1) + " Column:" + (eright + 1) + " The variable name was invlaid",e);
                            RESULT = new SimpleDec(eleft, 0, new NameTy(eleft,0,NameTy.NULL), null);
                         :}
                         ;

@@ -1,16 +1,21 @@
-/* Making any possible test I can think of */
+/* line 11, line 14,  line 16, line 20
 
-/* Syntax Error - Missing a semicolon */
-void test1(void) {
-    printf("Hello World!")
-}
+    line 11, missing ; 
+    line 14, missing value after assignment expression 
+    line 16, Missing assigment expression
+    line 20, Missing left parantheses
+*/
 
-/* Function Error - Missing a bracket */
-void test2(void) {
-    printf("Hello World!");
-}
+void main(void) {
+  int x 
+  int fac;
 
-/* Parameter Error - Too many commas in the parameter */
-int test3(int a,, int b, int c) {
-    return 5;
+  x = input();
+  fac = ;
+  while (x > 1) {
+    fac = fac  x;
+    x = x - 1;
+  } 
+
+  output fac);
 }

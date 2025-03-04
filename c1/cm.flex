@@ -1,10 +1,12 @@
 /*
    Created By: Fei Song
    Modified By: Jessica Nguyen
-   File Name: tiny.flex
+   File Name: cm.flex
    
    To Build (no Parser): jflex tiny.flex
    To Build (with Parser): javac Lexer.java
+
+   To run scanner with flex files against the test files on the server java -cp /usr/share/java/cup.jar:. Main <Test file name>: 
 */
    
 /* --------------------------Usercode Section------------------------ */
@@ -131,4 +133,4 @@ comments = \/\*[^*]*\*\/
 {whiteSpace}+      { /* skip whitespace */ }   
 {comments} { /* skip comments */ }
 
-.                  { return symbol(sym.ERROR); }
+.                  {  System.err.println("ERROR: Character was not recognized \'" + yytext() +"\' on line " + yyline); return symbol(sym.ERROR); }
