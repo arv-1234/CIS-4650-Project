@@ -1,0 +1,16 @@
+/* Making any possible test I can think of */
+
+/* Syntax Error - Missing a semicolon */
+void test1(void) {
+    printf("Hello World!")
+}
+
+/* Function Error - Missing a bracket */
+void test2(void) {
+    printf("Hello World!");
+}
+
+/* Parameter Error - Too many commas in the parameter */
+int test3(int a,, int b, int c) {
+    return 5;
+}
