@@ -94,7 +94,7 @@ non terminal FunctionDec fun_declaration;
 
 precedence left OVER,TIMES, PLUS, MINUS;
 precedence nonassoc AND, OR, EQ, NEQ, LT, LTEQ, GT, GTEQ;
-precedence left ELSE, IF, ID;
+precedence left WHILE, ELSE, IF, ID;
 
 /* ----------------------------Grammar Section-------------------- */
 start with program;
@@ -334,9 +334,6 @@ selec_stmt            ::= IF:i LPAREN exp:e RPAREN stmt:s
 
 iter_stmt             ::= WHILE:w LPAREN exp:e RPAREN stmt:s
                         {: RESULT = new WhileExp(wleft,wright,e,s); :}
-                        | WHILE:w LPAREN exp:e RPAREN stmt:s
-                        {: 
-                           RESULT = new WhileExp(wleft,wright,e,s); :}
                         ;
 
 return_stmt           ::= RETURN:r exp:e SEMI
@@ -347,9 +344,6 @@ return_stmt           ::= RETURN:r exp:e SEMI
 
 exp                   ::= var:v ASSIGN:a exp:e
                         {: RESULT = new AssignExp(vleft,vright, new VarExp(vleft,vright,v), e); :}
-                        |var:v ASSIGN:a error:e
-                        {: parser.report_error("Incorrect assignment operator. Line:" + (vleft + 1) + " Column:" + (vright + 1) + " No right hand side",e);  
-                           RESULT = new AssignExp(vleft,vright, new VarExp(vleft,vright,v), new NilExp(vleft,vright)); :}
                         | exp:e1 PLUS exp:e2
                         {: RESULT= new OpExp(e1left,e1right,e1,OpExp.PLUS,e2); :}
                         | exp:e1 MINUS exp:e2
