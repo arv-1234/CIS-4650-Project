@@ -1,8 +1,8 @@
 /* Errors expected lines 9, 12, and 15. There is a function declaration with no left parantheses. Invalid variable declaration and cant initalize and declare variable
     
     line 9, the function is not displayed properly. It is missing the the left paranthesis 
-    line 11, invalid variable declaration due to @
-    line 14, cant have leading 0 unless you octal numbers 
+    line 12, invalid variable declaration due to @
+    line 15, cant have leading 0 unless you octal numbers 
 
 */
 

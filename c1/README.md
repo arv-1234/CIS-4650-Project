@@ -10,11 +10,11 @@ In this package the parser for checkpoint 1 is defined. To run the program you m
 
 -  Type make into the terminal when it's in the respective folder.
 
--  Type in the command, java -cp /Path/to/java-cup-11b.jar:. Main <Test file name>
+-  Type in the command, java -cp /Path/to/java-cup-11b.jar:. Main <Test file name> 
 
-- To run the code on the server type in this command: java -cp /usr/share/java/cup.jar:. Main <Test file name>
+- To run the code on the school server type in this command: java -cp /usr/share/java/cup.jar:. Main <Test file name>
 
-- To run the scanner against any of the test files on the server: java -cp /usr/share/java/cup.jar:. Scanner <Test file name>
+- To run the scanner against any of the test files on the school server: java -cp /usr/share/java/cup.jar:. Scanner <Test file name>
 
 
 **Files**
@@ -32,8 +32,12 @@ In this package the parser for checkpoint 1 is defined. To run the program you m
 **Limitations**
 - Our error recovery does not work very well. That is why our test files are limited. We have to improve on it before moving to c2
 
+- Some errors cause our program from working entriely 
+
 **Test Plan**
-- To test the program we created 5 test file 1.cm, 2.cm, 3.cm, 4.cm, 5.cm,
+- To test the program we created 5 test file 1.cm, 2.cm, 3.cm, 4.cm, 5.cm
+
+- We also used the programs provided by the c1 package
 
 - The types of errors that will be present in each file will be mentioned in the file in a comment
 
