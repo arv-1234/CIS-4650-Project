@@ -1,0 +1,14 @@
+/* Errors expected lines 3, 6, and 9. There is a function declaration with no left parantheses. Invalid variable declaration and cant initalize and declare variable*/
+
+int cheese void
+
+int main(void) {
+    int @invalid;  // Error 1: '@' is not a valid character in identifiers
+    @invalid = 5;
+    
+    int num = 099;  
+     
+    output(num);
+
+    return 0;
+}
