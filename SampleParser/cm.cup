@@ -84,7 +84,7 @@ non terminal DecList program, declaration_list;
 non terminal VarDecList param_list, local_decL, params;
 non terminal ExpList stmt_list, arg_list, args;
 
-non terminal Exp varExp, exp, exp_stmt, simple_exp, selec_stmt, iter_stmt, return_stmt, stmt, compound_stmt;  
+non terminal Exp exp, exp_stmt, selec_stmt, iter_stmt, return_stmt, stmt, compound_stmt;  
 non terminal Dec declaration, fun_prototype;
 non terminal VarDec var_declaration, param;
 non terminal Var var;
@@ -361,11 +361,15 @@ exp                   ::= var:v ASSIGN:a exp:e
                         | exp:e1 LTEQ exp:e2 
                         {: RESULT= new OpExp(e1left,e1right,e1,OpExp.LTEQ,e2); :}
                         | exp:e1 EQ exp:e2
-                        {: RESULT= new OpExp(e1left,e1right,e1,OpExp.EQ,e2); :} 
+                        {: RESULT= new OpExp(e1left,e1right,e1,OpExp.EQ,e2); :}
+                        |exp:e1 NEQ exp:e2
+                        {: RESULT= new OpExp(e1left,e1right,e1,OpExp.NEQ,e2); :}  
                         | exp:e1 OR exp:e2 
                         {: RESULT= new OpExp(e1left,e1right,e1,OpExp.OR,e2); :}
                         | exp:e1 AND exp:e2
                         {: RESULT= new OpExp(e1left,e1right,e1,OpExp.AND,e2); :}
+                        | APPROX:a exp:e1
+                        {: RESULT= new OpExp(e1left,e1right,e1,OpExp.APPROX,new NilExp(aleft,aright)); :}
                         | LPAREN:lp exp:e RPAREN:rp
                         {: RESULT = e; :}
                         |ID:i LPAREN args:a RPAREN
