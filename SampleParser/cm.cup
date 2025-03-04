@@ -94,7 +94,7 @@ non terminal FunctionDec fun_declaration;
 
 precedence left OVER,TIMES, PLUS, MINUS;
 precedence nonassoc AND, OR, EQ, NEQ, LT, LTEQ, GT, GTEQ;
-
+precedence left ELSE, IF;
 
 /* ----------------------------Grammar Section-------------------- */
 start with program;
@@ -280,6 +280,54 @@ selec_stmt            ::= IF:i LPAREN exp:e RPAREN stmt:s
                         {: RESULT = new IfExp(ileft,iright,e,s,new NilExp(ileft,iright)); :}
                         | IF:i LPAREN exp:e RPAREN stmt:s1 ELSE stmt:s2 
                         {: RESULT = new IfExp(ileft,iright,e,s1,s2); :}
+                        | IF:i LPAREN error:e exp:ex RPAREN stmt:s 
+                        {: parser.report_error("Incorrect Select statment. Line:" + (ileft + 1) + " Column:" + (iright + 1) + " Invalid expression",e);  
+                           RESULT = new IfExp(ileft,iright, ex,s,new NilExp(ileft,iright)); //still try to parse the expresion in the face of an error 
+                        :}
+                        | IF:i LPAREN error:e RPAREN stmt:s 
+                        {: parser.report_error("Incorrect Select statment. Line:" + (ileft + 1) + " Column:" + (iright + 1) + " Invalid condition expression",e);  
+                           RESULT = new IfExp(ileft,iright, new NilExp(ileft,iright) ,s,new NilExp(ileft,iright)); //still try to parse the expresion in the face of an error 
+                        :}
+                        | IF:i error:e exp:ex RPAREN stmt:s 
+                        {: parser.report_error("Incorrect Select statment. Line:" + (ileft + 1) + " Column:" + (iright + 1) + " Select statement Missing left parenthesis",e);  
+                           RESULT = new IfExp(ileft,iright, ex ,s,new NilExp(ileft,iright));
+                        :}
+                        |IF:i LPAREN exp:ex error:e stmt:s 
+                        {: parser.report_error("Incorrect Select statment. Line:" + (ileft + 1) + " Column:" + (iright + 1) + " Select missing right parenthesis",e);  
+                           RESULT = new IfExp(ileft,iright, ex ,s,new NilExp(ileft,iright)); //still try to parse the expresion in the face of an error 
+                        :}
+                        | IF:i LPAREN exp:ex RPAREN error:e stmt:s 
+                        {: parser.report_error("Incorrect Select statment. Line:" + (ileft + 1) + " Column:" + (iright + 1) + " invalid if structure",e);  
+                           RESULT = new IfExp(ileft,iright, ex ,s,new NilExp(ileft,iright)); //still try to parse the expresion in the face of an error 
+                        :}
+                        | IF:i LPAREN error:e exp:ex RPAREN stmt:s1 ELSE stmt:s2 
+                        {: parser.report_error("Incorrect Select statment. Line:" + (ileft + 1) + " Column:" + (iright + 1) + " Invalid Condition expression",e);  
+                           RESULT = new IfExp(ileft,iright,ex,s1,s2); 
+                        :}
+                        | IF:i LPAREN error:e RPAREN stmt:s1 ELSE stmt:s2 
+                        {: parser.report_error("Incorrect Select statment. Line:" + (ileft + 1) + " Column:" + (iright + 1) + " Invalid Condition expression",e);  
+                           RESULT = new IfExp(ileft,iright,new NilExp(ileft,iright) ,s1,s2); 
+                        :}
+                        | IF:i error:e exp:ex RPAREN stmt:s1 ELSE stmt:s2 
+                        {: parser.report_error("Incorrect Select statment. Line:" + (ileft + 1) + " Column:" + (iright + 1) + " If missing left parenthesis",e);  
+                           RESULT = new IfExp(ileft,iright,ex ,s1,s2); 
+                        :}
+                        | IF:i error:e LPAREN exp:ex RPAREN stmt:s1 ELSE stmt:s2 
+                        {: parser.report_error("Incorrect Select statment. Line:" + (ileft + 1) + " Column:" + (iright + 1) + " unexpected input before left parenthesis",e);  
+                           RESULT = new IfExp(ileft,iright,ex ,s1,s2); 
+                        :}
+                        | IF:i LPAREN exp:ex error:e stmt:s1 ELSE stmt:s2 
+                        {: parser.report_error("Incorrect Select statment. Line:" + (ileft + 1) + " Column:" + (iright + 1) + " missing right parenthesis",e);  
+                           RESULT = new IfExp(ileft,iright,ex ,s1,s2); 
+                        :}
+                        | IF:i LPAREN exp:ex RPAREN error:e stmt:s1 ELSE stmt:s2 
+                        {: parser.report_error("Incorrect Select statment. Line:" + (ileft + 1) + " Column:" + (iright + 1) + " unexpected input before first statement",e);  
+                           RESULT = new IfExp(ileft,iright,ex ,s1,s2); 
+                        :}
+                        | IF:i LPAREN exp:ex RPAREN stmt:s1 ELSE error:e stmt:s2 
+                        {: parser.report_error("Incorrect Select statment. Line:" + (ileft + 1) + " Column:" + (iright + 1) + " unexpected input before second statement",e);  
+                           RESULT = new IfExp(ileft,iright,ex ,s1,s2); 
+                        :}
                         ;
 
 iter_stmt             ::= WHILE:w LPAREN exp:e RPAREN stmt:s
