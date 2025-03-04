@@ -219,9 +219,9 @@ public class ShowTreeVisitor implements AbsynVisitor {
     VarDecList tempList = varDecList;
 
     //loop through and print each node in the list, similar to ExpList
-    while(varDecList!=null){
-      varDecList.head.accept(this,level);
-      varDecList = varDecList.tail;
+    while(tempList!=null){
+      tempList.head.accept(this,level);
+      tempList = tempList.tail;
     }
 
   }

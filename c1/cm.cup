@@ -160,15 +160,15 @@ fun_declaration       ::= type_spec:ts ID:id LPAREN params:ps RPAREN compound_st
                         {: RESULT = new FunctionDec(tsleft,tsright,ts,id,ps,ct); :}
                         | type_spec:ts ID:id error:e params:ps RPAREN compound_stmt:ct
                         {: parser.report_error("Function was not delcared properly. Line:" + (tsleft + 1) + " Column:" + (tsright + 1) + " Missing left parenthesis",e);
-                           RESULT = new FunctionDec(tsleft, tsright, ts, id, null, ct);
+                           RESULT = new FunctionDec(tsleft, tsright, ts, id, ps, ct);
                         :}
                         | type_spec:ts ID:id LPAREN params:ps error:e compound_stmt:ct
                         {: parser.report_error("Function was not delcared properly. Line:" + (tsleft + 1) + " Column:" + (tsright + 1) + " Missing right parenthesis",e);
-                           RESULT = new FunctionDec(tsleft, tsright, ts, id, null, ct);
+                           RESULT = new FunctionDec(tsleft, tsright, ts, id, ps, ct);
                         :}
                         | error:e ID:id LPAREN params:ps RPAREN compound_stmt:ct
-                        {: parser.report_error("Function was not delcared properly. Line:" + (eleft + 1) + " Column:" + (1) + " Missing type specifier",e);
-                           RESULT = new FunctionDec(eleft, 0, new NameTy(eleft,0,NameTy.NULL) ,id, ps, ct);
+                        {: parser.report_error("Function was not delcared properly. Line:" + (eleft + 1) + " Column:" + (1) + " Missing Function type specifier",e);
+                           RESULT = new FunctionDec(eleft, 0, new NameTy(eleft,0,NameTy.VOID) ,id, ps, ct);
                         :}
                         ;
 
