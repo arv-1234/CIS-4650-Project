@@ -1,4 +1,4 @@
-Names: Arvind Palakkal (1141879), Justin Palmer (1102541), Jessica Nguyen (1169812)
+Names: Justin Palmer (1102541), Jessica Nguyen (1169812), Arvind Palakkal (1141879)
 
 Acknowledgment: I used C1-Package's SampleScanner code and modified it for my implementation.
 
