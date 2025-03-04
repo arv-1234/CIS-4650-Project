@@ -334,6 +334,9 @@ selec_stmt            ::= IF:i LPAREN exp:e RPAREN stmt:s
 
 iter_stmt             ::= WHILE:w LPAREN exp:e RPAREN stmt:s
                         {: RESULT = new WhileExp(wleft,wright,e,s); :}
+                        | WHILE:w LPAREN exp:e RPAREN stmt:s
+                        {: 
+                           RESULT = new WhileExp(wleft,wright,e,s); :}
                         ;
 
 return_stmt           ::= RETURN:r exp:e SEMI
