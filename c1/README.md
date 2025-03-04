@@ -10,9 +10,12 @@ In this package the parser for checkpoint 1 is defined. To run the program you m
 
 -  Type make into the terminal when it's in the respective folder.
 
--  Type in the command, java -cp /Path/to/java-cup-11b.jar:. Main <Test file name> 
+-  Type in the command, java -cp /Path/to/java-cup-11b.jar:. Main <Test file name> -a (the -a command will display the syntax tree)
 
-- To run the code on the school server type in this command: java -cp /usr/share/java/cup.jar:. Main <Test file name>
+    - If you run the command without the the -a errors messages about errors in the file will be displayed only, not the tree
+
+
+- To run the code on the school server type in this command: java -cp /usr/share/java/cup.jar:. Main <Test file name> -a
 
 - To run the scanner against any of the test files on the school server: java -cp /usr/share/java/cup.jar:. Scanner  < <Test file name>
 
@@ -45,3 +48,5 @@ In this package the parser for checkpoint 1 is defined. To run the program you m
 
 
 **(ALSO NOTE WE HAD TO MANUALLY PLACE java-cup-11b.jar into the project to run our code locally)**
+
+java -cp /usr/share/java/cup.jar:. Main <Test file name>

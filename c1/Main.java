@@ -18,10 +18,20 @@ class Main {
   public final static boolean SHOW_TREE = true;
   static public void main(String argv[]) {    
     /* Start the parser */
+
+    boolean printAST = false;
+
+    for(String commandArgs : argv)
+    {
+      if(commandArgs.equals("-a"))
+      {
+        printAST = true;
+      }
+    }
     try {
       parser p = new parser(new Lexer(new FileReader(argv[0])));
       Absyn result = (Absyn)(p.parse().value);      
-      if (SHOW_TREE && result != null) {
+      if (printAST && SHOW_TREE && result != null) {
          System.out.println("The abstract syntax tree is:");
          AbsynVisitor visitor = new ShowTreeVisitor();
          result.accept(visitor, 0); 
