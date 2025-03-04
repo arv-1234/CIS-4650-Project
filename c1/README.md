@@ -14,7 +14,7 @@ In this package the parser for checkpoint 1 is defined. To run the program you m
 
 - To run the code on the school server type in this command: java -cp /usr/share/java/cup.jar:. Main <Test file name>
 
-- To run the scanner against any of the test files on the school server: java -cp /usr/share/java/cup.jar:. Scanner <Test file name>
+- To run the scanner against any of the test files on the school server: java -cp /usr/share/java/cup.jar:. Scanner  < <Test file name>
 
 
 **Files**

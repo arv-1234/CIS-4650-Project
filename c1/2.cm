@@ -1,4 +1,4 @@
-/* Errors expected lines 9, 12, and 15. There is a function declaration with no left parantheses. Invalid variable declaration and cant initalize and declare variable
+/* Errors expected lines 9, 12, and 15. There is a function declaration with no left parantheses. Cant have leading 0's
     
     line 9, the function is not displayed properly. It is missing the the left paranthesis 
     line 12, invalid variable declaration due to @
@@ -10,7 +10,7 @@ int cheese void
 
 int main(void) {
     int @invalid; 
-    @invalid = 5;
+    
     
     int num = 099;  
      

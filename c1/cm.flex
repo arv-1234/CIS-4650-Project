@@ -6,7 +6,7 @@
    To Build (no Parser): jflex cm.flex
    To Build (with Parser): javac Lexer.java
 
-   To run scanner with flex files against the test files on the server java -cp /usr/share/java/cup.jar:. Scanner <Test file name>: 
+   To run scanner with flex files against the test files on the server java -cp /usr/share/java/cup.jar:. Scanner < <Test file name>: 
 */
    
 /* --------------------------Usercode Section------------------------ */
