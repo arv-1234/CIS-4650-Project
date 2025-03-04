@@ -12,7 +12,7 @@ In this package the parser for checkpoint 1 is defined. To run the program you m
 
 -  Type in the command, java -cp /Path/to/java-cup-11b.jar:. Main <Test file name>
 
-  - To run the code on the server type in this command: java -cp /usr/share/java/cup.jar:. Main <Test file name>
+- To run the code on the server type in this command: java -cp /usr/share/java/cup.jar:. Main <Test file name>
 
 - To run the scanner against any of the test files on the server: java -cp /usr/share/java/cup.jar:. Main <Test file name>
 
