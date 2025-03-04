@@ -94,7 +94,7 @@ non terminal FunctionDec fun_declaration;
 
 precedence left OVER,TIMES, PLUS, MINUS;
 precedence nonassoc AND, OR, EQ, NEQ, LT, LTEQ, GT, GTEQ;
-precedence left ELSE, IF;
+precedence left ELSE, IF, ID;
 
 /* ----------------------------Grammar Section-------------------- */
 start with program;
@@ -118,6 +118,8 @@ declaration	          ::= var_declaration:vd
                         {: RESULT = vd; :}
                         | fun_declaration:fd
                         {: RESULT = fd;:}
+                        |  fun_prototype:fp
+                        {: RESULT = fp; :}
                         ;
 
 var_declaration	    ::= type_spec:ts ID:id SEMI
