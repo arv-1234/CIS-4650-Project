@@ -1,0 +1,21 @@
+/* line 11, line 14,  line 16, line 20
+
+    line 11, missing ; 
+    line 14, missing value after assignment expression 
+    line 16, Missing assigment expression
+    line 20, Missing left parantheses
+*/
+
+void main(void) {
+  int x 
+  int fac;
+
+  x = input();
+  fac = ;
+  while (x > 1) {
+    fac = fac  x;
+    x = x - 1;
+  } 
+
+  output fac);
+}

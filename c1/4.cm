@@ -1,0 +1,16 @@
+/* This is a simple test file that deals with functions and an incorrect function definition to see if the error recovery is working line 9 */
+
+void main(void){
+    int a;
+    int b;
+}
+
+/*missing left parenthesis*/
+int fun1 int c)  {
+
+    return c;
+}
+
+
+
+

@@ -55,7 +55,7 @@ public class ShowTreeVisitor implements AbsynVisitor {
         System.out.println( " / " );
         break;
       case OpExp.EQ:
-        System.out.println( " = " );
+        System.out.println( " == " );
         break;
       case OpExp.LT:
         System.out.println( " < " );
@@ -65,6 +65,15 @@ public class ShowTreeVisitor implements AbsynVisitor {
         break;
       case OpExp.UMINUS:
         System.out.println( " - " );
+        break;
+      case OpExp.AND:
+        System.out.println( " AND ");
+        break;
+      case OpExp.OR:
+        System.out.println( " OR ");
+        break;
+      case OpExp.APPROX:
+        System.out.println( " NOT ");
         break;
       default:
         System.out.println( "Unrecognized operator at line " + exp.row + " and column " + exp.col);
@@ -210,9 +219,9 @@ public class ShowTreeVisitor implements AbsynVisitor {
     VarDecList tempList = varDecList;
 
     //loop through and print each node in the list, similar to ExpList
-    while(varDecList!=null){
-      varDecList.head.accept(this,level);
-      varDecList = varDecList.tail;
+    while(tempList!=null){
+      tempList.head.accept(this,level);
+      tempList = tempList.tail;
     }
 
   }
