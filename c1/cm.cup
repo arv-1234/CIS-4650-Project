@@ -12,6 +12,8 @@ import absyn.*;
    line and column number of the error). */
 parser code {:
     
+
+
     /* Change the method report_error so it will display the line and
        column of where the error occurred in the input as well as the
        reason for the error which is passed into the method in the
@@ -159,16 +161,20 @@ type_spec             ::= BOOL:b
 fun_declaration       ::= type_spec:ts ID:id LPAREN params:ps RPAREN compound_stmt:ct 
                         {: RESULT = new FunctionDec(tsleft,tsright,ts,id,ps,ct); :}
                         | type_spec:ts ID:id  params:ps RPAREN compound_stmt:ct
-                        {: System.err.println("Syntax Error Line: " + (tsleft + 1) + " Column: " + (tsright + 1) + " Function was not delcared properly. Missing left parenthesis");
+                        {: System.err.println("Error in line " + (tsleft + 1) + ", column " + (tsright + 1) + ": Syntax error\ninstead expected token classes are [(] \nError: Function was not delcared properly, Missing left parenthesis.");
                            RESULT = new FunctionDec(tsleft, tsright, ts, id, ps, ct);
                         :}
-                        | type_spec:ts ID:id LPAREN params:ps  compound_stmt:ct
-                        {: System.err.println("Syntax Error Line: " + (tsleft + 1) + " Column: " + (tsright + 1) + " Function was not delcared properly. Missing right parenthesis");
+                        | type_spec:ts ID:id LPAREN params:ps compound_stmt:ct
+                        {: System.err.println("Error in line " + (tsleft + 1) + ", column " + (tsright + 1) + ": Syntax error\ninstead expected token classes are [)] \nError: Function was not delcared properly, Missing right parenthesis.");
                            RESULT = new FunctionDec(tsleft, tsright, ts, id, ps, ct);
                         :}
                         | ID:id LPAREN params:ps RPAREN compound_stmt:ct
-                        {: System.err.println("Syntax Error Line: " + (idleft + 1) + " Column: " + (idright + 1) + " Function was not delcared properly. Missing type specifier");
+                        {: System.err.println("Error in line " + (idleft + 1) + ", column " + (idright + 1) + ": Syntax error \ninstead expected token classes are [int,void,bool] \nError: Function was not delcared properly, Missing type identifier");
                            RESULT = new FunctionDec(idleft, 0, new NameTy(idleft,0,NameTy.VOID) ,id, ps, ct);
+                        :}
+                        | error:e type_spec:ts ID:id LPAREN params:ps RPAREN compound_stmt:ct
+                        {: parser.report_error("Unexpected token(s) before function declaration",e);
+                           RESULT = new FunctionDec(eleft, 0, new NameTy(eleft,0,NameTy.VOID) ,id, ps, ct);
                         :}
                         ;
 

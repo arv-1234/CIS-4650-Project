@@ -18,6 +18,11 @@ fun3 (int k)  {
     return k;
 }
 
+/*unexpected token before declaration*/
+unexpected int fun4 (int k)  {
+
+    return k;
+}
 
 void main(void){
     int a;
