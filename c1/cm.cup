@@ -166,9 +166,9 @@ fun_declaration       ::= type_spec:ts ID:id LPAREN params:ps RPAREN compound_st
                         {: System.err.println("Syntax Error Line: " + (tsleft + 1) + " Column: " + (tsright + 1) + " Function was not delcared properly. Missing right parenthesis");
                            RESULT = new FunctionDec(tsleft, tsright, ts, id, ps, ct);
                         :}
-                        | error:e ID:id LPAREN params:ps RPAREN compound_stmt:ct
-                        {: parser.report_error("Function was not delcared properly. Line:" + (eleft + 1) + " Column:" + (1) + " Missing Function type specifier",e);
-                           RESULT = new FunctionDec(eleft, 0, new NameTy(eleft,0,NameTy.VOID) ,id, ps, ct);
+                        | ID:id LPAREN params:ps RPAREN compound_stmt:ct
+                        {: System.err.println("Syntax Error Line: " + (idleft + 1) + " Column: " + (idright + 1) + " Function was not delcared properly. Missing type specifier");
+                           RESULT = new FunctionDec(idleft, 0, new NameTy(idleft,0,NameTy.VOID) ,id, ps, ct);
                         :}
                         ;
 

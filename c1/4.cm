@@ -1,15 +1,29 @@
 /* This is a simple test file that deals with functions and an incorrect function definition to see if the error recovery is working line 9 */
 
-void main(void){
-    int a;
-    int b;
-}
-
 /*missing left parenthesis*/
 int fun1 int c)  {
 
     return c;
 }
+
+/*missing right parenthesis*/
+int fun2 (int z  {
+
+    return z;
+}
+
+/*missing type specifier*/
+fun3 (int k)  {
+
+    return k;
+}
+
+
+void main(void){
+    int a;
+    int b;
+}
+
 
 
 
