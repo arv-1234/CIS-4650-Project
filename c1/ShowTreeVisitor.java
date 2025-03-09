@@ -258,7 +258,7 @@ public class ShowTreeVisitor implements AbsynVisitor {
     System.out.println( "func: " + FunDec.func );
 
     VarDecList tempList = FunDec.parameters;
-    while(tempList!=null && tempList.tail!=null){
+    while(tempList!=null){
       tempList.head.accept(this,level);
       tempList = tempList.tail;
     }
