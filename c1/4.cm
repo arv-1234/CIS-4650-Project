@@ -24,6 +24,11 @@ unexpected int fun4 (int k)  {
     return k;
 }
 
+int fun5 (int g, int q)  {
+
+    return v;
+}
+
 void main(void){
     int a;
     int b;
