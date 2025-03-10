@@ -106,7 +106,7 @@ public class ShowTreeVisitor implements AbsynVisitor {
 
     indent( level );
 
-    if(arrayDec.typ.typeVal == 1)
+    if(arrayDec.typ.typeVal == 0)
     {
       System.out.println("NameTy: int");
 
@@ -119,6 +119,23 @@ public class ShowTreeVisitor implements AbsynVisitor {
         indent( level );
         System.out.println("Size: " + arrayDec.size );
       }
+    }
+    else if(arrayDec.typ.typeVal == 3)
+    {
+      System.out.println("NameTy: bool ");
+
+      indent( level );
+
+      System.out.println("Name: " + arrayDec.name);
+
+      if( arrayDec.size != 0)
+      {
+        indent( level );
+        System.out.println("Size: " + arrayDec.size );
+      }
+    }
+    else{
+      System.out.println("NameTy: Undefined");//undefined type was somehow used
     }
   }
 
