@@ -1,0 +1,15 @@
+/*Test file to test variable declaration error recovery*/
+
+/*properly initialized*/
+int test1 [2];
+bool test2 [3];
+int test3;
+bool test4;
+
+/* missing ID */
+int ;
+bool ;
+
+/* missing right and left square bracket */ 
+int test [6 ;
+int test 7] ;
