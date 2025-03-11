@@ -314,9 +314,12 @@ public class ShowTreeVisitor implements AbsynVisitor {
 
     //print out the decs stored
     DecList tempDecList = decList;
-    while( tempDecList   != null ) {
-      tempDecList.head.accept( this, level );
-      tempDecList   = tempDecList.tail;
+  
+    if(tempDecList.head != null){ //in cases where an empty declist was declared
+      while( tempDecList != null ) {
+        tempDecList.head.accept( this, level );
+        tempDecList   = tempDecList.tail;
+      }
     }
 
   }

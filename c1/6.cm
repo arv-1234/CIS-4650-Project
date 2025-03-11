@@ -13,3 +13,4 @@ bool ;
 /* missing right and left square bracket */ 
 int test [6 ;
 int test 7] ;
+int test [] ;
