@@ -128,6 +128,10 @@ var_declaration	    ::= type_spec:ts ID:id SEMI
                         {: RESULT = new SimpleDec( tsleft, tsright, ts, id); :}                        
                         | type_spec:ts ID:id LBRACK NUM:n RBRACK SEMI
                         {: RESULT = new ArrayDec(tsleft,tsright,ts,id,Integer.parseInt(n)); :}
+                        | type_spec:ts ID:id LBRACK RBRACK SEMI
+                        {: System.err.println("Error in line " + (tsleft + 1) + ", column " + (tsright + 1) + ": Syntax error\ninstead expected token classes are [NUM]  \nError: array was not delcared properly, Missing array length.");
+                           RESULT = new ArrayDec(tsleft, tsright, ts, id , 0); 
+                        :}
                         | type_spec:ts ID:id LBRACK NUM:n SEMI
                         {: System.err.println("Error in line " + (tsleft + 1) + ", column " + (tsright + 1) + ": Syntax error\ninstead expected ']' token  \nError: array was not delcared properly, Missing right square bracket.");
                            RESULT = new ArrayDec(tsleft, tsright, ts, id , Integer.parseInt(n));
@@ -138,7 +142,7 @@ var_declaration	    ::= type_spec:ts ID:id SEMI
                         :}
                         | type_spec:ts error:e SEMI
                         {: parser.report_error("invalid variable name", e);
-                           RESULT = new SimpleDec(tsleft, tsright, ts, null);
+                           RESULT = new SimpleDec(tsleft, tsright, ts, "");
                         :}
                         | type_spec:ts SEMI
                         {: System.err.println("Error in line " + (tsleft + 1) + ", column " + (tsright + 1) + ": Syntax error\ninstead expected token classes are [ID]  \nError: varriable was not delcared properly, Missing ID.");
@@ -150,7 +154,7 @@ var_declaration	    ::= type_spec:ts ID:id SEMI
                         :}
                         | error:e SEMI
                         {: parser.report_error("Invalid input before semi colon",e);
-                           RESULT = new SimpleDec(eleft, 0, new NameTy(eleft,0,NameTy.NULL), null);
+                           RESULT = new SimpleDec(eleft, 0, new NameTy(eleft,0,NameTy.NULL), "");
                         :}
                         ;
 
@@ -178,23 +182,47 @@ fun_declaration       ::= type_spec:ts ID:id LPAREN params:ps RPAREN compound_st
                         :}
                         | error:e type_spec:ts ID:id LPAREN params:ps RPAREN compound_stmt:ct
                         {: parser.report_error("Unexpected token(s) before function declaration",e);
-                           RESULT = new FunctionDec(eleft, 0, new NameTy(eleft,0,NameTy.VOID) ,id, ps, ct);
+                           RESULT = new FunctionDec(eleft, 0, ts ,id, ps, ct);
+                        :}
+                        | type_spec:ts ID:id LPAREN error:e RPAREN compound_stmt:ct
+                        {: parser.report_error("Invalid Parameter(s) in function declaration",e);
+                           RESULT = new FunctionDec(tsleft, tsright, ts ,id,  new VarDecList(null,null) , ct);
+                        :}
+                        | type_spec:ts ID:id LPAREN RPAREN compound_stmt:ct
+                        {: System.err.println("Error in line " + (tsleft + 1) + ", column " + (tsright + 1) + ": Syntax error \ninstead expected token classes are [param_list, VOID] \nError: Function was not delcared properly, Missing parameters");
+                           RESULT = new FunctionDec(tsleft, tsright, ts ,id, null , ct);
                         :}
                         ;
 
 fun_prototype         ::= type_spec:ts ID:id LPAREN params:ps RPAREN SEMI
                         {: RESULT = new FunctionDec(tsleft,tsright,ts,id,ps,new NilExp(tsleft,tsright)); :}
-                        |type_spec:ts ID:id error:e params:ps RPAREN SEMI
-                        {: parser.report_error("Function was not delcared properly. Line:" + (tsleft + 1) + " Column:" + (tsright + 1) + " Missing Left parenthesis",e);  
-                           RESULT = new FunctionDec(tsleft,tsright,ts,id, null,new NilExp(tsleft,tsright)); 
-                        :}
-                        |type_spec:ts ID:id LPAREN params:ps error:e SEMI
-                        {: parser.report_error("Function was not delcared properly. Line:" + (tsleft + 1) + " Column:" + (tsright + 1) + " Missing right parenthesis",e);  
-                           RESULT = new FunctionDec(tsleft,tsright,ts,id, null,new NilExp(tsleft,tsright)); 
-                        :}
-                        |type_spec:ts ID:id LPAREN params:ps RPAREN error:e SEMI
-                        {: parser.report_error("Function was not delcared properly. Line:" + (tsleft + 1) + " Column:" + (tsright + 1) + " Missing SemiColon",e);  
+                        |type_spec:ts ID:id params:ps RPAREN SEMI
+                        {: System.err.println("Error in line " + (tsleft + 1) + ", column " + (tsright + 1) + ": Syntax error\ninstead expected token classes are [(] \nError: Function Prototype was not delcared properly, Missing left parenthesis.");
                            RESULT = new FunctionDec(tsleft,tsright,ts,id, ps ,new NilExp(tsleft,tsright)); 
+                        :}
+                        |type_spec:ts ID:id LPAREN params:ps SEMI
+                        {: System.err.println("Error in line " + (tsleft + 1) + ", column " + (tsright + 1) + ": Syntax error\ninstead expected token classes are [)] \nError: Function Prototype was not delcared properly, Missing right parenthesis.");
+                           RESULT = new FunctionDec(tsleft,tsright,ts,id, ps ,new NilExp(tsleft,tsright)); 
+                        :}
+                        |type_spec:ts ID:id LPAREN error:e RPAREN SEMI
+                        {: parser.report_error("Function was not delcared properly, invalid parameter(s)",e);  
+                           RESULT = new FunctionDec(tsleft,tsright,ts,id, new VarDecList(null,null) ,new NilExp(tsleft,tsright)); 
+                        :}
+                        |type_spec:ts error:e LPAREN params:ps RPAREN SEMI
+                        {: parser.report_error("Function was not delcared properly, invalid identifier name",e);  
+                           RESULT = new FunctionDec(tsleft,tsright,ts, "" , ps ,new NilExp(tsleft,tsright)); 
+                        :}
+                        |ID:id LPAREN params:ps RPAREN SEMI
+                        {: System.err.println("Error in line " + (idleft + 1) + ", column " + (idright + 1) + ": Syntax error\ninstead expected token classes are [NameTy] \nError: Function Prototype was not delcared properly, Missing type specifier.");
+                           RESULT = new FunctionDec(idleft,idright, new NameTy(idleft,0,NameTy.VOID) ,id, ps ,new NilExp(idleft,idright)); 
+                        :}
+                        |type_spec:ts LPAREN params:ps RPAREN SEMI
+                        {: System.err.println("Error in line " + (tsleft + 1) + ", column " + (tsright + 1) + ": Syntax error\ninstead expected token classes are [ID] \nError: Function Prototype was not delcared properly, Missing type Identifier.");
+                           RESULT = new FunctionDec(tsleft,tsright, ts , "", ps ,new NilExp(tsleft,tsright)); 
+                        :}
+                        | type_spec:ts ID:id LPAREN RPAREN SEMI
+                        {: System.err.println("Error in line " + (tsleft + 1) + ", column " + (tsright + 1) + ": Syntax error \ninstead expected token classes are [param_list, VOID] \nError: Function prototype was not delcared properly, Missing parameters");
+                           RESULT = new FunctionDec(tsleft, tsright, ts ,id, null , new NilExp(tsleft,tsright));
                         :}
                         ;
 
@@ -292,20 +320,24 @@ selec_stmt            ::= IF:i LPAREN exp:e RPAREN stmt:s
                         {: RESULT = new IfExp(ileft,iright,e,s,new NilExp(ileft,iright)); :}
                         | IF:i LPAREN exp:e RPAREN stmt:s1 ELSE stmt:s2 
                         {: RESULT = new IfExp(ileft,iright,e,s1,s2); :}
-                        | IF:i LPAREN error:e exp:ex RPAREN stmt:s 
-                        {: parser.report_error("Incorrect Select statment. Line:" + (ileft + 1) + " Column:" + (iright + 1) + " Invalid expression",e);  
-                           RESULT = new IfExp(ileft,iright, ex,s,new NilExp(ileft,iright)); //still try to parse the expresion in the face of an error 
-                        :}
                         | IF:i LPAREN error:e RPAREN stmt:s 
-                        {: parser.report_error("Incorrect Select statment. Line:" + (ileft + 1) + " Column:" + (iright + 1) + " Invalid condition expression",e);  
-                           RESULT = new IfExp(ileft,iright, new NilExp(ileft,iright) ,s,new NilExp(ileft,iright)); //still try to parse the expresion in the face of an error 
+                        {: parser.report_error("statement contains an Invalid expression",e);  
+                           RESULT = new IfExp(ileft,iright, new NilExp(ileft,iright) ,s,new NilExp(ileft,iright));
                         :}
-                        | IF:i error:e exp:ex RPAREN stmt:s 
-                        {: parser.report_error("Incorrect Select statment. Line:" + (ileft + 1) + " Column:" + (iright + 1) + " Select statement Missing left parenthesis",e);  
-                           RESULT = new IfExp(ileft,iright, ex ,s,new NilExp(ileft,iright));
+                        | IF:i exp:e RPAREN stmt:s
+                        {: System.err.println("Error in line " + (ileft + 1) + ", column " + (iright + 1) + ": Syntax error\ninstead expected token classes are [(] \nError: if statement was not delcared properly, Missing left parenthesis.");
+                           RESULT = new IfExp(ileft,iright, e , s ,new NilExp(ileft,iright));
                         :}
-                        |IF:i LPAREN exp:ex error:e stmt:s 
-                        {: parser.report_error("Incorrect Select statment. Line:" + (ileft + 1) + " Column:" + (iright + 1) + " Select missing right parenthesis",e);  
+                        | IF:i LPAREN exp:e stmt:s
+                        {: System.err.println("Error in line " + (ileft + 1) + ", column " + (iright + 1) + ": Syntax error\ninstead expected token classes are [)] \nError: if statement was not delcared properly, Missing right parenthesis.");
+                           RESULT = new IfExp(ileft,iright, e , s,new NilExp(ileft,iright));
+                        :}
+                        |IF:i LPAREN exp:ex error:e RPAREN stmt:s 
+                        {: parser.report_error("statement contains an invalid expression",e);  
+                           RESULT = new IfExp(ileft,iright, ex ,s,new NilExp(ileft,iright)); //still try to parse the expresion in the face of an error 
+                        :}
+                        |IF:i LPAREN error:e exp:ex RPAREN stmt:s 
+                        {: parser.report_error("statement contains an invalid expression",e);  
                            RESULT = new IfExp(ileft,iright, ex ,s,new NilExp(ileft,iright)); //still try to parse the expresion in the face of an error 
                         :}
                         | IF:i LPAREN exp:ex RPAREN error:e stmt:s 

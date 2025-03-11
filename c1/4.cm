@@ -18,6 +18,17 @@ fun3 (int k)  {
     return k;
 }
 
+/*Properly defined no argument function dec*/
+int voidFun (void){
+    return o;
+}
+
+
+/*missing parameters, C- must have void or paramter(s)*/
+int emptyFun (){
+    return j;
+}
+
 /*unexpected token before declaration*/
 unexpected int fun4 (int k)  {
 
@@ -34,7 +45,18 @@ void main(void){
     int b;
 }
 
+/*Function prototypes*/
 
+int proto1 (int j, int u);
 
+/*missing right or left brackets */
+int proto2 int k, int z);
+int proto2 (int r, int t;
+
+/*Missing type specifier*/
+proto3 (int g, int h);
+
+/*missing id */
+void (int p, int y);
 
 
