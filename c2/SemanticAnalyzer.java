@@ -14,6 +14,9 @@ public class SemanticAnalyzer {
             String2 is the data type (item), ex. "int" */
     Stack<HashMap<String,String>> Scope = new Stack<HashMap<String,String>>(); 
 
+
+    /* Functions for symbol Table*/
+
     // Add a new inner scope (enter)
     public void addScope() {
         Scope.push(new HashMap<String,String>());
@@ -102,4 +105,15 @@ public class SemanticAnalyzer {
             System.out.println("Semantic Error: Symbol Table searched, key("+ variableName +") does not exist.");
         }
     }
+
+
+    
+
+    /*Visit functions for traversing Tree */
+
+    public void visit(NilExp exp, int level)
+    {
+
+    }
+
 }
