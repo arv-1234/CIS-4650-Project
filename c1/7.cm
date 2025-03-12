@@ -31,8 +31,15 @@ int main(void){
         return i;
     }
 
+    /*something weird before statement block*/
+    if (a<b) stuff{
+        int a;
+    }
+
+
 /* If else statement testing */
 
+/*normal if else*/
 if( a<b ){
 
     return a;
@@ -40,5 +47,16 @@ if( a<b ){
 else{
     return b;
 }
+
+
+
+
+/*missing else statement block*/
+if( a<b ){
+ b=a;
+}
+else
+
+
 
 }
