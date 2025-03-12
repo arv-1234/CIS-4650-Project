@@ -93,10 +93,11 @@ non terminal Var var;
 non terminal NameTy type_spec;
 non terminal FunctionDec fun_declaration;
 
-
-precedence left OVER,TIMES, PLUS, MINUS;
+precedence left SEMI;
+precedence left ASSIGN,PLUS, MINUS;
+precedence left TIMES,OVER;
 precedence nonassoc AND, OR, EQ, NEQ, LT, LTEQ, GT, GTEQ;
-precedence left WHILE, ELSE, IF, ID;
+precedence left WHILE, IF, LPAREN,ELSE, LCURLBRACK, ID, NUM, TRUTH,APPROX,RETURN;
 
 /* ----------------------------Grammar Section-------------------- */
 start with program;
@@ -150,6 +151,10 @@ var_declaration	    ::= type_spec:ts ID:id SEMI
                         :}
                         | type_spec:ts ID:id error:e SEMI
                         {: parser.report_error("Unexpected input after identifier", e);
+                           RESULT = new SimpleDec(tsleft, tsright, ts, null);
+                        :}
+                        | type_spec:ts ERROR:e SEMI
+                        {: System.err.println("Error in line " + (tsleft + 1) + ", column " + (tsright + 1) + ": Syntax error\ninstead expected token classes are []  \nError: varriable was not delcared properly, unrecognized token ecountered.");
                            RESULT = new SimpleDec(tsleft, tsright, ts, null);
                         :}
                         | error:e SEMI
@@ -334,15 +339,15 @@ selec_stmt            ::= IF:i LPAREN exp:e RPAREN stmt:s
                         :}
                         |IF:i LPAREN exp:ex error:e RPAREN stmt:s 
                         {: parser.report_error("statement contains an invalid expression",e);  
-                           RESULT = new IfExp(ileft,iright, ex ,s,new NilExp(ileft,iright)); //still try to parse the expresion in the face of an error 
+                           RESULT = new IfExp(ileft,iright, ex ,s,new NilExp(ileft,iright)); 
                         :}
                         |IF:i LPAREN error:e exp:ex RPAREN stmt:s 
                         {: parser.report_error("statement contains an invalid expression",e);  
-                           RESULT = new IfExp(ileft,iright, ex ,s,new NilExp(ileft,iright)); //still try to parse the expresion in the face of an error 
+                           RESULT = new IfExp(ileft,iright, ex ,s,new NilExp(ileft,iright)); 
                         :}
                         | IF:i LPAREN exp:ex RPAREN error:e stmt:s 
-                        {: parser.report_error("Incorrect Select statment. Line:" + (ileft + 1) + " Column:" + (iright + 1) + " invalid if structure",e);  
-                           RESULT = new IfExp(ileft,iright, ex ,s,new NilExp(ileft,iright)); //still try to parse the expresion in the face of an error 
+                        {: parser.report_error("Incorrect Select statment. Line:" + (ileft + 1) + " Column:" + (iright + 1) + " invalid if structure/missing statement",e);  
+                           RESULT = new IfExp(ileft,iright, ex ,s,new NilExp(ileft,iright));
                         :}
                         | IF:i LPAREN error:e exp:ex RPAREN stmt:s1 ELSE stmt:s2 
                         {: parser.report_error("Incorrect Select statment. Line:" + (ileft + 1) + " Column:" + (iright + 1) + " Invalid Condition expression",e);  
@@ -368,9 +373,9 @@ selec_stmt            ::= IF:i LPAREN exp:e RPAREN stmt:s
                         {: parser.report_error("Incorrect Select statment. Line:" + (ileft + 1) + " Column:" + (iright + 1) + " unexpected input before first statement",e);  
                            RESULT = new IfExp(ileft,iright,ex ,s1,s2); 
                         :}
-                        | IF:i LPAREN exp:ex RPAREN stmt:s1 ELSE error:e stmt:s2 
-                        {: parser.report_error("Incorrect Select statment. Line:" + (ileft + 1) + " Column:" + (iright + 1) + " unexpected input before second statement",e);  
-                           RESULT = new IfExp(ileft,iright,ex ,s1,s2); 
+                        | IF:i LPAREN exp:ex RPAREN stmt:s1 ELSE error:e
+                        {: parser.report_error(" unexpected input before second statement/missing statement ",e);  
+                           RESULT = new IfExp(ileft,iright,ex ,s1, new NilExp(ileft,iright)); 
                         :}
                         ;
 
@@ -379,21 +384,45 @@ iter_stmt             ::= WHILE:w LPAREN exp:e RPAREN stmt:s
                         ;
 
 return_stmt           ::= RETURN:r exp:e SEMI
-                        {: RESULT = new ReturnExp(rleft,rright,e) ;:}
+                        {: RESULT = new ReturnExp(rleft,rright,e); :}
                         | RETURN:r SEMI
-                        {: RESULT = new ReturnExp(rleft,rright,new NilExp(rleft,rright)); ;:}
+                        {: RESULT = new ReturnExp(rleft,rright,new NilExp(rleft,rright));:}
                         ;
 
 exp                   ::= var:v ASSIGN:a exp:e
                         {: RESULT = new AssignExp(vleft,vright, new VarExp(vleft,vright,v), e); :}
+                        | var:v ASSIGN:a error:e
+                        {: parser.report_error(" Missing right hand side of assign expression ",e);  
+                           RESULT = new AssignExp(vleft,vright, new VarExp(vleft,vright,v), new NilExp(vleft,vright)); 
+                        :}
+                        | ASSIGN:a exp:ex
+                        {: System.err.println("Error in line " + (aleft + 1) + ", column " + (aright + 1) + ": Syntax error\ninstead expected token classes are [Var] \nError: Assign expression expects left hand side.");
+                           RESULT = new AssignExp(aleft,aright, new VarExp(aleft,aright, new SimpleVar(aleft,aright,"")), ex); 
+                        :}
                         | exp:e1 PLUS exp:e2
                         {: RESULT= new OpExp(e1left,e1right,e1,OpExp.PLUS,e2); :}
+                        | exp:e1 PLUS:p error:e
+                        {: parser.report_error(" Missing right hand side of addition expression ",e);  
+                           RESULT= new OpExp(e1left,e1right,e1,OpExp.PLUS, new NilExp(e1left,e1right));
+                        :}
                         | exp:e1 MINUS exp:e2
                         {: RESULT= new OpExp(e1left,e1right,e1,OpExp.MINUS,e2); :}
+                        | exp:e1 MINUS:m error:e
+                        {: parser.report_error(" Missing right hand side of minus expression ",e);  
+                           RESULT= new OpExp(e1left,e1right,e1,OpExp.MINUS, new NilExp(e1left,e1right));
+                        :}
                         | exp:e1 TIMES exp:e2 
                         {: RESULT= new OpExp(e1left,e1right,e1,OpExp.TIMES,e2); :}
+                        | exp:e1 TIMES:t error:e
+                        {: parser.report_error(" Missing right hand side of multiplication expression ",e);  
+                           RESULT= new OpExp(e1left,e1right,e1,OpExp.TIMES, new NilExp(e1left,e1right));
+                        :}
                         | exp:e1 OVER exp:e2
-                        {: RESULT= new OpExp(e1left,e1right,e1,OpExp.OVER,e2); :} 
+                        {: RESULT= new OpExp(e1left,e1right,e1,OpExp.OVER,e2); :}
+                        | exp:e1 OVER:o error:e
+                        {: parser.report_error(" Missing right hand side of division expression ",e);  
+                           RESULT= new OpExp(e1left,e1right,e1,OpExp.OVER, new NilExp(e1left,e1right));
+                        :} 
                         | exp:e1 LT exp:e2 
                         {: RESULT= new OpExp(e1left,e1right,e1,OpExp.LT,e2); :}
                         | exp:e1 GT exp:e2 
