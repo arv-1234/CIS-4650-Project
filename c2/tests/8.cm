@@ -1,0 +1,26 @@
+void main(void){
+
+    /*Assign expression testing */
+    a = 2;
+    a = ;
+    = 3;
+
+    /*Add exp testing */
+    a + b;
+    a + ;
+
+    /* Minus Exp Testing */
+    j - k ;
+    j - ;
+
+    /* mult exp testing */
+    a * b;
+    a * ;
+
+    /*divide exp testing */
+    a/b;
+    a/;
+
+
+
+}

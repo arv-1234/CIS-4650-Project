@@ -1,0 +1,62 @@
+/*Test if statement*/
+
+/*Normal if statement followed by normal if else*/
+int main(void){
+
+
+/* start if statement testing */
+    if (j>x){
+        int x;
+    }
+
+    /*Invalid expressions*/
+    if ( x<){
+        int j;
+    }
+
+    if ( <){
+        int p;
+    }
+
+    if ( <x){
+        int l;
+    }
+
+    /* Missing right or left parenthesis */
+    if j==x) {
+        return p;
+    }
+
+    if (k<l {
+        return i;
+    }
+
+    /*something weird before statement block*/
+    if (a<b) stuff{
+        int a;
+    }
+
+
+/* If else statement testing */
+
+/*normal if else*/
+if( a<b ){
+
+    return a;
+}
+else{
+    return b;
+}
+
+
+
+
+/*missing else statement block*/
+if( a<b ){
+ b=a;
+}
+else
+
+
+
+}
