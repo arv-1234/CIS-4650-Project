@@ -1,81 +1,54 @@
-/* Goal: Traverse the abstract syntax tree in post-order and find semantic errors. */
+/* Goal: Traverse the abstract syntax tree in post-order and find/report semantic errors. */
 
-import java.io.*;
 import absyn.*;
-import java.util.Stack;
 import java.util.HashMap;
+import java.util.ArrayList;
 
-public class SemanticAnalyzer {
+public class SemanticAnalyzer implements AbsynVisitor {
     /* -----------------------------  SYMBOL TABLE  ------------------------------------- */
-    /*  Declare & initialize the variable:
-        Stack - represents the current number of scopes or blocks we're in
-        HashMap<String1,String2> - each hashmap represents a scope/block's symbol table 
-            String1 is the variable name (key), ex. "x"
-            String2 is the data type (item), ex. "int" */
-    Stack<HashMap<String,String>> Scope = new Stack<HashMap<String,String>>(); 
+    // Declare the variable
+    HashMap<String, ArrayList<NodeType>> table;
 
-
-    /* Functions for symbol Table*/
-
-    // Add a new inner scope (enter)
-    public void addScope() {
-        Scope.push(new HashMap<String,String>());
-    }
-    
-    // Remove the inner scope (exit)
-    public void removeScope() {
-        Scope.pop();
-    }
-
-    // Constructor - Push the first scope into the stack
+    // Constructor: Initialize the variable
     public SemanticAnalyzer() {
-        addScope();
+        table = new HashMap<String, ArrayList<NodeType>>();
     }
 
-    // Look up if a Symbol exists in the Symbol Table (in all scopes)
-    // Error Check: Symbol doesn’t exist, Return: Hashmap item using the key
-    public String lookup(String variableName) {
-        // We look through all of the available scopes to see if there is a key that exists
-        for (HashMap<String,String> symbolTable : Scope.keySet()) {
-            if (symbolTable.containsKey(variableName)) {
-                return symbolTable.get(variableName);
-            }
-        }
+    // Add a Symbol to the Symbol Table
+    public void insert(String key, NodeType node) {
+        // Declare the variable
+        ArrayList<NodeType> nodeList;
 
-        // Semantic Error: Symbol Table searched, key does not exist.
-        return null;
-    }
-
-    // Add a Symbol to the Symbol Table (in the top/innermost scope)
-    // Error Check: Symbol already exists
-    public void insert(String variableName, String dataType) {
-        boolean exists = false; 
-
-        // Check if it exists in any of the symbol tables
-        for (HashMap<String,String> symbolTable : Scope.keySet()) {
-            if (symbolTable.containsKey(variableName)) {
-                System.out.println("Semantic Error: Cannot insert, key already exists.");
-                exists = true;
-                break;
-            }
-        }
-
-        // If it doesn't exist, add it to the top/innermost symbol table
-        if (exists == false) {
-            HashMap<String,String> symbolTable = Scope.get(Scope.size()-1);
-            symbolTable.put(variableName, dataType);
-        }
-    }
-
-    // Delete a Symbol that exists in the Symbol Table (in the top/innermost scope)
-    // Error Check: Symbol doesn’t exist
-    public void delete(String variableName, String dataType) {
-        HashMap<String,String> symbolTable = Scope.get(Scope.size()-1);
-        
-        if (symbolTable.containsKey(variableName)) {
-            symbolTable.remove(variableName);
+        // Check if the key exists in the symbol table
+        if (table.containsKey(key)) {
+            // True: If it exists, get the node list from the key and add to it
+            nodeList = table.get(key);
+            nodeList.add(node);
         } else {
-            System.out.println("Semantic Error: Cannot delete, key does not exist.");
+            // False: If it doesn't exist, create a new node list, add the node, and insert it using the key
+            nodeList = new ArrayList<NodeType>();
+            nodeList.add(node);
+            table.put(key, nodeList);
+        }
+    }
+
+    // Look up if a Symbol exists in the Symbol Table
+    // Return: HashMap's node list using the key
+    public ArrayList<NodeType> lookup(String key) {
+        // We look through the symbol table to see if there is a matching key that exists
+        if (table.containsKey(key)) {
+            // True: return the array list of nodes
+            return table.get(key);
+        } else {
+            // False: return null to indicate that it doesn't exist
+            return null;
+        }
+    }
+
+    // Delete a Symbol that exists in the Symbol Table
+    public void delete(String key) {
+        if (table.containsKey(key)) {
+            table.remove(key);
         }
     }
 
