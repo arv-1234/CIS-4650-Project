@@ -12,4 +12,10 @@ public class BoolExp extends Exp {
   public void accept( AbsynVisitor visitor, int level ) {
     visitor.visit( this, level );
   }
+
+  public int getType(){
+    return 1;
+  }
+
 }
+

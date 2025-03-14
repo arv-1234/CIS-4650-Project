@@ -6,12 +6,15 @@ import java.util.ArrayList;
 
 public class SemanticAnalyzer implements AbsynVisitor {
     /* -----------------------------  SYMBOL TABLE  ------------------------------------- */
-    // Declare the variable
+    // Declare the variables
     HashMap<String, ArrayList<NodeType>> table;
+    Stack <String> scopeStack;
 
     // Constructor: Initialize the variable
     public SemanticAnalyzer() {
-        table = new HashMap<String, ArrayList<NodeType>>();
+        table = new HashMap<String, ArrayList<NodeType>>(); //store the nodes with asscociated string keys
+        scopeStack = new Stack<String>(); //stores the scopes in a stack like manor, pop when exiting a scope(end of compound_stmt visit), push when entering a scope
+        scopeStack.push("global"); //initially push global scope to the stack
     }
 
     // Add a Symbol to the Symbol Table
@@ -54,15 +57,16 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
     /* -----------------------------  TYPE CHECKER  ------------------------------------- */
     /* Checks the variable's type from the symbol table vs. from the current assignment in code
-       Mismatch Example: variable "x" is type "int" in the symbol table but assigned to "'helloWorld!'" which is type "string" */
-    public void typeChecker(String variableName, String strAssign) {
+       Mismatch Example: variable "x" is type "int" in the symbol table but assigned to "'helloWorld!'" which is type "string" 
+       Scope dependant as well, check the level?*/
+    public void typeChecker(String variableName, String strAssign, int curLevel) {
         // Declare & initialize variables (ST = Symbol Table)
-        String dataTypeST = lookup(variableName);
+        ArrayList<NodeType> listOfNodes = lookup(variableName);
         String dataTypeAssign = "int";
 
         // Check the string's datatype (letters indicate string, numbers indicate int, etc.)
         /* NOTICE: This needs to be updated, it can only detect chars or ints, not the others / pointers */
-        if (dataTypeST != null) {
+        if (listOfNodes != null) {
             // Check if it's an integer, catching an error means it's char
             try {
                 Integer.parseInt(dataTypeAssign);
@@ -146,10 +150,40 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
     public void visit( CallExp exp, int level );
 
-    public void visit( CompoundExp exp, int level );
+    public void visit( CompoundExp exp, int level ){ //only time scope level changes
 
+        level++;//scope level has changed, go deeper
+
+        //*****Deal with the declarations/expressions******
+
+        VarDecList tempVarDecList = exp.decs;
+        while( tempVarDecList  != null ) {
+            tempVarDecList.head.accept( this, level );
+            tempVarDecList  = tempVarDecList.tail;
+        }
+
+        //Next print out the exps
+        ExpList tempList = exp.exps;
+        while( tempList != null ) {
+            tempList.head.accept( this, level );
+            tempList = tempList.tail;
+        }
+    }
+
+    
     //Call insert here
-    public void visit( FunctionDec FunDec, int level );
+    public void visit( FunctionDec FunDec, int level ){
+
+        //new overall scope, push function name to stack, level change handled in the compoundExp
+        scopeStack.push(FunDec.func);
+
+        if(FunDec.body!=null){
+            //handle the compound expression
+            FunDec.body.accept(this, level);
+        }
+        scopeStack.pop();//remove the pushed function name to revert to the previous scope
+
+    }
 
     public void visit( IndexVar var, int level );
 

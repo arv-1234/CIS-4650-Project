@@ -4,9 +4,9 @@ import absyn.*;
 public class NodeType {
     public int level;
     public String variableName;
-    public Dec dataType;
+    public int dataType;
 
-    public NodeType(int level, String variableName, Dec dataType) {
+    public NodeType(int level, String variableName, int dataType) {
         this.level = level;
         this.variableName = variableName;
         this.dataType = dataType;

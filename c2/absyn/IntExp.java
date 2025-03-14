@@ -12,4 +12,9 @@ public class IntExp extends Exp {
   public void accept( AbsynVisitor visitor, int level ) {
     visitor.visit( this, level );
   }
+
+  public int getType(){
+    return 0;
+  }
+
 }
