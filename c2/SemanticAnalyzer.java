@@ -131,10 +131,21 @@ public class SemanticAnalyzer implements AbsynVisitor {
         }
     }
 
-    public void visit( IfExp exp, int level );
+    public void visit( IfExp exp, int level ){
+  
+        //conditional statement
+        exp.test.accept( this, level );
+        //this is going to be a compound stmt, let the respective visit function handle it
+        exp.thenpart.accept( this, level );
+        if (exp.elsepart != null ){
+            exp.elsepart.accept( this, level );
+        }
+    }
 
+    //I don't think ever need to call this, it wouldn't do much for semantic analyzer 
     public void visit( IntExp exp, int level );
 
+    //check if its a logic or math operator and type check accordingly
     public void visit( OpExp exp, int level );
 
     public void visit( WhileExp exp, int level );
