@@ -89,9 +89,43 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
     }
 
-    public void visit( ExpList exp, int level );
+    //loop through expressions and 'visit' each one
+    public void visit( ExpList exp, int level ){
+        while( expList != null ) {
+            expList.head.accept( this, level );
+            expList = expList.tail;
+          } 
+    }
 
-    public void visit( AssignExp exp, int level );
+    //check if the right hand sides type matches the left hand side
+    public void visit( AssignExp exp, int level ){
+
+
+        VarExp leftSide = exp.lhs.varriable;
+        Exp rightSide = exp.rhs;
+
+        String rightType = "";
+
+        //check if int
+        if(rightSide.value == (int)rightSide.value){
+            rightType = "int";
+        }//check if string
+        else if(rightSide.value instanceof String ){
+            rightType = "string";
+        }//check if boolean
+        else if(rightSide.value instanceof Boolean ){
+            rightType = "boolean";
+        }
+        else{
+            System.out.println("how???");
+        }
+
+        //get the type of the left hand side and compare their types
+        ArrayList<NodeType> leftNode = lookup(leftSide.name);
+        if(rightType == leftNode.type){
+            
+        }
+    }
 
     public void visit( IfExp exp, int level );
 
@@ -105,6 +139,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
     public void visit( DecList decList, int level );
 
+    //call insert here
     public void visit( ArrayDec arrDec, int level );
 
     public void visit( BoolExp exp , int level );
@@ -113,6 +148,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
     public void visit( CompoundExp exp, int level );
 
+    //Call insert here
     public void visit( FunctionDec FunDec, int level );
 
     public void visit( IndexVar var, int level );
@@ -123,6 +159,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
     public void visit( ReturnExp exp, int level );
 
+    //call insert here
     public void visit( SimpleDec dec, int level );
 
     public void visit( SimpleVar var, int level );
