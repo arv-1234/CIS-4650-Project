@@ -137,13 +137,65 @@ public class SemanticAnalyzer implements AbsynVisitor {
         }
     }
 
-    //I don't think ever need to call this, it wouldn't do much for semantic analyzer 
+    //I don't think ever need to call this, it wouldn't do much for semantic analyzer, leave as a placeholder or else errors will arise 
     public void visit( IntExp exp, int level );
 
     //check if its a logic or math operator and type check accordingly
-    public void visit( OpExp exp, int level );
+    public void visit( OpExp exp, int level ){
+       
 
-    public void visit( WhileExp exp, int level );
+        //Numerical operators
+        if( exp.op == OpExp.PLUS || exp.op == OpExp.MINUS || exp.op == OpExp.TIMES || exp.op == OpExp.OVER){
+            //only type check if both exist
+            if (exp.left != null && exp.right != null){
+                //both must be of type int, if not throw an error
+                if(exp.left.getType()!=0){
+                    System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Semantic Error: incorrect type for lefthand, not of type INT\n");
+                }
+                if(exp.right.getType()!=0){
+                    System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Semantic Error: incorrect type for lefthand, not of type INT\n");
+
+                }
+            }
+            else{//They must both exist for all of these operators, so if even one doesn't exist throw and error
+                System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Syntax Error: Missing right/left values in mathmatical operator\n");
+            }
+        }
+        else if (exp.op == OpExp.EQ || exp.op == OpExp.LT || exp.op == OpExp.GT || exp.op == OpExp.UMINUS || exp.op == OpExp.AND || exp.op == OpExp.OR || exp.op == OpExp.APPROX){
+            //only type check if both exist
+            if (exp.left != null && exp.right != null){
+                //both must be of type bool, if not throw an error
+                if(exp.left.getType()!=1){
+                    System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Semantic Error: incorrect type for lefthand, not of type Boolean\n");
+                }
+                if(exp.right.getType()!=1){
+                    System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Semantic Error: incorrect type for lefthand, not of type Boolean\n");
+
+                }
+            }
+            else{//They must both exist for all of these operators, so if even one doesn't exist throw and error
+                System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Syntax Error: Missing right/left values in mathmatical operator\n");
+            }
+        }
+        else{
+            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Syntax Error: Unrecognized operator\n");
+           
+        }
+
+    }
+
+    //again for this let the compoundExp accept handle semantic analysis
+    public void visit( WhileExp exp, int level ){
+
+        //if test expression exists, preform semantic analysis
+        if(exp.test!=null){
+            exp.test.accept(this,level);
+        }
+
+        exp.body.accept(this, level);
+
+    }
+    
 
     public void visit( VarExp exp, int level );
 
