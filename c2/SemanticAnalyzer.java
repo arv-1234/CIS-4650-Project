@@ -88,16 +88,11 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
     /*Visit functions for traversing Tree */
 
-    public void visit(NilExp exp, int level)
-    {
-
-    }
-
     //loop through expressions and 'visit' each one
     public void visit( ExpList exp, int level ){
-        while( expList != null ) {
-            expList.head.accept( this, level );
-            expList = expList.tail;
+        while( exp != null ) {
+            exp.head.accept( this, level );
+            exp = exp.tail;
           } 
     }
 

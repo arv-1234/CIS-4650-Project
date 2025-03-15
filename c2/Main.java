@@ -13,13 +13,16 @@
    
 import java.io.*;
 import absyn.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
    
 class Main {
-  public final static boolean SHOW_TREE = true;
+  //public final static boolean SHOW_TREE = true;
   static public void main(String argv[]) {    
     /* Start the parser */
 
     boolean printAST = false;
+    //boolean printTable = false;
 
     for(String commandArgs : argv)
     {
@@ -27,14 +30,31 @@ class Main {
       {
         printAST = true;
       }
+
+      /* 
+      else if(commandArgs.equals("-s"))
+      {
+        printTable = true;
+      }
+      */
     }
     try {
       parser p = new parser(new Lexer(new FileReader(argv[0])));
-      Absyn result = (Absyn)(p.parse().value);      
-      if (printAST && SHOW_TREE && result != null) {
-         System.out.println("The abstract syntax tree is:");
-         AbsynVisitor visitor = new ShowTreeVisitor();
-         result.accept(visitor, 0); 
+      Absyn result = (Absyn)(p.parse().value);
+
+      Path filePath = Paths.get(argv[0]);
+      Path nameOfFile = filePath.getFileName();
+      String fileName = nameOfFile.toString();
+      fileName = fileName.substring(0, fileName.lastIndexOf("."));
+
+      System.out.println("filename: " + fileName);
+
+      if (printAST && result != null) {
+        PrintStream fileOutput = new PrintStream(new FileOutputStream("tests/" + fileName + ".abs"));
+        System.setOut(fileOutput);
+        System.out.println("The abstract syntax tree is:");
+        AbsynVisitor visitor = new ShowTreeVisitor();
+        result.accept(visitor, 0); 
       }
     } catch (Exception e) {
       /* do cleanup here -- possibly rethrow e */
