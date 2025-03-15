@@ -93,11 +93,13 @@ non terminal Var var;
 non terminal NameTy type_spec;
 non terminal FunctionDec fun_declaration;
 
-precedence left SEMI;
-precedence left ASSIGN,PLUS, MINUS;
+precedence left ASSIGN;
+precedence left RPAREN;
+precedence left SEMI, ID;
+precedence left PLUS, MINUS;
 precedence left TIMES,OVER;
 precedence nonassoc AND, OR, EQ, NEQ, LT, LTEQ, GT, GTEQ;
-precedence left WHILE, IF, LPAREN,ELSE, LCURLBRACK, ID, NUM, TRUTH,APPROX,RETURN;
+precedence left WHILE, IF, LPAREN,ELSE, LCURLBRACK, NUM, TRUTH,APPROX,RETURN;
 
 /* ----------------------------Grammar Section-------------------- */
 start with program;
@@ -445,6 +447,8 @@ exp                   ::= var:v ASSIGN:a exp:e
                         {: RESULT = e; :}
                         |ID:i LPAREN args:a RPAREN
                         {: RESULT = new CallExp(ileft,iright,i,a); :}
+                        |ID:i LPAREN RPAREN
+                        {: RESULT = new CallExp(ileft,iright,i, new ExpList(new NilExp(ileft,iright),null)); :}
                         | var:v
                         {: RESULT = new VarExp(vleft,vright,v); :}
                         | NUM:n
