@@ -219,10 +219,6 @@ public class SemanticAnalyzer implements AbsynVisitor {
     }
     
 
-    public void visit( VarExp exp, int level ){
-
-    }
-
     public void visit( DecList decList, int level ){
         //print out the decs stored
         DecList tempDecList = decList;
@@ -412,7 +408,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
     public void visit( IndexVar var, int level ){
 
         //we simply need to check if the index is of type int
-        if( var.index.getType!=0){
+        if( var.index.getType() !=0){
             System.err.println("Error in line " + (var.row + 1) + ", column " + (var.col + 1) + "Syntax Error: Index is not of type int\n");
         }
 
@@ -429,6 +425,10 @@ public class SemanticAnalyzer implements AbsynVisitor {
     //matches the functions return type?
     public void visit( ReturnExp exp, int level ) {
 
+    }
+
+    public void visit( VarExp exp, int level ){
+        exp.variable.accept(this, level);
     }
 
     //call insert here
