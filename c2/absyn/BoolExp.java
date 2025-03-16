@@ -14,7 +14,7 @@ public class BoolExp extends Exp {
   }
 
   public int getType(){
-    return 1;
+    return 3;
   }
 
 }

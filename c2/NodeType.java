@@ -3,18 +3,20 @@ import absyn.*;
 /* For the symbol table's nodelist, each node has:
 - The level (ex. 3)
 - The variable name (ex. "x")
-- The declared datatype (ex. 0 = "int") 
+- The definition of when it was declared
 - The scope (ex. "fun1") */
 public class NodeType {
     public int level;
     public String variableName;
-    public int dataType;
-    public String scope;
+    public Dec def;
 
-    public NodeType(int level, String variableName, int dataType, String scope) {
+    public NodeType(int level, String variableName, Dec def) {
         this.level = level;
         this.variableName = variableName;
-        this.dataType = dataType;
-        this.scope = scope;
+        this.def = def;
+    }
+
+    public String getName(){
+        return variableName;
     }
 }
