@@ -37,6 +37,7 @@ class Main {
         printTable = true;
       }
       */
+    
     }
     try {
       parser p = new parser(new Lexer(new FileReader(argv[0])));
@@ -56,6 +57,18 @@ class Main {
         AbsynVisitor visitor = new ShowTreeVisitor();
         result.accept(visitor, 0); 
       }
+
+      /* 
+      if(printTable && result != null) {
+        PrintStream fileOutput = new PrintStream(new FileOutputStream("tests/" + fileName + ".sym"));
+        System.setOut(fileOutput);
+        System.out.println("In the global scope");
+        SemanticAnalyzer visitor = new SemanticAnalyzer();
+        result.accept(visitor, 0);
+        visitor.printTable();
+        System.out.println("Leaving the global scope");
+      }
+      */
     } catch (Exception e) {
       /* do cleanup here -- possibly rethrow e */
       e.printStackTrace();
