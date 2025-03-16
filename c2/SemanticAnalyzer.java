@@ -116,7 +116,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
     //check if the right hand sides type matches the left hand side
     public void visit( AssignExp exp, int level ){
 
-        VarExp leftSide = exp.lhs.varriable;
+        VarExp leftSide = exp.lhs.variable;
         Exp rightSide = exp.rhs;
 
         String rightType = "";
@@ -262,7 +262,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
         }
 
         //get the list of declarations in the current scope from the table
-        ArrayList<NodeType> tempList = table.get(scopeStack.seek()); 
+        ArrayList<NodeType> tempList = table.get(scopeStack.peek()); 
         //create a new node for the varriable, keep track of the level, varriable name, type and scope
         NodeType tempNode = new NodeType(level, arrDec.name, arrDec);
 
@@ -427,13 +427,24 @@ public class SemanticAnalyzer implements AbsynVisitor {
     }
 
     //matches the functions return type?
-    public void visit( ReturnExp exp, int level );
+    public void visit( ReturnExp exp, int level ) {
+
+    }
 
     //call insert here
-    public void visit( SimpleDec dec, int level );
+    public void visit( SimpleDec dec, int level ) {
 
-    public void visit( SimpleVar var, int level );
+    }
 
-    public void visit( VarDecList varDecList, int level );
+    public void visit( SimpleVar var, int level ) {
+
+    }
+
+    public void visit( VarDecList varDecList, int level ) {
+        while(varDecList != null) {
+            varDecList.head.accept(this, level);
+            varDecList = varDecList.tail;
+        }
+    }
 
 }
