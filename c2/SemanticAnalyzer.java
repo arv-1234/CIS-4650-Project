@@ -8,8 +8,8 @@ import java.util.Stack;
 public class SemanticAnalyzer implements AbsynVisitor {
     /* -----------------------------  SYMBOL TABLE  ------------------------------------- */
     // Declare the variables
-    HashMap<String, ArrayList<NodeType>> table;
-    Stack<String> scopeStack;
+    public HashMap<String, ArrayList<NodeType>> table;
+    public Stack<String> scopeStack;
 
     // Constructor: Initialize the variables
     public SemanticAnalyzer() {
@@ -158,7 +158,9 @@ public class SemanticAnalyzer implements AbsynVisitor {
     }
 
     //I don't think ever need to call this, it wouldn't do much for semantic analyzer, leave as a placeholder or else errors will arise 
-    public void visit( IntExp exp, int level );
+    public void visit( IntExp exp, int level ){
+
+    }
 
     //check if its a logic or math operator and type check accordingly
     public void visit( OpExp exp, int level ){
@@ -217,7 +219,9 @@ public class SemanticAnalyzer implements AbsynVisitor {
     }
     
 
-    public void visit( VarExp exp, int level );
+    public void visit( VarExp exp, int level ){
+
+    }
 
     public void visit( DecList decList, int level ){
         //print out the decs stored
@@ -241,19 +245,19 @@ public class SemanticAnalyzer implements AbsynVisitor {
         }
         else if(arrDec.typ.typeVal == 1){
             tempType = "void";
-            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Syntax Error: Invalid array type detected: void\n");
+            System.err.println("Error in line " + (arrDec.row + 1) + ", column " + (arrDec.col + 1) + "Syntax Error: Invalid array type detected: void\n");
             return;
         }
         else if(arrDec.typ.typeVal == 2){
             tempType = "null";
-            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Syntax Error: Invalid array type detected: null\n");
+            System.err.println("Error in line " + (arrDec.row + 1) + ", column " + (arrDec.col + 1) + "Syntax Error: Invalid array type detected: null\n");
             return;
         }
         else if(arrDec.typ.typeVal == 3){
             tempType = "bool";
         }
         else{
-            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Syntax Error: Invalid type detected\n");
+            System.err.println("Error in line " + (arrDec.row + 1) + ", column " + (arrDec.col + 1) + "Syntax Error: Invalid type detected\n");
             return;
         }
 
@@ -265,7 +269,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
         int result = -1;
 
         if(tempList == null){//no previous instances of anything, insert without a check
-            insert(scopeStack.seek(), tempNode);
+            insert(scopeStack.peek(), tempNode);
             return;
         }
         else{//declarations already exist, check if it was previously defined in the same scope
@@ -274,25 +278,27 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
         //if we find there are no conflicting previous declarations, insert it into the current scopes list of nodes
         if(result == 0){
-            insert(scopeStack.seek(), tempNode);
+            insert(scopeStack.peek(), tempNode);
         }
 
     }
 
-    public void visit( BoolExp exp , int level );
+    public void visit( BoolExp exp , int level ){
+
+    }
 
     //verify the arguments match previous declarations
     public void visit( CallExp exp, int level ){
 
         //check if the function exists, check the global scope as they can only be defined there
         ArrayList<NodeType> tempArr = table.get("global");
-        FunDec prevDef;
+        FunctionDec prevDef;
 
         //check for instances of the called functions declaration
         if(tempArr!=null){
             for( NodeType tempNode: tempArr){
                 if(tempNode.variableName == exp.fun){//previous definition was found! have prevDef point to it and break the loop
-                    prevDef = (FunDec)tempNode.def; //typecast to FunDe type
+                    prevDef = (FunctionDec)tempNode.def; //typecast to FunDe type
                     break;
                 }
             }
@@ -412,9 +418,13 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
     }
 
-    public void visit( NameTy type, int level );
+    public void visit( NameTy type, int level ) {
 
-    public void visit( NilExp exp, int level );
+    }
+
+    public void visit( NilExp exp, int level ) {
+
+    }
 
     //matches the functions return type?
     public void visit( ReturnExp exp, int level );
