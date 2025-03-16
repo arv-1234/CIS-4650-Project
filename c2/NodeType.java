@@ -1,6 +1,10 @@
 import absyn.*;
 
-// This class holds the level, variable name, and declared datatype for each key in the symbol table
+/* For the symbol table's nodelist, each node has:
+- The level (ex. 3)
+- The variable name (ex. "x")
+- The declared datatype (ex. 0 = "int") 
+- The scope (ex. "fun1") */
 public class NodeType {
     public int level;
     public String variableName;

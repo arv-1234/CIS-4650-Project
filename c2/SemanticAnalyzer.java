@@ -8,13 +8,16 @@ public class SemanticAnalyzer implements AbsynVisitor {
     /* -----------------------------  SYMBOL TABLE  ------------------------------------- */
     // Declare the variables
     HashMap<String, ArrayList<NodeType>> table;
-    Stack <String> scopeStack;
+    Stack<String> scopeStack;
 
-    // Constructor: Initialize the variable
+    // Constructor: Initialize the variables
     public SemanticAnalyzer() {
-        table = new HashMap<String, ArrayList<NodeType>>(); //store the nodes with asscociated string keys
-        scopeStack = new Stack<String>(); //stores the scopes in a stack like manor, pop when exiting a scope(end of compound_stmt visit), push when entering a scope
-        scopeStack.push("global"); //initially push global scope to the stack
+        // Store the nodes with associated string keys
+        table = new HashMap<String, ArrayList<NodeType>>();
+        // Store the scopes in a stack, pop when exiting a scope (end of compound_stmt visit), push when entering a scope
+        scopeStack = new Stack<String>(); 
+        // The first scope that the stack holds is the global scope
+        scopeStack.push("global");
     }
 
     // Add a Symbol to the Symbol Table
@@ -24,11 +27,12 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
         // Check if the key exists in the symbol table
         if (table.containsKey(key)) {
-            // True: If it exists, get the node list from the key and add to it
+            // True: Get the existing node list from the key and add the new node to it
+            System.err.println("Error: cannot redefine the variable key '"+ key +"', the new node will be added to the key's existing nodelist.");
             nodeList = table.get(key);
             nodeList.add(node);
         } else {
-            // False: If it doesn't exist, create a new node list, add the node, and insert it using the key
+            // False: Create a new node list, add the new node, and insert it into the hashmap using the key
             nodeList = new ArrayList<NodeType>();
             nodeList.add(node);
             table.put(key, nodeList);
@@ -44,6 +48,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
             return table.get(key);
         } else {
             // False: return null to indicate that it doesn't exist
+            System.err.println("Error: cannot lookup and return the undefined variable key '"+ key +"'.");
             return null;
         }
     }
@@ -52,14 +57,17 @@ public class SemanticAnalyzer implements AbsynVisitor {
     public void delete(String key) {
         if (table.containsKey(key)) {
             table.remove(key);
+        } else {
+            System.err.println("Error: cannot delete the undefined variable key '"+ key +"'.");
         }
     }
 
     /* -----------------------------  TYPE CHECKER  ------------------------------------- */
-    /* Takes in a array list of nodes yielded from a query from the symbol table and a node representing the variable we have just read in
-      Preform the necessary type check against all instances. This is done by first checking if they are within the same scope, if not no type mismatch
-      and we can proceeed, next check if it is on a level that is the same or lower if not proceed. If they are within the same scope and same level check if the
-      current node has a matching type with the previously defined instance then we are safe, if not print out a error
+    /* 
+        Takes in a array list of nodes yielded from a query from the symbol table and a node representing the variable we have just read in
+        Preform the necessary type check against all instances. This is done by first checking if they are within the same scope, if not no type mismatch
+        and we can proceeed, next check if it is on a level that is the same or lower if not proceed. If they are within the same scope and same level check if the
+        current node has a matching type with the previously defined instance then we are safe, if not print out a error
      */
     public int typeChecker(ArrayList<NodeType> storedNodes, int level, String scope, String type, int row, int col) {
        
