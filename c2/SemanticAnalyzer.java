@@ -116,16 +116,16 @@ public class SemanticAnalyzer implements AbsynVisitor {
     //check if the right hand sides type matches the left hand side
     public void visit( AssignExp exp, int level ){
 
-        VarExp leftSide = exp.lhs.variable;
+        Var leftSide = exp.lhs.variable; // Was varExp
         Exp rightSide = exp.rhs;
 
         String rightType = "";
 
         //check if int
-        if(rightSide.value.getType() == 0){
+        if(rightSide.getType() == 0){
             rightType = "int";
         }//check if boolean
-        else if(rightSide.value.getType() == 1){
+        else if(rightSide.getType() == 1){
             rightType = "boolean";
         }
         else{
@@ -133,14 +133,14 @@ public class SemanticAnalyzer implements AbsynVisitor {
         }
 
         //get the type of the left hand side and compare their types
-        ArrayList<NodeType> leftNodeList = table.get(leftSide.name);
+        ArrayList<NodeType> leftNodeList = table.get(scopeStack.peek()); // Was leftSide.name
 
         //check if the types for the right side and left side match
         if(leftNodeList!=null){
             typeChecker(leftNodeList, level, scopeStack.peek(), rightType, exp.row, exp.col);
         }
         else{ // varriable doesn't exist, call an error for an undeclared variable
-            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Semantic Error: Undeclared varriable: " + leftSide.name);
+            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Semantic Error: Undeclared varriable: " + leftSide.toString());
                
         }
     
