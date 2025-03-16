@@ -56,34 +56,39 @@ public class SemanticAnalyzer implements AbsynVisitor {
     }
 
     /* -----------------------------  TYPE CHECKER  ------------------------------------- */
-    /* Checks the variable's type from the symbol table vs. from the current assignment in code
-       Mismatch Example: variable "x" is type "int" in the symbol table but assigned to "'helloWorld!'" which is type "string" 
-       Scope dependant as well, check the level?*/
-    public void typeChecker(String variableName, String strAssign, int curLevel) {
-        // Declare & initialize variables (ST = Symbol Table)
-        ArrayList<NodeType> listOfNodes = lookup(variableName);
-        String dataTypeAssign = "int";
-
-        // Check the string's datatype (letters indicate string, numbers indicate int, etc.)
-        /* NOTICE: This needs to be updated, it can only detect chars or ints, not the others / pointers */
-        if (listOfNodes != null) {
-            // Check if it's an integer, catching an error means it's char
-            try {
-                Integer.parseInt(dataTypeAssign);
-            } catch (NumberFormatException e) {
-                dataTypeAssign = "char";
+    /* Takes in a array list of nodes yielded from a query from the symbol table and a node representing the variable we have just read in
+      Preform the necessary type check against all instances. This is done by first checking if they are within the same scope, if not no type mismatch
+      and we can proceeed, next check if it is on a level that is the same or lower if not proceed. If they are within the same scope and same level check if the
+      current node has a matching type with the previously defined instance then we are safe, if not print out a error
+     */
+    public int typeChecker(ArrayList<NodeType> storedNodes, int level, String scope, String type, int row, int col) {
+       
+        //loop through each node
+        for( NodeType tempNode: storedNodes){
+            //check if same scope and at a level that is lower or the same as the previous definition and check if their types do not match
+            if( tempNode.scope == scope && level <= tempNode.level && type!=tempNode.type){
+            
+                System.err.println("Error in line " + (row + 1) + ", column " + (col + 1) + "Semantic Error: Variable " + tempNode.variableName + " was previously declared as a " + tempNode.dataType + " but was treated as : " + type);
+                return -1;
             }
-
-            // Check for a mismatch and report it
-            if (dataTypeST != dataTypeAssign) {
-                System.out.println("Type Checker Error: key(" + variableName + ") does not have matching datatypes.");
-            }
-        } else {
-            System.out.println("Semantic Error: Symbol Table searched, key("+ variableName +") does not exist.");
         }
+        return 0;
     }
 
+    //Function that checks if a varriable was already defined within the same scope, if it is report it, similar to type checker
+    public int wasDefined( ArrayList<NodeType> storedNodes, NodeType curNode, int row, int col ){
 
+        //loop through each node
+        for( NodeType tempNode: storedNodes){
+            //check if same scope and at a level that is lower or the same as the previous definition and check if their types do not match
+            if( tempNode.scope == curNode.scope && curNode.level <= tempNode.level){
+                
+                System.err.println("Error in line " + (row + 1) + ", column " + (col + 1) + "Semantic Error: Variable " + curNode.variableName + " was already declared in the same scope");
+                return -1;
+            }
+        }
+        return 0;
+    }
     
 
     /*Visit functions for traversing Tree */
@@ -99,20 +104,16 @@ public class SemanticAnalyzer implements AbsynVisitor {
     //check if the right hand sides type matches the left hand side
     public void visit( AssignExp exp, int level ){
 
-
         VarExp leftSide = exp.lhs.varriable;
         Exp rightSide = exp.rhs;
 
         String rightType = "";
 
         //check if int
-        if(rightSide.value == (int)rightSide.value){
+        if(rightSide.value.getType() == 0){
             rightType = "int";
-        }//check if string
-        else if(rightSide.value instanceof String ){
-            rightType = "string";
         }//check if boolean
-        else if(rightSide.value instanceof Boolean ){
+        else if(rightSide.value.getType() == 1){
             rightType = "boolean";
         }
         else{
@@ -120,10 +121,17 @@ public class SemanticAnalyzer implements AbsynVisitor {
         }
 
         //get the type of the left hand side and compare their types
-        ArrayList<NodeType> leftNode = lookup(leftSide.name);
-        if(rightType == leftNode.type){
-            
+        ArrayList<NodeType> leftNodeList = table.get(leftSide.name);
+
+        //check if the types for the right side and left side match
+        if(leftNodeList!=null){
+            typeChecker(leftNodeList, level, scopeStack.peek(), rightType, exp.row, exp.col);
         }
+        else{ // varriable doesn't exist, call an error for an undeclared variable
+            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Semantic Error: Undeclared varriable: " + leftSide.name);
+               
+        }
+    
     }
 
     public void visit( IfExp exp, int level ){
@@ -199,10 +207,64 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
     public void visit( VarExp exp, int level );
 
-    public void visit( DecList decList, int level );
+    public void visit( DecList decList, int level ){
+        //print out the decs stored
+        DecList tempDecList = decList;
+  
+        if(tempDecList.head != null){ //make sure it's not empty
+            while( tempDecList != null ) {
+                tempDecList.head.accept( this, level );
+                tempDecList   = tempDecList.tail;
+            }
+        }
+    }
 
-    //call insert here
-    public void visit( ArrayDec arrDec, int level );
+    //call insert here,type check as well with previous instances
+    public void visit( ArrayDec arrDec, int level ){
+
+        String tempType = "";
+        //get the current type
+        if(arrDec.typ.typeVal == 0){
+            tempType = "int";
+        }
+        else if(arrDec.typ.typeVal == 1){
+            tempType = "void";
+            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Syntax Error: Invalid array type detected: void\n");
+            return;
+        }
+        else if(arrDec.typ.typeVal == 2){
+            tempType = "null";
+            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Syntax Error: Invalid array type detected: null\n");
+            return;
+        }
+        else if(arrDec.typ.typeVal == 3){
+            tempType = "bool";
+        }
+        else{
+            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Syntax Error: Invalid type detected\n");
+            return;
+        }
+
+        //find instance(s) of varriable
+        ArrayList<NodeType> tempList = table.get(arrDec.name); 
+        //create a new node for the varriable, keep track of the level, varriable name, type and scope
+        NodeType tempNode = new NodeType(level, arrDec.name, tempType, scopeStack.peek());
+
+        int result = -1;
+
+        if(tempList == null){//no previous instances, insert without a check
+            insert(arrDec.name, tempNode);
+        }
+        else{//some thing was found check if it was defined in the same scope
+            result = wasDefined(tempList,tempNode, arrDec.row, arrDec.col);
+        }
+
+        //if we find there are no conflicting previous declarations, insert it, if not simply skip over it
+        if(result == 0){
+            insert(arrDec.name, tempNode);
+        }
+
+    }
 
     public void visit( BoolExp exp , int level );
 
@@ -220,7 +282,6 @@ public class SemanticAnalyzer implements AbsynVisitor {
             tempVarDecList  = tempVarDecList.tail;
         }
 
-        //Next print out the exps
         ExpList tempList = exp.exps;
         while( tempList != null ) {
             tempList.head.accept( this, level );
@@ -229,7 +290,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
     }
 
     
-    //Call insert here
+    //Call insert here, check for any previous declarations
     public void visit( FunctionDec FunDec, int level ){
 
         //new overall scope, push function name to stack, level change handled in the compoundExp
@@ -243,12 +304,21 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
     }
 
-    public void visit( IndexVar var, int level );
+    //check if the var's index is a int, can be done because index is of type exp
+    public void visit( IndexVar var, int level ){
+
+        //we simply need to check if the index is of type int
+        if( var.index.getType!=0){
+            System.err.println("Error in line " + (var.row + 1) + ", column " + (var.col + 1) + "Syntax Error: Index is not of type int\n");
+        }
+
+    }
 
     public void visit( NameTy type, int level );
 
     public void visit( NilExp exp, int level );
 
+    //matches the functions return type?
     public void visit( ReturnExp exp, int level );
 
     //call insert here
