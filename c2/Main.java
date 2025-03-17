@@ -48,8 +48,6 @@ class Main {
       String fileName = nameOfFile.toString();
       fileName = fileName.substring(0, fileName.lastIndexOf("."));
 
-      System.out.println("filename: " + fileName);
-
       if (printAST && result != null) {
         PrintStream fileOutput = new PrintStream(new FileOutputStream("tests/" + fileName + ".abs"));
         System.setOut(fileOutput);

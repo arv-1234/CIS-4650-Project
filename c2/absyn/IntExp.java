@@ -13,6 +13,7 @@ public class IntExp extends Exp {
     visitor.visit( this, level );
   }
 
+  @Override
   public int getType(){
     return 0;
   }

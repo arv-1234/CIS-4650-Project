@@ -5,16 +5,13 @@
   
 */
 
-/* Global Variable Declarations */
 int x;
 int y;
 int z;
 
-/* Function Prototypes */
 int testOne(int a);
 void testTwo(int b);
 
-/* Functions */
 void testThree(int c) {
   testTwo(c);
   y = y - 1;
@@ -24,19 +21,13 @@ void testTwo(int b) {
   b = b - 1;
   if (b > 0) {
     testThree(b);
-    y = y - 1;
     testTwo(b);
   }
 }
 
 int main(void) {
-  x = input();
-  y = input();
-  
-  testTwo(x);
-  
-  output(x);
-  output(y);
+
+  int j;
   
   return 0;
 }
