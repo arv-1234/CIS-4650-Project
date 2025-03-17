@@ -171,9 +171,9 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
         // Only print an error check 
         if (res == -1) {
-            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Semantic Error: In Assignment operator left and right hand side types differ\n");
+            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: In Assignment operator left and right hand side types differ\n");
         } else if (res == 0) {
-            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Semantic Error: Assign operators left hand side variable was never declared\n");
+            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: Assign operators left hand side variable was never declared\n");
         }
     }
 
@@ -200,31 +200,31 @@ public class SemanticAnalyzer implements AbsynVisitor {
             if (exp.left != null && exp.right != null) {
                 // Both must be of type int, if not throw an error
                 if (exp.left.getType() != 0) {
-                    System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Semantic Error: incorrect type for lefthand, not of type INT\n");
+                    System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: incorrect type for lefthand, not of type INT\n");
                 }
                 if (exp.right.getType() != 0) {
-                    System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Semantic Error: incorrect type for lefthand, not of type INT\n");
+                    System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: incorrect type for lefthand, not of type INT\n");
                 }
             } else {
                 // They must both exist for all of these operators, so if even one doesn't exist throw and error
-                System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Syntax Error: Missing right/left values in mathmatical operator\n");
+                System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Syntax Error: Missing right/left values in mathmatical operator\n");
             }
         } else if (exp.op == OpExp.EQ || exp.op == OpExp.LT || exp.op == OpExp.GT || exp.op == OpExp.UMINUS || exp.op == OpExp.AND || exp.op == OpExp.OR || exp.op == OpExp.APPROX) {
             // Only type check if both exist
             if (exp.left != null && exp.right != null) {
                 // Both must be of type bool, if not throw an error
                 if (exp.left.getType() != 3) {
-                    System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Semantic Error: incorrect type for lefthand, not of type Boolean\n");
+                    System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: incorrect type for lefthand, not of type Boolean\n");
                 }
                 if (exp.right.getType() != 3) {
-                    System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Semantic Error: incorrect type for lefthand, not of type Boolean\n");
+                    System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: incorrect type for lefthand, not of type Boolean\n");
                 }
             } else {
                 // They must both exist for all of these operators, so if even one doesn't exist throw and error
-                System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Syntax Error: Missing right/left values in mathmatical operator\n");
+                System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Syntax Error: Missing right/left values in mathmatical operator\n");
             }
         } else {
-            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Syntax Error: Unrecognized operator\n");
+            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Syntax Error: Unrecognized operator\n");
         }
     }
 
@@ -260,16 +260,16 @@ public class SemanticAnalyzer implements AbsynVisitor {
             tempType = "int";
         } else if (arrDec.typ.typeVal == 1) {
             tempType = "void";
-            System.err.println("Error in line " + (arrDec.row + 1) + ", column " + (arrDec.col + 1) + "Syntax Error: Invalid array type detected: void\n");
+            System.err.println("Error in line " + (arrDec.row + 1) + ", column " + (arrDec.col + 1) + " Syntax Error: Invalid array type detected: void\n");
             return;
         } else if (arrDec.typ.typeVal == 2) {
             tempType = "null";
-            System.err.println("Error in line " + (arrDec.row + 1) + ", column " + (arrDec.col + 1) + "Syntax Error: Invalid array type detected: null\n");
+            System.err.println("Error in line " + (arrDec.row + 1) + ", column " + (arrDec.col + 1) + " Syntax Error: Invalid array type detected: null\n");
             return;
         } else if (arrDec.typ.typeVal == 3) {
             tempType = "bool";
         } else {
-            System.err.println("Error in line " + (arrDec.row + 1) + ", column " + (arrDec.col + 1) + "Syntax Error: Invalid type detected\n");
+            System.err.println("Error in line " + (arrDec.row + 1) + ", column " + (arrDec.col + 1) + " Syntax Error: Invalid type detected\n");
             return;
         }
 
@@ -484,7 +484,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
      
     public void visit(FunctionDec FunDec, int level) {
         if (tableStack.size() != 1) {
-            System.err.println("Error in line " + (FunDec.row + 1) + ", column " + (FunDec.col + 1) + "Semantic Error: Function not defined in the global scope\n");
+            System.err.println("Error in line " + (FunDec.row + 1) + ", column " + (FunDec.col + 1) + " Semantic Error: Function not defined in the global scope\n");
             return;
         }
     
@@ -513,7 +513,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
                     tempArr.clear();
                     tempArr.add(tempNode);
                 } else {
-                    System.err.println("Error in line " + (FunDec.row + 1) + ", column " + (FunDec.col + 1) + "Semantic Error: Function '" + FunDec.func + "' was already defined\n");
+                    System.err.println("Error in line " + (FunDec.row + 1) + ", column " + (FunDec.col + 1) + " Semantic Error: Function '" + FunDec.func + "' was already defined\n");
                     return;
                 }
             } else {
@@ -662,7 +662,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
     public void visit(IndexVar var, int level) {
         // We simply need to check if the index is of type int
         if (var.index.getType() != 0) {
-            System.err.println("Error in line " + (var.row + 1) + ", column " + (var.col + 1) + "Syntax Error: Index is not of type int\n");
+            System.err.println("Error in line " + (var.row + 1) + ", column " + (var.col + 1) + " Syntax Error: Index is not of type int\n");
         }
     }
 
@@ -678,7 +678,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
     public void visit(ReturnExp exp, int level) {
         // Check if current scopes return type matches the return statements type
         if (currentReturnType != exp.getType()) {
-            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Semantic Error: Invalid return type\n");
+            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: Invalid return type\n");
         }
     }
 
@@ -711,7 +711,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
     // Found an instance of a varriable, check to see if it was declared previously
     public void visit(SimpleVar var, int level) {
         if (wasDefined(var.name) != 1) {
-            System.err.println("Error in line " + (var.row + 1) + ", column " + (var.col + 1) + "Semantic Error: Varriable was not declared\n");
+            System.err.println("Error in line " + (var.row + 1) + ", column " + (var.col + 1) + " Semantic Error: Varriable was not declared\n");
         }
     }
 
