@@ -12,22 +12,9 @@ int z;
 int testOne(int a);
 void testTwo(int b);
 
-void testThree(int c) {
+void testOne(int c) {
   testTwo(c);
   y = y - 1;
 }
 
-void testTwo(int b) {
-  b = b - 1;
-  if (b > 0) {
-    testThree(b);
-    testTwo(b);
-  }
-}
 
-int main(void) {
-
-  int j;
-  
-  return 0;
-}
