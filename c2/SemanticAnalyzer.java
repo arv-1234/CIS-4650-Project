@@ -288,7 +288,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
         //check if the function exists, check the global scope as they can only be defined there
         ArrayList<NodeType> tempArr = table.get("global");
-        FunctionDec prevDef; // Was Fundec
+        FunctionDec prevDef = null; // Was Fundec
 
         //check for instances of the called functions declaration
         if(tempArr!=null){
@@ -298,6 +298,13 @@ public class SemanticAnalyzer implements AbsynVisitor {
                     break;
                 }
             }
+
+            /* Uncomment code once we get confirmation this is suppose to checj prevDef
+            if (prevDef == null) {
+                System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Semantic Error: Function was never defined\n");
+                return;
+            }
+            */
 
             //after checking all global declarations no matching function declaration was found, print error and skip over everything else
             System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Semantic Error: Function was never defined\n");
