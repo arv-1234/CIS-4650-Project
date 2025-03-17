@@ -418,14 +418,35 @@ public class SemanticAnalyzer implements AbsynVisitor {
         } else {
             while(tempArgList != null && tempParamList != null) {
                 Dec tempVar = (Dec) tempParamList.head; 
-                Exp tempExp = (Exp) tempArgList.head;
+                Exp tempExp =  (Exp) tempArgList.head;
     
-                tempArgType = tempExp.getType();
+                if(tempArgList.head instanceof VarExp){//means we have a varriable being passed, is probably of type simpleVar
+                    String varName = ((VarExp)tempArgList.head).variable.getName();
+                    //find previous instance, look at the prev dec and get the type, loop through all scopes
+                    if(!"".equals(varName)){
+                       
+                        ArrayList<NodeType> tempVarList;
+                        tempVarList = lookup(varName, exp.row, exp.col);
+                        tempArgType = tempVarList.get(0).def.getType();//get the type value of the time it was declared
+
+
+                    }
+                    else{
+                        tempArgType = tempExp.getType();
+                    }
+                }
+                else{
+                    tempArgType = tempExp.getType();
+                }
+
+                
                 tempParamType = tempVar.getType();
 
+                /* 
                 System.err.println("Name of variable: " + tempVar.getName());
                 System.err.println("tempArgType : " + tempArgType);
                 System.err.println("tempParamType: " + tempParamType);
+                */
     
                 if(tempArgType != tempParamType) {
                     System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: Function call contains invalid types");
@@ -451,10 +472,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
         System.out.println("Entering a new block:");
 
         //handle possible function parameter declarations, need to reference it in the scope
-        
-
         while (paramsToAdd != null) {
-            
             paramsToAdd.head.accept(this, level + 1);
             paramsToAdd = paramsToAdd.tail;
         }
