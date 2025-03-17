@@ -10,6 +10,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
     public Stack<HashMap<String, ArrayList<NodeType>>> tableStack; // Will change block by block
     final static int SPACES = 4;
     public int currentReturnType = -1;
+    public VarDecList paramsToAdd = null;
 
     // Indent: creates spacing to organize display
     private void indent( int level ) {
@@ -449,6 +450,17 @@ public class SemanticAnalyzer implements AbsynVisitor {
         indent(level);
         System.out.println("Entering a new block:");
 
+        //handle possible function parameter declarations, need to reference it in the scope
+        
+
+        while (paramsToAdd != null) {
+            
+            paramsToAdd.head.accept(this, level + 1);
+            paramsToAdd = paramsToAdd.tail;
+        }
+
+        paramsToAdd = null;//reset it for the next possible function dec
+
         /*****Deal with the declarations/expressions*****/
         VarDecList tempVarDecList = exp.decs;
         while(tempVarDecList != null) {
@@ -479,6 +491,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
         NodeType tempNode = new NodeType(level, FunDec.func, FunDec);
         ArrayList<NodeType> tempArr = tableStack.peek().get(FunDec.func);
     
+
         if (FunDec.body.isNilExp() != 1) { // Function definition
             int prevReturnType = currentReturnType;
             currentReturnType = FunDec.result.typeVal;
@@ -507,13 +520,14 @@ public class SemanticAnalyzer implements AbsynVisitor {
                 insert(FunDec.func, tempNode, FunDec.col + 1, FunDec.row + 1);
             }
     
-            // Add parameters and process body
-            VarDecList params = FunDec.parameters;
-            while (params != null) {
+            // Add parameters and process it in the body
+            paramsToAdd = FunDec.parameters; //we are gonna handle this in the boddy
+           /*  while (params != null) {
                 params.head.accept(this, level + 1);
                 params = params.tail;
             }
-    
+            */
+
             if (FunDec.body != null) {
                 FunDec.body.accept(this, level);
             }
