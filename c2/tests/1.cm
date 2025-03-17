@@ -1,32 +1,42 @@
-/* Use mutual recursion and added additional variable declarations at  line 4 and a function prototype at line 7*/
+/* Test 1: Compile without errors.
 
+  Checkpoint 1: Uses mutual recursion and added additional variable declarations on line 5 and function prototypes on line 10.
+  Checkpoint 2: Code can now deal with proper semantics. 
+  
+*/
+
+// Global Variable Declarations
 int x;
 int y;
-int s;
+int z;
 
-int testNum(int s);
+// Function Prototypes
+int testOne(int a);
+void testTwo(int b);
 
-void g(int n);    /* prototype for mutual recursions */
-
-void f(int n) {
-   g(n);
-   y = y - 1;
+// Functions
+void testThree(int c) {
+  testTwo(c);
+  y = y - 1;
 }
 
-void g(int m) {
-  m = m - 1;
-  if (m > 0) {
-     f(m);
-     y = y - 1;
-     g(m);
+void testTwo(int b) {
+  b = b - 1;
+  if (b > 0) {
+    testThree(b);
+    y = y - 1;
+    testTwo(b);
   }
 }
 
 int main(void) {
   x = input();
   y = input();
-  g(x);
+  
+  testTwo(x);
+  
   output(x);
   output(y);
+  
+  return 0;
 }
-

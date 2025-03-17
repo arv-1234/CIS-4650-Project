@@ -1,26 +1,34 @@
-/*  line 8, line 13, line 16
+/* Test 3: Exhibit different kinds of semantic errors (but no more than 3 per program)
 
-    line 8, missing right bracket 
-    line 13, missing SEMI on line 10
-    line 16, missing left side of assignment expression
+  Error 1: line 13, i can't be redefined as type bool.
+  Error 2: line 14, j can't be defined as type void.
+  Error 3: line 31, k does not exist outside of its nested scope/block.
+
 */
 
-int x[1;
+int x[10];
 
-void main(void) {
-  int i
+int main(void) {
+  int i;
+  bool i;
+  void j;
 
   i = 0;
+
   while (i < 10) {
     x[i] = input();
-    i =  + 1;
+    i = i + 1;
   }
 
   sort(x, 0, 10);
-
-  i = 0;
-  while (i < 10) {
-    output(x[i]);
-    i = i + 1;
+  
+  {
+    int k;
+    {
+      k = 1;
+    }
   }
+  k = 2;
+
+  return 0;
 }
