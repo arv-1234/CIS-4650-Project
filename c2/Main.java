@@ -22,7 +22,7 @@ class Main {
     /* Start the parser */
 
     boolean printAST = false;
-    //boolean printTable = false;
+    boolean printTable = false;
 
     for(String commandArgs : argv)
     {
@@ -31,12 +31,12 @@ class Main {
         printAST = true;
       }
 
-      /* 
+      
       else if(commandArgs.equals("-s"))
       {
         printTable = true;
       }
-      */
+      
     
     }
     try {
@@ -58,17 +58,17 @@ class Main {
         result.accept(visitor, 0); 
       }
 
-      /* 
+      
       if(printTable && result != null) {
         PrintStream fileOutput = new PrintStream(new FileOutputStream("tests/" + fileName + ".sym"));
         System.setOut(fileOutput);
-        System.out.println("In the global scope");
+        //System.out.println("In the global scope");
         SemanticAnalyzer visitor = new SemanticAnalyzer();
         result.accept(visitor, 0);
-        visitor.printTable();
+        //visitor.printTable();//don't need this, prints as we traverse tree as we get rid of the tables as we go along
         System.out.println("Leaving the global scope");
       }
-      */
+      
     } catch (Exception e) {
       /* do cleanup here -- possibly rethrow e */
       e.printStackTrace();
