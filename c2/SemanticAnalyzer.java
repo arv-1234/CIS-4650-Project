@@ -288,13 +288,13 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
         //check if the function exists, check the global scope as they can only be defined there
         ArrayList<NodeType> tempArr = table.get("global");
-        FunctionDec prevDef;
+        FunctionDec prevDef; // Was Fundec
 
         //check for instances of the called functions declaration
         if(tempArr!=null){
             for( NodeType tempNode: tempArr){
                 if(tempNode.variableName == exp.fun){//previous definition was found! have prevDef point to it and break the loop
-                    prevDef = (FunctionDec)tempNode.def; //typecast to FunDe type
+                    prevDef = (FunctionDec) tempNode.def; //typecast to FunDe type
                     break;
                 }
             }
@@ -330,18 +330,22 @@ public class SemanticAnalyzer implements AbsynVisitor {
         else{
             while(tempArgList.head!=null && tempParamList.head!=null){
 
+                SimpleDec randomVar = (SimpleDec)tempParamList.head; // Change variable name
+
+
                 //check if the types match
                 tempArgType = tempArgList.head.getType(); // 0 for int, 3 for bool, -1 for invalid
-                tempParamType = tempParamList.head.typ.typeVal; //0 for int, 3 for bool, 1 for void, 2 for null
+                tempParamType = randomVar.getType(); //0 for int, 3 for bool, 1 for void, 2 for null
+
 
                 if(tempArgType!=tempParamType){
                     System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Semantic Error: Function call contains invalid types");
-                    System.err.println(tempParamList.head.name +" expected a different type\n");
+                    System.err.println(randomVar.name +" expected a different type\n");
                 }
 
                 //move to the next parameter/argument
-                tempArgList.head = tempArgList.tail;
-                tempParamList.head = tempParamList.tail;
+                tempArgList = tempArgList.tail;
+                tempParamList = tempParamList.tail;
             }
         }
 
