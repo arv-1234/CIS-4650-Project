@@ -4,7 +4,7 @@ JFLEX=jflex
 #JFLEX=~/Projects/jflex/bin/jflex
 #CLASSPATH=-cp ~/Projects/java-cup-11b.jar:.
 
-#CLASSPATH=-cp /root/CIS4650/CIS-4650-Project/c1/java-cup-11b.jar:.
+#CLASSPATH=-cp /root/CIS4650/CIS-4650-Project/c2/java-cup-11b.jar:.
 
 CLASSPATH=-cp /usr/share/java/cup.jar:. #For the school server and use JFLEX=jflex
 CUP=$(JAVA) $(CLASSPATH) java_cup.Main
