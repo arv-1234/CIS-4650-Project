@@ -21,19 +21,13 @@ void testTwo(int b) {
   b = b - 1;
   if (b > 0) {
     testThree(b);
-    y = y - 1;
     testTwo(b);
   }
 }
 
 int main(void) {
-  x = input();
-  y = input();
-  
-  testTwo(x);
-  
-  output(x);
-  output(y);
+
+  int j;
   
   return 0;
 }

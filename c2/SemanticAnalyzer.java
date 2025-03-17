@@ -285,6 +285,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
         // Will never be needed for the semantic analyzer, used as a placeholder for errors
     }
 
+    /* 
     // Verify that the arguments match previous declarations
     public void visit(CallExp exp, int level) {
         // Check if the function exists, check the global scope as they can only be defined there, lastElement is the initially pushed table
@@ -312,12 +313,13 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
             // Never found a declaration, throw error and return(no body to analyze)
             if (prevDef == null) {
-                System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Semantic Error: Function was never defined\n");
+                
+                System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: Function was never defined\n");
                 return;
             }
         } else {
             // No declarations initially, no function definition, throw error and return
-            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Semantic Error: Function was never defined\n");
+            System.err.println("1Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: Function was never defined\n");
             return;
         }
 
@@ -360,6 +362,62 @@ public class SemanticAnalyzer implements AbsynVisitor {
             }
         }
     }
+    */
+    public void visit(CallExp exp, int level) {
+        // CHANGE 1: Use FIRST ELEMENT (global scope) instead of lastElement()
+        HashMap<String, ArrayList<NodeType>> tempTable = tableStack.firstElement();
+        ArrayList<NodeType> tempArr = tempTable.get(exp.fun);
+        FunctionDec prevDef = null;
+    
+        // CHANGE 2: Simplify prototype/definition check
+        if (tempArr != null && !tempArr.isEmpty()) {
+            // Accept either prototype or definition
+            for(NodeType tempNode: tempArr) {
+                prevDef = (FunctionDec) tempNode.def;
+                break; // C- doesn't allow overloading, take first match
+            }
+        } else {
+            // CHANGE 3: Consistent error message formatting
+            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) 
+                            + ": Function '" + exp.fun + "' was never defined");
+            return;
+        }
+    
+        // CHANGE 4: Remove redundant null check (tempArr guaranteed non-null here)
+        ExpList tempArgList = exp.args;
+        VarDecList tempParamList = prevDef.parameters;
+        int tempArgType = -1;
+        int tempParamType = -1;
+    
+        // Parameter/argument matching logic remains unchanged
+        if (tempArgList.head == null && tempParamList.head == null) {
+            return;
+        } else if (tempArgList.head == null && tempParamList.head != null) { 
+            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) 
+                            + ": Function does not expect void arguments");
+            return;   
+        } else if (tempArgList.head != null && tempParamList.head == null) { 
+            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) 
+                            + ": Function expected void arguments but got parameters");
+            return; 
+        } else {
+            while(tempArgList != null && tempParamList != null) {
+                Dec tempVar = (Dec) tempParamList.head; 
+                Exp tempExp = (Exp) tempArgList.head;
+    
+                tempArgType = tempExp.getType();
+                tempParamType = tempVar.getType();
+    
+                if(tempArgType != tempParamType) {
+                    System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Semantic Error: Function call contains invalid types");
+                    System.err.println(tempVar.getName() +" expected a different type\n");
+                }
+    
+                tempArgList = tempArgList.tail;
+                tempParamList = tempParamList.tail;
+            }
+        }
+    }
 
     // Only time scope level changes
     public void visit(CompoundExp exp, int level) {
@@ -389,7 +447,61 @@ public class SemanticAnalyzer implements AbsynVisitor {
         tableStack.pop();
         level--;
     }
+    
+    public void visit(FunctionDec FunDec, int level) {
+        // Check if we are in the global scope, global scope if only one table is in the stack
+        if (tableStack.size() != 1) {
+            System.err.println("Error in line " + (FunDec.row + 1) + ", column " + (FunDec.col + 1) + "Semantic Error: Function not defined in the global scope\n");
+            return;
+        }
+    
+        // Check if any functions of the same name already exists
+        NodeType tempNode = new NodeType(level, FunDec.func, FunDec);
+        ArrayList<NodeType> tempArr = tableStack.peek().get(FunDec.func);
+    
+        // Function has a body (definition)
+        if (FunDec.body.isNilExp() != 1) {
+            int prevReturnType = currentReturnType;
+            currentReturnType = FunDec.result.typeVal;
+    
+            // PRESERVE ORIGINAL PRINT STATEMENTS
+            indent(level+1);
+            System.out.print("New Scope for function " + FunDec.func + " ");
+    
+            // Check for previous definitions
+            if (funcWasDefined(tempArr, tempNode, FunDec.row, FunDec.col) == 0) {
+                insert(FunDec.func, tempNode, FunDec.col + 1, FunDec.row + 1);
+            } else {
+                System.err.println("Error in line " + (FunDec.row + 1) + ", column " + (FunDec.col + 1) + "Semantic Error: Function was already previously defined\n");
+            }
 
+            // ADD PARAMETERS TO FUNCTION SCOPE AFTER CREATING BODY SCOPE
+            VarDecList params = FunDec.parameters;
+            while (params != null) {
+                params.head.accept(this, level + 1);  // Insert params into function scope
+                params = params.tail;
+            }
+    
+            // Process function body (this creates new scope via CompoundExp)
+            if (FunDec.body != null) {
+                FunDec.body.accept(this, level);
+            }
+    
+            // PRESERVE ORIGINAL INDENTATION
+            indent(level+1);
+            System.out.println("Exiting function " + FunDec.func + " scope");
+    
+            currentReturnType = prevReturnType;
+        } 
+        // Function prototype
+        else {
+            insert(FunDec.func, tempNode, FunDec.col + 1, FunDec.row + 1);
+            indent(level);
+            System.out.println("Function prototype: " + FunDec.func);
+        }
+    }
+
+    /*
     // Call insert here, check for any previous declarations
     public void visit(FunctionDec FunDec, int level) {
         // Check if we are in the global scope, global scope if only one table is in the stack
@@ -435,7 +547,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
             insert(FunDec.func, tempNode, FunDec.col + 1, FunDec.row + 1);
         }
     }
-
+*/
     // Check if the var's index is a int, can be done because index is of type exp
     public void visit(IndexVar var, int level) {
         // We simply need to check if the index is of type int

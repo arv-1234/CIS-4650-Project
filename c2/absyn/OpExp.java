@@ -31,6 +31,16 @@ public class OpExp extends Exp {
     this.right = right;
   }
 
+  @Override
+  public int getType() {
+      // Determine type based on operation semantics
+      if (op == PLUS || op == MINUS || op == TIMES || op == OVER) {
+          return 0; // Arithmetic operations return int
+      } else {
+          return 3; // Comparisons return bool
+      }
+  }
+
   public void accept( AbsynVisitor visitor, int level ) {
     visitor.visit( this, level );
   }
