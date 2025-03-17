@@ -19,4 +19,11 @@ public class SimpleDec extends VarDec {
     public int getType() {
         return typ.typeVal; // Return the actual type (0 = int, 3 = bool, etc.)
     }
+
+    public String getName(){
+        return name;
+    }
+
+
+
 }

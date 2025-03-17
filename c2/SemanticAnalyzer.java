@@ -8,100 +8,111 @@ import java.util.Stack;
 public class SemanticAnalyzer implements AbsynVisitor {
     /* -----------------------------  SYMBOL TABLE  ------------------------------------- */
     // Declare the variables
-    public HashMap<String, ArrayList<NodeType>> table;
-    public Stack<String> scopeStack;
+    public Stack<HashMap<String, ArrayList<NodeType>>> tableStack;//will change block by block
+    final static int SPACES = 4;
+    public int currentReturnType = -1;
+
+    private void indent( int level ) {
+        for( int i = 0; i < level * SPACES; i++ ) System.out.print( " " );
+    }
 
     // Constructor: Initialize the variables
     public SemanticAnalyzer() {
-        // Store the nodes with associated string keys
-        table = new HashMap<String, ArrayList<NodeType>>();
-        // Store the scopes in a stack, pop when exiting a scope (end of compound_stmt visit), push when entering a scope
-        scopeStack = new Stack<String>(); 
+    
+        // Store the tables for each stack, creates a linked table relationship
+        tableStack = new Stack<HashMap<String, ArrayList<NodeType>>>(); 
         // The first scope that the stack holds is the global scope
-        scopeStack.push("global");
+        tableStack.push( new HashMap<String, ArrayList<NodeType>>());
+
+        //declare that we have entered the global scope
+        System.out.println("Entering the global scope:");
+
     }
 
-    // Add a Symbol to the Symbol Table
-    public void insert(String key, NodeType node) {
-        // Declare the variable
-        ArrayList<NodeType> nodeList;
 
-        // Check if the key exists in the symbol table
-        if (table.containsKey(key)) {
-            // True: Get the existing node list from the key and add the new node to it
-            nodeList = table.get(key);
-            nodeList.add(node);
-        } else {
-            // False: Create a new node list, add the new node, and insert it into the hashmap using the key
-            nodeList = new ArrayList<NodeType>();
-            nodeList.add(node);
-            table.put(key, nodeList);
-        }
-    }
-
-    // Look up if a Symbol exists in the Symbol Table
-    // Return: HashMap's node list using the key
-    public ArrayList<NodeType> lookup(String key) {
-        // We look through the symbol table to see if there is a matching key that exists
-        if (table.containsKey(key)) {
-            // True: return the array list of nodes
-            return table.get(key);
-        } else {
-            // False: return null to indicate that it doesn't exist
-            System.err.println("Error: cannot lookup and return the undefined variable key '"+ key +"'.");
-            return null;
-        }
-    }
-
-    // Delete a Symbol that exists in the Symbol Table
-    public void delete(String key) {
-        if (table.containsKey(key)) {
-            table.remove(key);
-        } else {
-            System.err.println("Error: cannot delete the undefined variable key '"+ key +"'.");
-        }
-    }
 
     /* -----------------------------  TYPE CHECKER  ------------------------------------- */
     /* 
-        Takes in a array list of nodes yielded from a query from the symbol table and a node representing the variable we have just read in
-        Preform the necessary type check against all instances. This is done by first checking if they are within the same scope, if not no type mismatch
-        and we can proceeed, next check if it is on a level that is the same or lower if not proceed. If they are within the same scope and same level check if the
-        current node has a matching type with the previously defined instance then we are safe, if not print out a error
+      Given the current scopes table of declarations, use get to get the stored variable and verify it's got the same type as the passed type
+      Since everything in the stack are the current scopes declarations and parent scopes we must check them all, however we use the most recently defined
+      rule( from the lecture ) where we favor the closest scopes declaration. Assume a variable is being passed
+      returns 1 upon success, -1 on type mismatch, 0 on not found.
      */
-    public int typeChecker(ArrayList<NodeType> storedNodes, int level, String scope, String type, int row, int col) {
+    public int typeChecker(int level, String varName, int type, int row, int col) {
        
-        //loop through each node
-        for( NodeType tempNode: storedNodes){
-            //check if same scope and at a level that is lower or the same as the previous definition and check if their types do not match
-            if( tempNode.scope == scope && level <= tempNode.level && type!=tempNode.type){
-            
-                System.err.println("Error in line " + (row + 1) + ", column " + (col + 1) + "Semantic Error: Variable " + tempNode.variableName + " was previously declared as a " + tempNode.dataType + " but was treated as : " + type);
-                return -1;
+
+        HashMap<String, ArrayList<NodeType>> tempTable;
+        ArrayList<NodeType> tempList;
+        Dec tempDec;
+
+        //loop through all from top(current) to bottom(global) 
+        for (int i = 0; i < tableStack.size(); i++) {
+
+            tempTable = tableStack.get(i);
+            tempList = tempTable.get(varName);
+
+            if(tempList!=null){//found an instance, check if one of the nodes type matches the given type
+
+                for( NodeType tempNode: tempList){
+                    tempDec = tempNode.def;
+                    if(tempDec.getType() == type){//the types match, return 1 for success
+                       return 1;
+                    }
+                    else{
+                        return -1; //type do not match, return -1 to indicate type mismatch
+                    }
+
+                }
+
             }
+
         }
+
+        //no matches found, wasn't declared, return 0
         return 0;
     }
 
-    //Function that checks if a varriable was already defined within the same scope, if it is report it, similar to type checker. -1 on error, 0 on nothing found
-    public int wasDefined( ArrayList<NodeType> storedNodes, NodeType curNode, int row, int col ){
+        
+    //Function that checks if a varriable was defined in the current scope or above. used to determine if a VARIABLE was declared before
+    //when we find a declaration, we can stop and return 1 for a success, 0 for failure
+    public int wasDefined( String name ){
 
-        if(storedNodes == null){
-            return -1;
+        ArrayList<NodeType> tempList;
+        //go through all scopes as now we can reference declarations from higher scopes
+        for (int i = 0; i < tableStack.size(); i++) {
+           tempList = tableStack.get(i).get(name);
+           if(tempList!=null){//non null, found a declaration, return 1
+            return 1;
+           }
         }
 
-        //loop through each node
-        for( NodeType tempNode: storedNodes){
-            //check if same name and at a level that is lower or the same as the previous definition, since its a variable type does not matter, only care if it was defined before
-            if( tempNode.variableName == curNode.variableName && curNode.level >= tempNode.level){
-                
-                System.err.println("Error in line " + (row + 1) + ", column " + (col + 1) + "Semantic Error: " + curNode.variableName + " was already declared previously");
-                return -1;
-            }
-        }
         return 0;
     }
     
+    //loop through node list and find if a body was previously defined
+    public int funcWasDefined( ArrayList<NodeType> storedNodes, NodeType curNode, int row, int col ){
+
+        //nothing was found 
+        if(storedNodes==null){
+            return 0;
+        }
+
+        FunctionDec tempFunc;
+        for( NodeType tempNode: storedNodes){
+
+            tempFunc = (FunctionDec)tempNode.def;
+
+            //if the body is not a NilExp, means it was defined, return 1 as a "found"
+            if(tempFunc.body.isNilExp()!=1){
+                return 1;
+            }
+
+        }
+
+        //nothing found
+        return 0;
+    }
+
 
     /*Visit functions for traversing Tree */
 
@@ -116,33 +127,35 @@ public class SemanticAnalyzer implements AbsynVisitor {
     //check if the right hand sides type matches the left hand side
     public void visit( AssignExp exp, int level ){
 
-        Var leftSide = exp.lhs.variable; // Was varExp
+        //current scopes table, peek to get the most recent scope(current one)
+        HashMap<String, ArrayList<NodeType>> curTable = tableStack.peek();
+
+        SimpleVar leftSide = (SimpleVar)exp.lhs.variable; //should always be simple var as left hand will be a variable
         Exp rightSide = exp.rhs;
 
+        /*  Through re defining type checker we do not need this portion, kept it just in case tho
         String rightType = "";
 
-        //check if int
-        if(rightSide.getType() == 0){
-            rightType = "int";
-        }//check if boolean
-        else if(rightSide.getType() == 1){
-            rightType = "boolean";
+        
+        //check its type
+        switch (rightSide.getType()) {
+            case 0 -> rightType = "int";
+            case 1 -> rightType = "boolean";
+            default -> System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) +"Incorrect type given for assign exps right hand side");
         }
-        else{
-            System.out.println("how???");
-        }
+        */
+            
+        //check if the types for the right side and left side match. 1 for match, -1 for mismatch, 0 for lhs wasn't declared
+        int res = typeChecker(level, leftSide.name , rightSide.getType(), exp.row, exp.col);
 
-        //get the type of the left hand side and compare their types
-        ArrayList<NodeType> leftNodeList = table.get(scopeStack.peek()); // Was leftSide.name
-
-        //check if the types for the right side and left side match
-        if(leftNodeList!=null){
-            typeChecker(leftNodeList, level, scopeStack.peek(), rightType, exp.row, exp.col);
+        //only print an error check 
+        if(res==-1){
+            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Semantic Error: In Assignment operator left and right hand side types differ\n");
         }
-        else{ // varriable doesn't exist, call an error for an undeclared variable
-            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Semantic Error: Undeclared varriable: " + leftSide.toString());
-               
+        else if(res == 0){
+            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Semantic Error: Assign operators left hand side variable was never declared\n");
         }
+    
     
     }
 
@@ -187,10 +200,10 @@ public class SemanticAnalyzer implements AbsynVisitor {
             //only type check if both exist
             if (exp.left != null && exp.right != null){
                 //both must be of type bool, if not throw an error
-                if(exp.left.getType()!=1){
+                if(exp.left.getType()!=3){
                     System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Semantic Error: incorrect type for lefthand, not of type Boolean\n");
                 }
-                if(exp.right.getType()!=1){
+                if(exp.right.getType()!=3){
                     System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Semantic Error: incorrect type for lefthand, not of type Boolean\n");
 
                 }
@@ -257,24 +270,25 @@ public class SemanticAnalyzer implements AbsynVisitor {
             return;
         }
 
+
+        indent(level);
+        //print out declaration for symbol table
+        System.out.println(arrDec.name + ": " + tempType);
+
         //get the list of declarations in the current scope from the table
-        ArrayList<NodeType> tempList = table.get(scopeStack.peek()); 
+        ArrayList<NodeType> tempList = tableStack.peek().get(arrDec.name);
+
         //create a new node for the varriable, keep track of the level, varriable name, type and scope
         NodeType tempNode = new NodeType(level, arrDec.name, arrDec);
+        ArrayList<NodeType> tempNodeList = new  ArrayList<NodeType>();
+        tempNodeList.add(tempNode);
 
-        int result = -1;
-
-        if(tempList == null){//no previous instances of anything, insert without a check
-            insert(scopeStack.peek(), tempNode);
-            return;
+        if(tempList == null){//no previous instances of anything, insert into the current scopes symbol table
+            tableStack.peek().put( arrDec.name,tempNodeList);
         }
-        else{//declarations already exist, check if it was previously defined in the same scope
-            result = wasDefined(tempList,tempNode, arrDec.row, arrDec.col);
-        }
-
-        //if we find there are no conflicting previous declarations, insert it into the current scopes list of nodes
-        if(result == 0){
-            insert(scopeStack.peek(), tempNode);
+        else{//declaration already exists in the scope, regardless of anything throw an error
+            System.err.println("Error in line " + (arrDec.row + 1) + ", column " + (arrDec.col + 1) + "Semantic Error: Another varriable of the same name was already declared\n");
+            
         }
 
     }
@@ -286,29 +300,33 @@ public class SemanticAnalyzer implements AbsynVisitor {
     //verify the arguments match previous declarations
     public void visit( CallExp exp, int level ){
 
-        //check if the function exists, check the global scope as they can only be defined there
-        ArrayList<NodeType> tempArr = table.get("global");
-        FunctionDec prevDef = null; // Was Fundec
-
+        //check if the function exists, check the global scope as they can only be defined there, lastElement is the initially pushed table
+        HashMap<String, ArrayList<NodeType>> tempTable = tableStack.lastElement();
+        FunctionDec prevDef = null;
+        ArrayList<NodeType> tempArr = tempTable.get(exp.fun);
         //check for instances of the called functions declaration
         if(tempArr!=null){
             for( NodeType tempNode: tempArr){
-                if(tempNode.variableName == exp.fun){//previous definition was found! have prevDef point to it and break the loop
+                if(tempNode.variableName.equals(exp.fun)){//previous definition was found! have prevDef point to it, check if its a prototype or definition
                     prevDef = (FunctionDec) tempNode.def; //typecast to FunDe type
-                    break;
+                    
+                    //if it is not a prototype, we have found a definition and we can break, there can only be 1
+                    if(prevDef.body.isNilExp() == -1){
+                        break;
+                    }
+                    else{
+                        prevDef = null; //revert it back to null to show we havent found anything
+                    }
+
                 }
             }
 
-            /* Uncomment code once we get confirmation this is suppose to checj prevDef
+            //never found a declaration, throw error and return(no body to analyze)
             if (prevDef == null) {
                 System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Semantic Error: Function was never defined\n");
                 return;
             }
-            */
-
-            //after checking all global declarations no matching function declaration was found, print error and skip over everything else
-            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Semantic Error: Function was never defined\n");
-            return;
+            
 
         }
         else{//no declarations initially, no function definition, throw error and return
@@ -316,9 +334,10 @@ public class SemanticAnalyzer implements AbsynVisitor {
             return;
         }
 
+        //found the definition, compare args and defined parameters
         //check if called arguments match defined parameters by looping through the arguments and parameters for the found declaration
         ExpList tempArgList = exp.args;
-        VarDecList tempParamList = prevDef.parameters;
+        VarDecList tempParamList = ((FunctionDec)prevDef).parameters;
         int tempArgType = -1;
         int tempParamType = -1;
 
@@ -335,19 +354,19 @@ public class SemanticAnalyzer implements AbsynVisitor {
             return; 
         }
         else{
-            while(tempArgList.head!=null && tempParamList.head!=null){
+            while(tempArgList!=null && tempParamList!=null){//go through defined parameters and passed arguments
 
-                SimpleDec randomVar = (SimpleDec)tempParamList.head; // Change variable name
-
+                Dec tempVar = (Dec)tempParamList.head; 
+                Exp tempExp = (Exp)tempArgList.head;
 
                 //check if the types match
-                tempArgType = tempArgList.head.getType(); // 0 for int, 3 for bool, -1 for invalid
-                tempParamType = randomVar.getType(); //0 for int, 3 for bool, 1 for void, 2 for null
+                tempArgType = tempExp.getType(); // 0 for int, 3 for bool, -1 for invalid
+                tempParamType = tempVar.getType(); //0 for int, 3 for bool, 1 for void, 2 for null
 
 
                 if(tempArgType!=tempParamType){
                     System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Semantic Error: Function call contains invalid types");
-                    System.err.println(randomVar.name +" expected a different type\n");
+                    System.err.println(tempVar.getName() +" expected a different type\n");
                 }
 
                 //move to the next parameter/argument
@@ -355,14 +374,17 @@ public class SemanticAnalyzer implements AbsynVisitor {
                 tempParamList = tempParamList.tail;
             }
         }
-
-
-
     }
 
     public void visit( CompoundExp exp, int level ){ //only time scope level changes
 
+        //new scope, go down a level and create a new symbol table for the new scope
+        tableStack.push(new HashMap<String, ArrayList<NodeType>>());
         level++;//scope level has changed, go deeper
+
+        //print for the symbol table
+        indent(level);
+        System.out.println("Entering a new block:");
 
         //*****Deal with the declarations/expressions******
 
@@ -377,42 +399,76 @@ public class SemanticAnalyzer implements AbsynVisitor {
             tempList.head.accept( this, level );
             tempList = tempList.tail;
         }
+
+        //finished with the current scope, pop it from the stack and move back up to the previous scope and level
+        tableStack.pop();
+        level--;
+
     }
 
-    
     //Call insert here, check for any previous declarations
     public void visit( FunctionDec FunDec, int level ){
 
-        //check if we are in the global scope, if not throw an error and do not insert as functions can only be defined in global
-        if(scopeStack.peek()!="global"){
+    
+        //check if we are in the global scope, global scope if only one table is in the stack
+        if(tableStack.size()!=1){
             System.err.println("Error in line " + (FunDec.row + 1) + ", column " + (FunDec.col + 1) + "Semantic Error: Function not defined in the global scope\n");
             return;
         }
 
         //check if any functions of the same name already exists, unlike variables we cannot have more than one function of the same name, so if one is found throw error 
-        ArrayList<NodeType> tempArr = table.get("global");
+        ArrayList<NodeType> tempArr;
         NodeType tempNode = new NodeType(level, FunDec.func, FunDec);
+        tempArr = tableStack.peek().get(FunDec.func); //Resulting array of nodes for when 
 
 
-        //no previous function declarations match so we can insert
-        if(wasDefined(tempArr, tempNode, FunDec.row, FunDec.col) == 0){
-            //if the previous checks are false, valid function declaration, store the function into the table
-            insert("global", tempNode);
+        //we are either dealing with a function prototype or function defining declaration, must treat each differently
+
+        //Function has a body, dealing with body defining declaration
+        if(FunDec.body.isNilExp()!=1){
+
+            //if it has a body, must have a return type, swap our current global tracking variable to track the return type
+            int prevReturnType = currentReturnType;
+            currentReturnType = FunDec.result.typeVal;
+
+            //also if it has a body we must declare a scope change with function
+            indent(level+1);
+            System.out.print("New Scope for function " + FunDec.func + " "); //print instead of println so it connects to the print in compoundExp
+
+
+            //no previous function declarations match so we can insert
+            if(funcWasDefined(tempArr, tempNode, FunDec.row, FunDec.col) == 0){
+                //if the previous checks are false, valid function declaration, store the function into the table
+                ArrayList<NodeType> newArr = new ArrayList<NodeType>();
+                newArr.add(tempNode); 
+                tableStack.peek().put(FunDec.func, newArr);
+            }
+            else{
+                //function was already defined else where, throw an error and continue
+                System.err.println("Error in line " + (FunDec.row + 1) + ", column " + (FunDec.col + 1) + "Semantic Error: Function was already previously defined\n");
+            
+            }
+            if(FunDec.body!=null){
+                //handle the body/new scope
+                FunDec.body.accept(this, level);
+            }
+
+            //after dealing with the body we leave so revert the return type
+            currentReturnType = prevReturnType;
         }
-        else{
-            //function was already defined else where, do not analyze further and return
-            return;
+        else{//dealing with a prototype declaration, if anything else was previously defined with a same name throw an error
+
+            //no such declaration, add it to the current table
+            if(tableStack.peek().get(FunDec.func)==null){
+                ArrayList<NodeType> newArr = new ArrayList<NodeType>();
+                newArr.add(tempNode); 
+                tableStack.peek().put(FunDec.func, newArr);
+            }
+            else{//already exists so we cannot have a prototype
+                System.err.println("Error in line " + (FunDec.row + 1) + ", column " + (FunDec.col + 1) + "Semantic Error: Function Prototype was already previously defined\n");     
+            }
+
         }
-
-        //new overall scope, push function name to stack, level change handled in the compoundExp
-        scopeStack.push(FunDec.func);
-
-        if(FunDec.body!=null){
-            //handle the compound expression
-            FunDec.body.accept(this, level);
-        }
-        scopeStack.pop();//remove the pushed function name to revert to the previous scope
-
     }
 
     //check if the var's index is a int, can be done because index is of type exp
@@ -422,7 +478,6 @@ public class SemanticAnalyzer implements AbsynVisitor {
         if( var.index.getType() !=0){
             System.err.println("Error in line " + (var.row + 1) + ", column " + (var.col + 1) + "Syntax Error: Index is not of type int\n");
         }
-
     }
 
     public void visit( NameTy type, int level ) {
@@ -435,20 +490,59 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
     //matches the functions return type?
     public void visit( ReturnExp exp, int level ) {
-
+        //check if current scopes return type matches the return statements type
+        if(currentReturnType!=exp.getType()){
+            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Semantic Error: Invalid return type\n");
+        }
     }
+
 
     public void visit( VarExp exp, int level ){
         exp.variable.accept(this, level);
     }
 
-    //call insert here
+    //check if it was previously declared or not. if it was throw an error, if it wasn't insert into the current scopes stack
+    //ONLY CHECK THE CURRENT SCOPE 
     public void visit( SimpleDec dec, int level ) {
+
+        indent(level);
+        String dataType = "";
+
+        //get its type in string form, maybe defn a function for this if we have time
+        if(dec.getType()==0){
+            dataType = "int";
+        }
+        else if(dec.getType()==3){
+            dataType = "boolean";
+        }
+        else{
+            dataType = "invalid";
+        }
+
+        //print declared varriable details like the symbol table
+        System.out.println(dec.name + ": " + dataType );
+
+        //get the current scopes table and find an instance of the declared variables name in the current scope
+        HashMap<String, ArrayList<NodeType>> tempTable = tableStack.peek();
+        ArrayList<NodeType> tempList = tempTable.get(dec.name);
+
+        if(tempList==null){//does not exist, create node and insert
+            tempList = new ArrayList<NodeType>();
+            tempList.add(new NodeType(level, dec.name, dec));
+            tempTable.put(dec.name, tempList);//update the current scopes symbol table
+        }
+        else{//already declared, throw error and move on
+            System.err.println("Error in line " + (dec.row + 1) + ", column " + (dec.col + 1) + "Semantic Error: Already previously declared\n");
+        }
 
     }
 
+    //found an instance of a varriable, check to see if it was declared previously
     public void visit( SimpleVar var, int level ) {
 
+        if(wasDefined(var.name)!=1){
+            System.err.println("Error in line " + (var.row + 1) + ", column " + (var.col + 1) + "Semantic Error: Varriable was not declared\n");
+        }
     }
 
     public void visit( VarDecList varDecList, int level ) {
