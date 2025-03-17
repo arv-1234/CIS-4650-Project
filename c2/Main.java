@@ -64,7 +64,7 @@ class Main {
         System.setOut(fileOutput);
         //System.out.println("In the global scope");
         SemanticAnalyzer visitor = new SemanticAnalyzer();
-        result.accept(visitor, 0);
+        result.accept(visitor, 1);
         //visitor.printTable();//don't need this, prints as we traverse tree as we get rid of the tables as we go along
         System.out.println("Leaving the global scope");
       }

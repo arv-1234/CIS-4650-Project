@@ -433,7 +433,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
             //also if it has a body we must declare a scope change with function
             indent(level+1);
-            System.out.print("New Scope for function " + FunDec.func + " "); //print instead of println so it connects to the print in compoundExp
+            System.out.print("New Scope for function " + FunDec.func); //print instead of println so it connects to the print in compoundExp
 
 
             //no previous function declarations match so we can insert
@@ -505,7 +505,6 @@ public class SemanticAnalyzer implements AbsynVisitor {
     //ONLY CHECK THE CURRENT SCOPE 
     public void visit( SimpleDec dec, int level ) {
 
-        indent(level);
         String dataType = "";
 
         //get its type in string form, maybe defn a function for this if we have time
@@ -520,6 +519,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
         }
 
         //print declared varriable details like the symbol table
+        indent(level+1);
         System.out.println(dec.name + ": " + dataType );
 
         //get the current scopes table and find an instance of the declared variables name in the current scope
