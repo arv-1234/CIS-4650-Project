@@ -364,8 +364,8 @@ public class SemanticAnalyzer implements AbsynVisitor {
     }
     */
     public void visit(CallExp exp, int level) {
-        // CHANGE 1: Use FIRST ELEMENT (global scope) instead of lastElement()
-        HashMap<String, ArrayList<NodeType>> tempTable = tableStack.firstElement();
+        // CHANGE 1: Use FIRST ELEMENT (global scope) instead of lastElement()/0 index table
+        HashMap<String, ArrayList<NodeType>> tempTable = tableStack.get(0);
         ArrayList<NodeType> tempArr = tempTable.get(exp.fun);
         FunctionDec prevDef = null;
     
@@ -374,8 +374,22 @@ public class SemanticAnalyzer implements AbsynVisitor {
             // Accept either prototype or definition
             for(NodeType tempNode: tempArr) {
                 prevDef = (FunctionDec) tempNode.def;
-                break; // C- doesn't allow overloading, take first match
+                if(prevDef.body.isNilExp()!=1){ //if the body isn't a null exp we found instance
+                    break;
+                }
+                else{ //was an empty body, most likely prototype, reset it to null
+                    prevDef = null;
+                }
             }
+
+            //went through all matching names in scope, if prevDef is still null never found so throw error and return
+            if(prevDef == null){
+                System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) 
+                            + ": Function '" + exp.fun + "' was never defined");
+                return;
+            }
+
+
         } else {
             // CHANGE 3: Consistent error message formatting
             System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) 
@@ -413,7 +427,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
                 System.err.println("tempParamType: " + tempParamType);
     
                 if(tempArgType != tempParamType) {
-                    System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + "Semantic Error: Function call contains invalid types");
+                    System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: Function call contains invalid types");
                     System.err.println(tempVar.getName() +" expected a different type\n");
                 }
     
