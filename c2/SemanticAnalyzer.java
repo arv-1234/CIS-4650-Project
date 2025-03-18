@@ -210,11 +210,11 @@ public class SemanticAnalyzer implements AbsynVisitor {
     public void visit(AssignExp exp, int level) {
         // Current scopes table, peek to get the most recent scope(current one)
         HashMap<String, ArrayList<NodeType>> curTable = tableStack.peek();
-        SimpleVar leftSide = (SimpleVar)exp.lhs.variable; // Should always be simple var as left hand will be a variable
+        Var leftSide = exp.lhs.variable; // Should always be simple var as left hand will be a variable
         Exp rightSide = exp.rhs;
             
         // Check if the types for the right side and left side match. 1 for match, -1 for mismatch, 0 for lhs wasn't declared
-        int res = typeChecker(level, leftSide.name , rightSide.getType(), exp.row, exp.col);
+        int res = typeChecker(level, leftSide.getName() , rightSide.getType(), exp.row, exp.col);
 
         // Only print an error check 
         if (res == -1) {
