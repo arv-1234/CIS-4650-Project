@@ -1,24 +1,24 @@
 /* 
   Error 1: line 18 missing right hand side of the expression
   Error 2: line 20 assigning type bool with int value 
-  Error 3: line 23 the function foo was never defined
+  Error 3: line 23 the function nice was never defined
  */
 
-int input(void);
-void output(int a);
-void foo(void);
+int random(void);
+void applesOrange(int a);
+void nice(void);
 
 
 void main(void) {
-  int x;  
+  int y;  
   int fac;
-  int y[10];
+  int h[10];
   bool test;
 
-  x = ;
+  y = ;
 
   test = 21;
 
 
-  x = foo();
+  y = nice();
 }
