@@ -357,6 +357,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
 
     public void visit(CallExp exp, int level) {
+        
         // CHANGE 1: Use FIRST ELEMENT (global scope) instead of lastElement()/0 index table
         HashMap<String, ArrayList<NodeType>> tempTable = tableStack.get(0);
         ArrayList<NodeType> tempArr = tempTable.get(exp.fun);
@@ -570,7 +571,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
     // Check if the var's index is a int, can be done because index is of type exp
     public void visit(IndexVar var, int level) {
         // We simply need to check if the index is of type int
-        if (var.index.getType() != 0) {
+        if (getExpType(var.index) != 0) {
             System.err.println("Error in line " + (var.row + 1) + ", column " + (var.col + 1) + " Syntax Error: Index is not of type int\n");
         }
     }
