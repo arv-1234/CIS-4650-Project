@@ -1,0 +1,30 @@
+/* 
+  Error 1: line 20 missing right hand side of the expression
+  Error 2: line 22 assigning type bool with int value 
+  Error 3: line 24 z is undefined variable 
+  Error 3: line 26 bool and int in while expression
+  Error 4: line 29 nice never defined.
+ */
+
+int random(void);
+void applesOrange(int a);
+void nice(void);
+
+
+void main(void) {
+  int y;  
+  int fac;
+  int h[10];
+  bool test;
+
+  y = ;
+
+  test = 21;
+
+  z = 0;
+
+  while (test < y){
+    y = y + 1;
+  }
+  y = nice();
+}
