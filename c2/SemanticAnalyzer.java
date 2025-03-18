@@ -211,6 +211,11 @@ public class SemanticAnalyzer implements AbsynVisitor {
         } else if (res == 0) {
             System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: Assign operators left hand side variable was never declared\n");
         }
+
+        //handle the left and right hand expressions seperately
+        exp.lhs.accept( this, level );
+        exp.rhs.accept( this, level );
+
     }
 
     public void visit(IfExp exp, int level) {
@@ -230,6 +235,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
     // Check if its a logic or math operator and type check accordingly
     public void visit(OpExp exp, int level) {
+
         // operators that require numbers
         if (exp.op == OpExp.PLUS || exp.op == OpExp.MINUS || exp.op == OpExp.TIMES || exp.op == OpExp.OVER || exp.op == OpExp.EQ || exp.op == OpExp.LT || exp.op == OpExp.GT) {
             // Only type check if both exist
@@ -247,13 +253,15 @@ public class SemanticAnalyzer implements AbsynVisitor {
             }
         } else if (exp.op == OpExp.UMINUS || exp.op == OpExp.AND || exp.op == OpExp.OR || exp.op == OpExp.APPROX) {//operators that require boolean values
             // Only type check if both exist
+           
+        
             if (exp.left != null && exp.right != null) {
                 // Both must be of type bool, if not throw an error
                 if ( getExpType(exp.left)!= 3) {
                     System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: incorrect type for lefthand, not of type Boolean\n");
                 }
                 if (getExpType(exp.right) != 3) {
-                    System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: incorrect type for lefthand, not of type Boolean\n");
+                    System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: incorrect type for righthand, not of type Boolean\n");
                 }
             } else {
                 // They must both exist for all of these operators, so if even one doesn't exist throw and error
