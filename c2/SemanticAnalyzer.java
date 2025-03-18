@@ -398,16 +398,24 @@ public class SemanticAnalyzer implements AbsynVisitor {
         int tempParamType = -1;
     
 
-        //System.err.println("IN CALL NAME IS :" + tempParamList.head.getName()+ " END");
+        /* 
+        //no args 
+        if(tempParamList==null){
+            System.err.println("IN CALL NAME IS NULLLI WHAT THE FUCK");
+            return;
+        }
+            */
+
+       
 
         // Parameter/argument matching logic remains unchanged
-        if ( tempArgList.head.isNilExp() == 1 && tempParamList.head == null) { //expects void, no need to continue on
+        if ( tempArgList.head.isNilExp() == 1 && tempParamList == null) { //expects void, no need to continue on
             return;
-        } else if (tempArgList.head.isNilExp() == 1 && tempParamList.head != null) { 
+        } else if (tempArgList.head.isNilExp() == 1 && tempParamList!= null) { 
             System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) 
                             + ": Function does not expect void arguments");
             return;   
-        } else if (tempArgList.head != null && tempParamList.head == null) { 
+        } else if (tempArgList.head.isNilExp() != 1 && tempParamList == null) { //arguments weren't empty but expected nothing
             System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) 
                             + ": Function expected void arguments but got parameters");
             return; 
