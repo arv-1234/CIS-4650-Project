@@ -146,6 +146,11 @@ public class SemanticAnalyzer implements AbsynVisitor {
         ArrayList<NodeType> tempVarList;
         String varName;
 
+        if(exp==null){
+            return -1;
+        }
+
+
         if(exp instanceof VarExp){//means we have a varriable being passed, is probably of type simpleVar
             varName = ((VarExp)exp).variable.getName();
             //find previous instance, look at the prev dec and get the type, loop through all scopes
@@ -167,6 +172,22 @@ public class SemanticAnalyzer implements AbsynVisitor {
             tempVarList = lookup(varName, exp.row, exp.col);
             FunctionDec tempFunDec = (FunctionDec)tempVarList.get(0).def;//prototype or not will still have the type 
             return tempFunDec.result.typeVal;//return the declared return type
+        }
+        else if(exp instanceof OpExp){//expression passed is an operator expression
+
+            OpExp tempExp = (OpExp)exp;
+            //if of the numerical type return 0
+            if (tempExp.op == OpExp.PLUS || tempExp.op == OpExp.MINUS || tempExp.op == OpExp.TIMES || tempExp.op == OpExp.OVER) {
+                return 0;
+            }
+            else if (tempExp.op == OpExp.EQ || tempExp.op == OpExp.LT || tempExp.op == OpExp.GT || tempExp.op == OpExp.UMINUS || tempExp.op == OpExp.AND || tempExp.op == OpExp.OR || tempExp.op == OpExp.APPROX){//will yield a boolean type
+                return 3;
+            }
+            else{
+                return -1;//unknown type, return -1
+            }
+
+
         }
         else{
             return  exp.getType();
@@ -219,6 +240,12 @@ public class SemanticAnalyzer implements AbsynVisitor {
     }
 
     public void visit(IfExp exp, int level) {
+
+          //check if the test is a boolean expression
+        if(getExpType(exp.test)!=3){
+            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: if Conditional statement is not of the boolean type\n");
+        }
+
         // Conditional statement
         exp.test.accept(this, level);
 
@@ -236,6 +263,8 @@ public class SemanticAnalyzer implements AbsynVisitor {
     // Check if its a logic or math operator and type check accordingly
     public void visit(OpExp exp, int level) {
 
+        //System.err.println("WHAT VAREXPGET GOT:" + getExpType(exp.left));
+
         // operators that require numbers
         if (exp.op == OpExp.PLUS || exp.op == OpExp.MINUS || exp.op == OpExp.TIMES || exp.op == OpExp.OVER || exp.op == OpExp.EQ || exp.op == OpExp.LT || exp.op == OpExp.GT) {
             // Only type check if both exist
@@ -244,8 +273,8 @@ public class SemanticAnalyzer implements AbsynVisitor {
                 if (getExpType(exp.left) != 0) {
                     System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: incorrect type for lefthand, not of type INT\n");
                 }
-                if (exp.right.getType() != 0) {
-                    System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: incorrect type for lefthand, not of type INT\n");
+                if (getExpType(exp.right)!= 0) {
+                    System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: incorrect type for righthand, not of type INT\n");
                 }
             } else {
                 // They must both exist for all of these operators, so if even one doesn't exist throw and error
@@ -274,6 +303,12 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
     // Again for this let the compoundExp accept handle semantic analysis
     public void visit(WhileExp exp, int level) {
+
+        //check if the test is a boolean expression
+        if(getExpType(exp.test)!=3){
+            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: While Conditional statement is not of the boolean type\n");
+        }
+
         // If test expression exists, preform semantic analysis
         if (exp.test != null) {
             exp.test.accept(this,level);
