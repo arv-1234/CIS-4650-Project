@@ -37,7 +37,7 @@ The c2 directory contains the symbol table for checkpoint 2. To run the program 
 - SemanticAnalyzer.java holds the definition for our symbol table, type checking, and visit functions (For the symbol table)
 
 **Limitations**
-
+- Program has trouble dealing with array indicies 
 
 **Test Plan**
 - To test the program we created 5 test file 1.cm, 2.cm, 3.cm, 4.cm, 5.cm
