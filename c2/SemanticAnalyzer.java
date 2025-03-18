@@ -139,6 +139,42 @@ public class SemanticAnalyzer implements AbsynVisitor {
         return 0;
     }
 
+
+    //any exp types, this will get its datat type
+    public int getExpType(Exp exp){
+
+        ArrayList<NodeType> tempVarList;
+        String varName;
+
+        if(exp instanceof VarExp){//means we have a varriable being passed, is probably of type simpleVar
+            varName = ((VarExp)exp).variable.getName();
+            //find previous instance, look at the prev dec and get the type, loop through all scopes
+            if(!"".equals(varName)){
+            
+                tempVarList = lookup(varName, exp.row, exp.col);
+                return tempVarList.get(0).def.getType();//get the type value of the time it was declared
+
+
+            }
+            else{//not found, simply default
+                return exp.getType();
+            }
+        }
+        else if(exp instanceof CallExp){//if a function call was detected, find its type
+
+            varName = ((CallExp)exp).fun;
+
+            tempVarList = lookup(varName, exp.row, exp.col);
+            FunctionDec tempFunDec = (FunctionDec)tempVarList.get(0).def;//prototype or not will still have the type 
+            return tempFunDec.result.typeVal;//return the declared return type
+        }
+        else{
+            return  exp.getType();
+        }
+    }
+
+
+
     /* ----------------------  VISIT FUNCTIONS FOR TREE TRAVERSAL  ---------------------- */
     // Loop through expressions and 'visit' each one
     public void visit(ExpList exp, int level) {
@@ -194,12 +230,12 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
     // Check if its a logic or math operator and type check accordingly
     public void visit(OpExp exp, int level) {
-        // Numerical operators
-        if (exp.op == OpExp.PLUS || exp.op == OpExp.MINUS || exp.op == OpExp.TIMES || exp.op == OpExp.OVER) {
+        // operators that require numbers
+        if (exp.op == OpExp.PLUS || exp.op == OpExp.MINUS || exp.op == OpExp.TIMES || exp.op == OpExp.OVER || exp.op == OpExp.EQ || exp.op == OpExp.LT || exp.op == OpExp.GT) {
             // Only type check if both exist
             if (exp.left != null && exp.right != null) {
                 // Both must be of type int, if not throw an error
-                if (exp.left.getType() != 0) {
+                if (getExpType(exp.left) != 0) {
                     System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: incorrect type for lefthand, not of type INT\n");
                 }
                 if (exp.right.getType() != 0) {
@@ -209,14 +245,14 @@ public class SemanticAnalyzer implements AbsynVisitor {
                 // They must both exist for all of these operators, so if even one doesn't exist throw and error
                 System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Syntax Error: Missing right/left values in mathmatical operator\n");
             }
-        } else if (exp.op == OpExp.EQ || exp.op == OpExp.LT || exp.op == OpExp.GT || exp.op == OpExp.UMINUS || exp.op == OpExp.AND || exp.op == OpExp.OR || exp.op == OpExp.APPROX) {
+        } else if (exp.op == OpExp.UMINUS || exp.op == OpExp.AND || exp.op == OpExp.OR || exp.op == OpExp.APPROX) {//operators that require boolean values
             // Only type check if both exist
             if (exp.left != null && exp.right != null) {
                 // Both must be of type bool, if not throw an error
-                if (exp.left.getType() != 3) {
+                if ( getExpType(exp.left)!= 3) {
                     System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: incorrect type for lefthand, not of type Boolean\n");
                 }
-                if (exp.right.getType() != 3) {
+                if (getExpType(exp.right) != 3) {
                     System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: incorrect type for lefthand, not of type Boolean\n");
                 }
             } else {
