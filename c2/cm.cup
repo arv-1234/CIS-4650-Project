@@ -143,10 +143,6 @@ var_declaration	    ::= type_spec:ts ID:id SEMI
                         {: System.err.println("Error in line " + (tsleft + 1) + ", column " + (tsright + 1) + ": Syntax error\ninstead expected '[' token  \nError: array was not delcared properly, Missing left square bracket.");
                            RESULT = new ArrayDec(tsleft, tsright, ts, id , Integer.parseInt(n));
                         :}
-                        | type_spec:ts error:e SEMI
-                        {: parser.report_error("invalid variable name", e);
-                           RESULT = new SimpleDec(tsleft, tsright, ts, "");
-                        :}
                         | type_spec:ts SEMI
                         {: System.err.println("Error in line " + (tsleft + 1) + ", column " + (tsright + 1) + ": Syntax error\ninstead expected token classes are [ID]  \nError: varriable was not delcared properly, Missing ID.");
                            RESULT = new SimpleDec(tsleft, tsright, ts, "");
@@ -197,7 +193,7 @@ fun_declaration       ::= type_spec:ts ID:id LPAREN params:ps RPAREN compound_st
                         :}
                         | type_spec:ts ID:id LPAREN RPAREN compound_stmt:ct
                         {: System.err.println("Error in line " + (tsleft + 1) + ", column " + (tsright + 1) + ": Syntax error \ninstead expected token classes are [param_list, VOID] \nError: Function was not delcared properly, Missing parameters");
-                           RESULT = new FunctionDec(tsleft, tsright, ts ,id, null , ct);
+                           RESULT = new FunctionDec(tsleft, tsright, ts ,id, new VarDecList(null,null) , ct);
                         :}
                         ;
 

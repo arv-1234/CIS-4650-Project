@@ -397,10 +397,13 @@ public class SemanticAnalyzer implements AbsynVisitor {
         int tempArgType = -1;
         int tempParamType = -1;
     
+
+        //System.err.println("IN CALL NAME IS :" + tempParamList.head.getName()+ " END");
+
         // Parameter/argument matching logic remains unchanged
-        if (tempArgList.head == null && tempParamList.head == null) {
+        if ( tempArgList.head.isNilExp() == 1 && tempParamList.head == null) { //expects void, no need to continue on
             return;
-        } else if (tempArgList.head == null && tempParamList.head != null) { 
+        } else if (tempArgList.head.isNilExp() == 1 && tempParamList.head != null) { 
             System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) 
                             + ": Function does not expect void arguments");
             return;   
