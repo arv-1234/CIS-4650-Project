@@ -6,7 +6,7 @@
 
 */
 
-int num() {
+int num(void) {
   int z;
   z = 1;
   return z;
