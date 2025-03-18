@@ -11,6 +11,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
     final static int SPACES = 4;
     public int currentReturnType = -1;
     public VarDecList paramsToAdd = null;
+    public String funcMsg = "";
 
     // Indent: creates spacing to organize display
     private void indent( int level ) {
@@ -460,7 +461,8 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
         // Print for the symbol table
         indent(level);
-        System.out.println("Entering a new block:");
+        System.out.println("Entering a new block " + funcMsg+ ":");
+        funcMsg = "";//reset it after
 
         //handle possible function parameter declarations, need to reference it in the scope
         while (paramsToAdd != null) {
@@ -505,8 +507,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
             int prevReturnType = currentReturnType;
             currentReturnType = FunDec.result.typeVal;//we use this to check if return exp matches
     
-            indent(level + 1);
-            System.out.print("New Scope for function " + FunDec.func + " ");
+            funcMsg = "for function " + FunDec.func;//passes this to compoundExp
     
             if (tempArr != null) {
                 boolean hasPrototype = false;
