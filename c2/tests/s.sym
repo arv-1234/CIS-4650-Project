@@ -1,7 +1,0 @@
-Entering the global scope:
-    x: int
-    fac: int
-    y: int
-    test: boolean
-    : invalid
-Leaving the global scope

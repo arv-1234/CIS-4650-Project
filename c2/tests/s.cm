@@ -1,7 +1,0 @@
-int x;  
-  int fac;
-  int y[10];
-  bool test;
-
-  x = input();
-  y[1] = 2;
