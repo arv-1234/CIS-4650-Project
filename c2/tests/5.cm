@@ -1,21 +1,30 @@
-/* line 11, line 14,  line 16, line 20
+/* 
+  Error 1: line 20 missing right hand side of the expression
+  Error 2: line 22 assigning type bool with int value 
+  Error 3: line 24 z is undefined variable 
+  Error 3: line 26 bool and int in while expression
+  Error 4: line 29 nice never defined.
+ */
 
-    line 11, missing ; 
-    line 14, missing value after assignment expression 
-    line 16, Missing assigment expression
-    line 20, Missing left parantheses
-*/
+int random(void);
+void applesOrange(int a);
+void nice(void);
+
 
 void main(void) {
-  int x 
+  int y;  
   int fac;
+  int h[10];
+  bool test;
 
-  x = input();
-  fac = ;
-  while (x > 1) {
-    fac = fac  x;
-    x = x - 1;
-  } 
+  y = ;
 
-  output fac);
+  test = 21;
+
+  z = 0;
+
+  while (test < y){
+    y = y + 1;
+  }
+  y = nice();
 }
