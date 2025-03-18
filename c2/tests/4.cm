@@ -1,62 +1,24 @@
-/* This is a simple test file that deals with functions and an incorrect function definition to see if the error recovery is working line 9 */
+/* 
+  Error 1: line 18 missing right hand side of the expression
+  Error 2: line 20 assigning type bool with int value 
+  Error 3: line 23 the function nice was never defined
+ */
 
-/*missing left parenthesis*/
-int fun1 int c)  {
+int random(void);
+void applesOrange(int a);
+void nice(void);
 
-    return c;
+
+void main(void) {
+  int y;  
+  int fac;
+  int h[10];
+  bool test;
+
+  y = ;
+
+  test = 21;
+  
+
+  y = nice();
 }
-
-/*missing right parenthesis*/
-int fun2 (int z  {
-
-    return z;
-}
-
-/*missing type specifier*/
-fun3 (int k)  {
-
-    return k;
-}
-
-/*Properly defined no argument function dec*/
-int voidFun (void){
-    return o;
-}
-
-
-/*missing parameters, C- must have void or paramter(s)*/
-int emptyFun (){
-    return j;
-}
-
-/*unexpected token before declaration*/
-unexpected int fun4 (int k)  {
-
-    return k;
-}
-
-int fun5 (int g, int q)  {
-
-    return v;
-}
-
-void main(void){
-    int a;
-    int b;
-}
-
-/*Function prototypes*/
-
-int proto1 (int j, int u);
-
-/*missing right or left brackets */
-int proto2 int k, int z);
-int proto2 (int r, int t;
-
-/*Missing type specifier*/
-proto3 (int g, int h);
-
-/*missing id */
-void (int p, int y);
-
-

@@ -1,34 +1,29 @@
-/* Test 3: Exhibit different kinds of semantic errors (but no more than 3 per program)
+/* Test 3: Eyhibit different kinds of semantic errors (but no more than 3 per program)
 
-  Error 1: line 13, i can't be redefined as type bool.
-  Error 2: line 14, j can't be defined as type void.
-  Error 3: line 31, k does not exist outside of its nested scope/block.
+  Error 1: line 18 the randomTest variable is redefined 
+  Error 2: line 20 getNum was never defined
+  Error 3: line 28 displayString was never defined
 
 */
 
-int x[10];
 
-int main(void) {
-  int i;
-  bool i;
-  void j;
 
-  i = 0;
+int getNum(void);
+void displayString(int a);
 
-  while (i < 10) {
-    x[i] = input();
-    i = i + 1;
+void main(void) {
+  int y; 
+  int toe;
+  bool randomTest;
+  bool randomTest;
+
+  y = getNum();
+  toe = 2 + (y + h);
+  randomTest = y > 1;
+  while (randomTest) {
+    toe = toe * y;
+    y = y - 1;
+    randomTest = y > 1;
   }
-
-  sort(x, 0, 10);
-  
-  {
-    int k;
-    {
-      k = 1;
-    }
-  }
-  k = 2;
-
-  return 0;
+  displayString((toe + y)/2);
 }
