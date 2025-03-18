@@ -1,0 +1,34 @@
+
+int z;
+bool j;
+void foo(void);
+
+bool foobar(void){
+    bool p;
+    return p;
+}
+
+int main(void) {
+
+    int j;
+    int k;
+
+    if(1<k){
+        j=j+k;
+    }
+
+    if(foobar()){
+        j=j+k;
+    }
+
+    if(j + k){
+        j = j+k;
+    }
+
+    while( j - k){
+        j = j+k;
+    }
+
+  
+  return 0;
+}

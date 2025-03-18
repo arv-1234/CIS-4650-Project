@@ -1,0 +1,11 @@
+The abstract syntax tree is:
+FunctionDec:
+    NameTy: VOID
+    func: main
+    CompoundExp: 
+        SimpleDec:
+            NameTy: INT
+            Name: null
+        SimpleDec:
+            NameTy: NULL
+            Name: 

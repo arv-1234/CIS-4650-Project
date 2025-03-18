@@ -1,0 +1,16 @@
+Entering the global scope:
+    x: int
+    y: int
+    z: int
+    Function prototype: testOne
+    Function prototype: testTwo
+    Entering a new block for function testThree:
+            c: int
+        Exiting function testThree scope
+    Entering a new block for function testTwo:
+            b: int
+        Entering a new block :
+        Exiting function testTwo scope
+    Entering a new block for function main:
+        Exiting function main scope
+Leaving the global scope

@@ -1,0 +1,99 @@
+The abstract syntax tree is:
+FunctionDec:
+    NameTy: INT
+    func: main
+    CompoundExp: 
+        IfExp:
+            OpExp: > 
+                VarExp:
+                    SimpleVar: j
+                VarExp:
+                    SimpleVar: x
+            CompoundExp: 
+                SimpleDec:
+                    NameTy: INT
+                    Name: x
+            NilExp: NULL
+        IfExp:
+            VarExp:
+                SimpleVar: x
+            CompoundExp: 
+                SimpleDec:
+                    NameTy: INT
+                    Name: j
+            NilExp: NULL
+        IfExp:
+            NilExp: NULL
+            CompoundExp: 
+                SimpleDec:
+                    NameTy: INT
+                    Name: p
+            NilExp: NULL
+        IfExp:
+            VarExp:
+                SimpleVar: x
+            CompoundExp: 
+                SimpleDec:
+                    NameTy: INT
+                    Name: l
+            NilExp: NULL
+        IfExp:
+            OpExp: == 
+                VarExp:
+                    SimpleVar: j
+                VarExp:
+                    SimpleVar: x
+            CompoundExp: 
+                ReturnExp:
+                    VarExp:
+                        SimpleVar: p
+            NilExp: NULL
+        IfExp:
+            OpExp: < 
+                VarExp:
+                    SimpleVar: k
+                VarExp:
+                    SimpleVar: l
+            CompoundExp: 
+                ReturnExp:
+                    VarExp:
+                        SimpleVar: i
+            NilExp: NULL
+        IfExp:
+            OpExp: < 
+                VarExp:
+                    SimpleVar: a
+                VarExp:
+                    SimpleVar: b
+            CompoundExp: 
+                SimpleDec:
+                    NameTy: INT
+                    Name: a
+            NilExp: NULL
+        IfExp:
+            OpExp: < 
+                VarExp:
+                    SimpleVar: a
+                VarExp:
+                    SimpleVar: b
+            CompoundExp: 
+                ReturnExp:
+                    VarExp:
+                        SimpleVar: a
+            CompoundExp: 
+                ReturnExp:
+                    VarExp:
+                        SimpleVar: b
+        IfExp:
+            OpExp: < 
+                VarExp:
+                    SimpleVar: a
+                VarExp:
+                    SimpleVar: b
+            CompoundExp: 
+                AssignExp:
+                    VarExp:
+                        SimpleVar: b
+                    VarExp:
+                        SimpleVar: a
+            NilExp: NULL

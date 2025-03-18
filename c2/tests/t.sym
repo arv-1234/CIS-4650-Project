@@ -1,0 +1,16 @@
+Entering the global scope:
+    z: int
+    j: boolean
+    Function prototype: foo
+    Entering a new block for function foobar:
+        p: boolean
+        Exiting function foobar scope
+    Entering a new block for function main:
+        j: int
+        k: int
+        Entering a new block :
+        Entering a new block :
+        Entering a new block :
+        Entering a new block :
+        Exiting function main scope
+Leaving the global scope
