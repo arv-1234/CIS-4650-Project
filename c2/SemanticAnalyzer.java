@@ -456,13 +456,13 @@ public class SemanticAnalyzer implements AbsynVisitor {
     public void visit(CompoundExp exp, int level) {
         // New scope, go down a level and create a new symbol table for the new scope
         tableStack.push(new HashMap<String, ArrayList<NodeType>>());
-        // Scope level has changed, go deeper
-        level++;
 
         // Print for the symbol table
         indent(level);
         System.out.println("Entering a new block " + funcMsg+ ":");
         funcMsg = "";//reset it after
+        // Scope level has changed, go deeper
+        level++;
 
         //handle possible function parameter declarations, need to reference it in the scope
         while (paramsToAdd != null) {
