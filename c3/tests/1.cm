@@ -1,0 +1,33 @@
+/* Test 1: Compile without errors.
+
+  Checkpoint 1: Uses mutual recursion and added additional variable declarations on line 5 and function prototypes on line 10.
+  Checkpoint 2: Code can now deal with proper semantics. 
+
+*/
+
+int x;
+int y;
+int z;
+
+int testOne(int a);
+void testTwo(int b);
+
+void testThree(int c) {
+  y = y - 1;
+}
+
+void testTwo(int b) {
+  b = b - 1;
+  if (b > 0) {
+    y = y - 1;
+  }
+}
+
+int main(void) {
+
+  testTwo(x);
+
+
+
+  return 0;
+}

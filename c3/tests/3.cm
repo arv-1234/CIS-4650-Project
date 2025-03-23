@@ -1,0 +1,29 @@
+/* Test 3: Eyhibit different kinds of semantic errors (but no more than 3 per program)
+
+  Error 1: line 18 the randomTest variable is redefined 
+  Error 2: line 20 getNum was never defined
+  Error 3: line 28 displayString was never defined
+
+*/
+
+
+
+int getNum(void);
+void displayString(int a);
+
+void main(void) {
+  int y; 
+  int toe;
+  bool randomTest;
+  bool randomTest;
+
+  y = getNum();
+  toe = 2 + (y + h);
+  randomTest = y > 1;
+  while (randomTest) {
+    toe = toe * y;
+    y = y - 1;
+    randomTest = y > 1;
+  }
+  displayString((toe + y)/2);
+}
