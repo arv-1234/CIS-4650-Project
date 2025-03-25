@@ -11,7 +11,7 @@ public class IndexVar extends Var {
         this.index = index;
     }
 
-    public void accept( AbsynVisitor visitor, int level ) {
-        visitor.visit( this, level );
+    public void accept( AbsynVisitor visitor, int level, boolean flag ) {
+        visitor.visit( this, level, flag );
     }
 }

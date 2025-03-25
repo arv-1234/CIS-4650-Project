@@ -199,15 +199,15 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
     /* ----------------------  VISIT FUNCTIONS FOR TREE TRAVERSAL  ---------------------- */
     // Loop through expressions and 'visit' each one
-    public void visit(ExpList exp, int level) {
+    public void visit(ExpList exp, int level, boolean flag) {
         while(exp != null) {
-            exp.head.accept(this, level);
+            exp.head.accept(this, level, flag);
             exp = exp.tail;
         }
     }
 
     // Check if the right hand sides type matches the left hand side
-    public void visit(AssignExp exp, int level) {
+    public void visit(AssignExp exp, int level, boolean flag) {
         // Current scopes table, peek to get the most recent scope(current one)
         HashMap<String, ArrayList<NodeType>> curTable = tableStack.peek();
         Var leftSide = exp.lhs.variable; // Should always be simple var as left hand will be a variable
@@ -224,12 +224,12 @@ public class SemanticAnalyzer implements AbsynVisitor {
         }
 
         //handle the left and right hand expressions seperately
-        exp.lhs.accept( this, level );
-        exp.rhs.accept( this, level );
+        exp.lhs.accept( this, level, flag );
+        exp.rhs.accept( this, level, flag );
 
     }
 
-    public void visit(IfExp exp, int level) {
+    public void visit(IfExp exp, int level, boolean flag) {
 
           //check if the test is a boolean expression
         if(getExpType(exp.test)!=3){
@@ -237,21 +237,21 @@ public class SemanticAnalyzer implements AbsynVisitor {
         }
 
         // Conditional statement
-        exp.test.accept(this, level);
+        exp.test.accept(this, level, flag);
 
         // This is going to be a compound stmt, let the respective visit function handle it
-        exp.thenpart.accept(this, level);
+        exp.thenpart.accept(this, level, flag);
         if (exp.elsepart != null) {
-            exp.elsepart.accept(this, level);
+            exp.elsepart.accept(this, level, flag);
         }
     }
 
-    public void visit(IntExp exp, int level) {
+    public void visit(IntExp exp, int level, boolean flag) {
         // Will never be needed for the semantic analyzer, used as a placeholder for errors
     }
 
     // Check if its a logic or math operator and type check accordingly
-    public void visit(OpExp exp, int level) {
+    public void visit(OpExp exp, int level, boolean flag) {
 
         //System.err.println("WHAT VAREXPGET GOT:" + getExpType(exp.left));
 
@@ -292,7 +292,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
     }
 
     // Again for this let the compoundExp accept handle semantic analysis
-    public void visit(WhileExp exp, int level) {
+    public void visit(WhileExp exp, int level, boolean flag) {
 
         //check if the test is a boolean expression
         if(getExpType(exp.test)!=3){
@@ -301,27 +301,27 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
         // If test expression exists, preform semantic analysis
         if (exp.test != null) {
-            exp.test.accept(this,level);
+            exp.test.accept(this,level, flag);
         }
 
-        exp.body.accept(this, level);
+        exp.body.accept(this, level, flag);
     }
     
-    public void visit(DecList decList, int level) {
+    public void visit(DecList decList, int level, boolean flag) {
         // Print out the decs stored
         DecList tempDecList = decList;
   
         // Make sure it's not empty
         if (tempDecList.head != null) {
             while(tempDecList != null) {
-                tempDecList.head.accept(this, level);
+                tempDecList.head.accept(this, level, flag);
                 tempDecList = tempDecList.tail;
             }
         }
     }
 
     // Call insert here,type check as well with previous instances
-    public void visit(ArrayDec arrDec, int level) {
+    public void visit(ArrayDec arrDec, int level, boolean flag) {
         String tempType = "";
 
         // Get the current type
@@ -351,12 +351,12 @@ public class SemanticAnalyzer implements AbsynVisitor {
         insert(arrDec.name, new NodeType(level, arrDec.name, arrDec), arrDec.col + 1, arrDec.row + 1);
     }
 
-    public void visit(BoolExp exp , int level) {
+    public void visit(BoolExp exp , int level, boolean flag) {
         // Will never be needed for the semantic analyzer, used as a placeholder for errors
     }
 
 
-    public void visit(CallExp exp, int level) {
+    public void visit(CallExp exp, int level, boolean flag) {
         
         // CHANGE 1: Use FIRST ELEMENT (global scope) instead of lastElement()/0 index table
         HashMap<String, ArrayList<NodeType>> tempTable = tableStack.get(0);
@@ -465,7 +465,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
     
     // Only time scope level changes
-    public void visit(CompoundExp exp, int level) {
+    public void visit(CompoundExp exp, int level, boolean flag) {
         // New scope, go down a level and create a new symbol table for the new scope
         tableStack.push(new HashMap<String, ArrayList<NodeType>>());
 
@@ -478,7 +478,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
         //handle possible function parameter declarations, need to reference it in the scope
         while (paramsToAdd != null) {
-            paramsToAdd.head.accept(this, level + 1);
+            paramsToAdd.head.accept(this, level + 1, flag);
             paramsToAdd = paramsToAdd.tail;
         }
 
@@ -487,13 +487,13 @@ public class SemanticAnalyzer implements AbsynVisitor {
         /*****Deal with the declarations/expressions*****/
         VarDecList tempVarDecList = exp.decs;
         while(tempVarDecList != null) {
-            tempVarDecList.head.accept(this, level);
+            tempVarDecList.head.accept(this, level, flag);
             tempVarDecList  = tempVarDecList.tail;
         }
 
         ExpList tempList = exp.exps;
         while(tempList != null) {
-            tempList.head.accept(this, level);
+            tempList.head.accept(this, level, flag);
             tempList = tempList.tail;
         }
 
@@ -505,7 +505,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
     
 
      
-    public void visit(FunctionDec FunDec, int level) {
+    public void visit(FunctionDec FunDec, int level, boolean flag) {
         if (tableStack.size() != 1) {
             System.err.println("Error in line " + (FunDec.row + 1) + ", column " + (FunDec.col + 1) + " Semantic Error: Function not defined in the global scope\n");
             return;
@@ -551,7 +551,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
             */
 
             if (FunDec.body != null) {
-                FunDec.body.accept(this, level);
+                FunDec.body.accept(this, level, flag);
             }
     
             indent(level + 1);
@@ -580,36 +580,36 @@ public class SemanticAnalyzer implements AbsynVisitor {
     }
     
     // Check if the var's index is a int, can be done because index is of type exp
-    public void visit(IndexVar var, int level) {
+    public void visit(IndexVar var, int level, boolean flag) {
         // We simply need to check if the index is of type int
         if (getExpType(var.index) != 0) {
             System.err.println("Error in line " + (var.row + 1) + ", column " + (var.col + 1) + " Syntax Error: Index is not of type int\n");
         }
     }
 
-    public void visit(NameTy type, int level) {
+    public void visit(NameTy type, int level, boolean flag) {
         // Will never be needed for the semantic analyzer, used as a placeholder for errors
     }
 
-    public void visit(NilExp exp, int level) {
+    public void visit(NilExp exp, int level, boolean flag) {
         // Will never be needed for the semantic analyzer, used as a placeholder for errors
     }
 
     // Matches the functions return type?
-    public void visit(ReturnExp exp, int level) {
+    public void visit(ReturnExp exp, int level, boolean flag) {
         // Check if current scopes return type matches the return statements type
         if (currentReturnType != getExpType(exp.exp)) {
             System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: Invalid return type\n");
         }
     }
 
-    public void visit(VarExp exp, int level) {
-        exp.variable.accept(this, level);
+    public void visit(VarExp exp, int level, boolean flag) {
+        exp.variable.accept(this, level, flag);
     }
 
     // Check if it was previously declared or not. if it was throw an error, if it wasn't insert into the current scopes stack
     // ONLY CHECK THE CURRENT SCOPE 
-    public void visit( SimpleDec dec, int level ) {
+    public void visit( SimpleDec dec, int level, boolean flag ) {
         indent(level);
         String dataType = "";
 
@@ -630,15 +630,15 @@ public class SemanticAnalyzer implements AbsynVisitor {
     }
 
     // Found an instance of a varriable, check to see if it was declared previously
-    public void visit(SimpleVar var, int level) {
+    public void visit(SimpleVar var, int level, boolean flag) {
         if (wasDefined(var.name) != 1) {
             System.err.println("Error in line " + (var.row + 1) + ", column " + (var.col + 1) + " Semantic Error: Varriable was not declared\n");
         }
     }
 
-    public void visit(VarDecList varDecList, int level) {
+    public void visit(VarDecList varDecList, int level, boolean flag) {
         while(varDecList != null) {
-            varDecList.head.accept(this, level);
+            varDecList.head.accept(this, level, flag);
             varDecList = varDecList.tail;
         }
     }

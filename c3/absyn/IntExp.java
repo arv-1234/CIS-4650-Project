@@ -9,8 +9,8 @@ public class IntExp extends Exp {
     this.value = value;
   }
 
-  public void accept( AbsynVisitor visitor, int level ) {
-    visitor.visit( this, level );
+  public void accept( AbsynVisitor visitor, int level, boolean flag ) {
+    visitor.visit( this, level, flag );
   }
 
   //@Override
