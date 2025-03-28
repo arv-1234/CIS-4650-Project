@@ -36,7 +36,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
     public void insert(String key, NodeType node, int col, int row) {
         if (tableStack.peek().get(key) != null) {
             //do nothing prints handled in visit functions
-            System.err.println("Semantic Error (col "+col+", row "+row+"): cannot insert redefined variable key '"+key+"'.");
+            System.err.println("Semantic Error row "+row+", col "+col+": cannot insert redefined variable key '"+key+"'.\n");
         } else {
             ArrayList<NodeType> nodeList = new ArrayList<NodeType>();
             nodeList.add(node);
@@ -249,8 +249,10 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
     public void visit(IfExp exp, int level, boolean flag) {
 
-          //check if the test is a boolean expression
-        if(getExpType(exp.test)!=3){
+        int expType = getExpType(exp.test);
+
+        //check if the test is an integer or boolean, if not either give an error
+        if(expType!=3 && expType!=0){
             System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: if Conditional statement is not of the boolean type\n");
         }
 
@@ -288,17 +290,19 @@ public class SemanticAnalyzer implements AbsynVisitor {
                 // They must both exist for all of these operators, so if even one doesn't exist throw and error
                 System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Syntax Error: Missing right/left values in mathmatical operator\n");
             }
-        } else if (exp.op == OpExp.UMINUS || exp.op == OpExp.AND || exp.op == OpExp.OR || exp.op == OpExp.APPROX) {//operators that require boolean values
+        }
+         else if (exp.op == OpExp.UMINUS || exp.op == OpExp.AND || exp.op == OpExp.OR || exp.op == OpExp.APPROX) {//operators that require boolean values
             // Only type check if both exist
-           
+           int rightTy = getExpType(exp.right);
+           int leftTy = getExpType(exp.left);
         
             if (exp.left != null && exp.right != null) {
-                // Both must be of type bool, if not throw an error
-                if ( getExpType(exp.left)!= 3) {
-                    System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: incorrect type for lefthand, not of type Boolean\n");
+                // Both must be of type bool or int(again idk why but for some reason it accepts both :| ), if not throw an error
+                if ( leftTy!=3 && leftTy!=0) {
+                    System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: incorrect type for lefthand, not of type Boolean/int\n");
                 }
-                if (getExpType(exp.right) != 3) {
-                    System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: incorrect type for righthand, not of type Boolean\n");
+                if (rightTy!=3 && rightTy!=0) {
+                    System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: incorrect type for righthand, not of type Boolean/int\n");
                 }
             } else {
                 // They must both exist for all of these operators, so if even one doesn't exist throw and error
@@ -519,6 +523,8 @@ public class SemanticAnalyzer implements AbsynVisitor {
         // Finished with the current scope, pop it from the stack and move back up to the previous scope and level
         tableStack.pop();
         level--;
+        indent(level);
+        System.out.println("Exiting Block");
     }
 
     
@@ -573,7 +579,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
                 FunDec.body.accept(this, level, flag);
             }
     
-            indent(level + 1);
+            indent(level);
             System.out.println("Exiting function " + FunDec.func + " scope");
             currentReturnType = prevReturnType;
         } else { // Function prototype
