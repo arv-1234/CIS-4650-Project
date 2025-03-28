@@ -36,7 +36,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
     public void insert(String key, NodeType node, int col, int row) {
         if (tableStack.peek().get(key) != null) {
             //do nothing prints handled in visit functions
-            System.err.println("Semantic Error row "+row+", col "+col+": cannot insert redefined variable key '"+key+"'.\n");
+            System.err.println("Semantic Error in row "+row+", col "+col+": cannot insert redefined variable key '"+key+"'.\n");
         } else {
             ArrayList<NodeType> nodeList = new ArrayList<NodeType>();
             nodeList.add(node);
@@ -54,7 +54,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
             }
         }
         // If we cannot find it in the stack, it doesn't exist
-        System.err.println("Semantic Error (col "+col+", row "+row+"): cannot look up undefined variable key '"+key+"'.");
+        System.err.println("Semantic Error in row "+row+", col "+col+": cannot look up undefined variable key '"+key+"'.\n");
         return null;
     }
 
@@ -65,7 +65,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
         if (tableStack.peek().get(key) != null) {
             tableStack.peek().remove(key);
         } else {
-            System.err.println("Semantic Error (col "+col+", row "+row+"): cannot delete undefined variable key '"+key+"'.");
+            System.err.println("Semantic Error in row "+row+", col "+col+" : cannot delete undefined variable key '"+key+"'.\n");
         }
     }
 
@@ -104,12 +104,12 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
     // Function that checks if a varriable was defined in the current scope or above. used to determine if a VARIABLE was declared before
     // When we find a declaration, we can stop and return 1 for a success, 0 for failure
-    public int wasDefined(String name) {
+    public int wasDefined(String name, int row, int col) {
         // Declare Variable
         ArrayList<NodeType> tempList;
 
         // Go through all of the scopes, we can reference declarations from higher scopes
-        tempList = lookup(name, 0, 0);
+        tempList = lookup(name, row, col);
 
         // 1 = not null, declaration found
         if (tempList != null) {
@@ -672,7 +672,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
     // Found an instance of a varriable, check to see if it was declared previously
     public void visit(SimpleVar var, int level, boolean flag) {
-        if (wasDefined(var.name) != 1) {
+        if (wasDefined(var.name, var.row, var.col) != 1) {
             System.err.println("Error in line " + (var.row + 1) + ", column " + (var.col + 1) + " Semantic Error: Varriable was not declared\n");
         }
     }
