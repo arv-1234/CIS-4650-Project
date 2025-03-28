@@ -456,7 +456,11 @@ exp                   ::= var:v ASSIGN:a exp:e
 var                   ::= ID:i 
                         {: RESULT = new SimpleVar(ileft,iright,i); :}
                         | ID:i LBRACK exp:e RBRACK
-                        {: RESULT = new IndexVar(ileft,iright,i,e); :}
+                        {: 
+                        //IntExp tmp = (IntExp)e;
+                        //System.err.println("GOT TO INDEXVAR with" + i + " " + tmp.value); 
+                        RESULT = new IndexVar(ileft,iright,i,e); 
+                        :}
                         ;
 
 

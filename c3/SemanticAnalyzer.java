@@ -35,6 +35,7 @@ public class SemanticAnalyzer implements AbsynVisitor {
     // Error Checker: Looks for redefined variables
     public void insert(String key, NodeType node, int col, int row) {
         if (tableStack.peek().get(key) != null) {
+            //do nothing prints handled in visit functions
             System.err.println("Semantic Error (col "+col+", row "+row+"): cannot insert redefined variable key '"+key+"'.");
         } else {
             ArrayList<NodeType> nodeList = new ArrayList<NodeType>();
@@ -141,7 +142,8 @@ public class SemanticAnalyzer implements AbsynVisitor {
     }
 
 
-    //any exp types, this will get its datat type
+    //any exp types, this will get its subclass type
+
     public int getExpType(Exp exp){
 
         ArrayList<NodeType> tempVarList;
@@ -196,6 +198,12 @@ public class SemanticAnalyzer implements AbsynVisitor {
     }
 
 
+    public int GetVarType(){
+
+
+        return 0;
+    }
+
 
     /* ----------------------  VISIT FUNCTIONS FOR TREE TRAVERSAL  ---------------------- */
     // Loop through expressions and 'visit' each one
@@ -210,11 +218,21 @@ public class SemanticAnalyzer implements AbsynVisitor {
     public void visit(AssignExp exp, int level, boolean flag) {
         // Current scopes table, peek to get the most recent scope(current one)
         HashMap<String, ArrayList<NodeType>> curTable = tableStack.peek();
-        Var leftSide = exp.lhs.variable; // Should always be simple var as left hand will be a variable
-        Exp rightSide = exp.rhs;
+
+        Var leftSide = exp.lhs.variable;
+
+        //must set left side to its proper instance by type casting
+        if(exp.lhs.variable instanceof SimpleVar){
+            //System.err.println("ITS AN INSTANCE OF SIMPLE VAR!");
+            leftSide = (SimpleVar)exp.lhs.variable;
+        }
+        else if(exp.lhs.variable instanceof IndexVar){
+            //System.err.println("ITS AN INSTANCE OF INDEX VAR!");
+            leftSide = (IndexVar)exp.lhs.variable;
+        }
             
         // Check if the types for the right side and left side match. 1 for match, -1 for mismatch, 0 for lhs wasn't declared
-        int res = typeChecker(level, leftSide.getName() , rightSide.getType(), exp.row, exp.col);
+        int res = typeChecker(level, leftSide.getName() , getExpType(exp.rhs), exp.row, exp.col);
 
         // Only print an error check 
         if (res == -1) {
@@ -344,8 +362,9 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
         indent(level);
 
+        
         // Print out declaration for symbol table
-        System.out.println(arrDec.name + ": " + tempType);
+        System.out.println("Array Declaration: " + arrDec.name + ", Type: " + tempType + ", Size: " + arrDec.size);
 
         // Insert a new node for the variable to keep track of the level, varriable name, type, and scope
         insert(arrDec.name, new NodeType(level, arrDec.name, arrDec), arrDec.col + 1, arrDec.row + 1);
@@ -598,6 +617,22 @@ public class SemanticAnalyzer implements AbsynVisitor {
     // Matches the functions return type?
     public void visit(ReturnExp exp, int level, boolean flag) {
         // Check if current scopes return type matches the return statements type
+
+
+        String typeStr = "";
+        int typeInt = getExpType(exp.exp);
+        if(typeInt== 0){
+            typeStr = "Integer";
+        }
+        else if(typeInt == 3){
+            typeStr = "Boolean";
+        }
+
+        //print out the return type
+        indent(level);
+        System.out.println("Return Type: " + typeStr);
+
+        //if it doesnt match the current scopes function return type return false
         if (currentReturnType != getExpType(exp.exp)) {
             System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: Invalid return type\n");
         }
