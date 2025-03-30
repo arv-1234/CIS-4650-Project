@@ -182,7 +182,28 @@ public class CodeGenerator implements AbsynVisitor{
 
     }
   
-    public void visit( OpExp exp, int offset, boolean flag );
+    public void visit( OpExp exp, int offset, boolean flag ){
+
+        //handle the opExp emits
+        emitComment("-> op");
+
+        //handle the left and right sides
+        exp.left.accept(this, offset-1, false);
+        emitRM("ST", AC, offset, FP, "op: push left");
+
+        exp.left.accept(this, offset-2, false);
+        emitRM("LD", AC1, offset, FP, "op: Load left");
+
+
+
+        //handle for boolean
+
+        //handle for arithemetic
+
+
+        emitComment("<- op");
+
+    }
   
     public void visit( WhileExp exp, int offset, boolean flag );
   
