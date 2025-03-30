@@ -6,6 +6,9 @@ import java.util.Stack;
 
 public class CodeGenerator implements AbsynVisitor{
 
+    //add to it whenever we are making declarations, holds the offset value for the respective declaration
+    public HashMap<String, Integer> framePtr = new HashMap<String, Integer>();
+
     /*Offsets */
     public int mainEntry = -1; //updated with mains location if a main function is ever defined
     public int emitLoc = 0;
@@ -132,7 +135,7 @@ public class CodeGenerator implements AbsynVisitor{
         while ( decList != null && decList.head != null) {
             // VarDecList or Function Dec
             decList.head.accept( this, offset, true );
-            offset--;
+            offset--;//decrease offset to 'move' to next memory location
             decList = decList.tail;
         }
 
@@ -149,12 +152,35 @@ public class CodeGenerator implements AbsynVisitor{
 
     public void visit( AssignExp exp, int offset, boolean flag ){
 
+        emitComment("-> op");
 
+        //from here we copy the process as described from the lecture slides and from gcd.tm(The lecture slides were very confusing when they were explaining it)
+
+        //call the visit functions for both the left and right hand sides and let them handle it
+        exp.lhs.accept(this,offset-1,true);
+        //from the lecture slides, after simplevar handles the LDA use ST
+        emitRM("ST", AC, offset, FP, "op: push left"); //similar message in gcd.tm
+
+        exp.rhs.accept(this,offset-2, false);
+
+        //Got this process from the lec slides and gcd.tm for y=10
+        emitRM("LD", AC1, offset, FP, "op: Load left");
+        emitRM("ST", AC, 0, AC1, "Store AC1 contents into FP");
+
+
+        emitComment("<- op");
     }
   
     public void visit( IfExp exp, int offset, boolean flag );
   
-    public void visit( IntExp exp, int offset, boolean flag );
+    //this is basically a constant, simply load it into AC
+    public void visit( IntExp exp, int offset, boolean flag ){
+
+        emitComment("-> constant");
+        emitRM("LDC", AC, exp.value, 0, "load const"); //from gcd.tm I think the 3rd argument is to be the actual value itself
+        emitComment("<- constant");
+
+    }
   
     public void visit( OpExp exp, int offset, boolean flag );
   
@@ -182,7 +208,41 @@ public class CodeGenerator implements AbsynVisitor{
   
     public void visit( SimpleDec dec, int offset, boolean flag );
   
-    public void visit( SimpleVar var, int offset, boolean flag );
+    public void visit( SimpleVar var, int offset, boolean flag ){
+
+        //follow the format from gcd.tm
+        emitComment("->id");
+        emitComment("Looking up id: " + var.name);
+        int tmpOffset = 0;
+
+        //if it is a local variable it will exist in the framePtr
+        if(framePtr.containsKey(var.name)){
+            tmpOffset = framePtr.get(var.name);
+
+            //if isAddress is true load its address into AC from the lecture slides
+            if (flag) {
+                emitRM("LDA",AC, tmpOffset, FP, "Load id Address");
+            }
+            else{ //load its value
+                emitRM("LD", AC, tmpOffset, FP, "load id value");
+            }
+
+
+        }
+        else{//not in framePtr so must be global, use GP
+
+            //if isAddress is true load its address into AC from the lecture slides
+            if (flag) {
+                emitRM("LDA",AC, offset, GP, "Load id Address");
+            }
+            else{ //load its value
+                emitRM("LD", AC, offset, GP, "load id value");
+            }
+
+        }
+
+        emitComment("<-id");
+    }
   
     public void visit( VarDecList varDecList, int offset, boolean flag );
 
