@@ -84,6 +84,7 @@ public class CodeGenerator implements AbsynVisitor{
         emitRM("LD", GP , 0,  AC , "Load gp with maxaddress");
         emitRM("LDA", FP , 0,  GP , "Copy gp to fp");
         emitRM("ST", AC , 0,  AC , "Clear value at location 0");
+        int savedLoc = emitSkip(1);//from slide 36
 
         //inputs
         emitComment("Jump around i/o routines here");
@@ -98,6 +99,13 @@ public class CodeGenerator implements AbsynVisitor{
         emitRM("LD", AC , initialOffset,  FP , "Load output value");
         emitRO("OUT", 0, 0, 0, "output");
         emitRM("LD", PC, returnOffset, FP, "return to caller");
+
+        //from slide 36, shown to need after outputs
+        int savedLoc2 = emitSkip(0);
+        emitBackup(savedLoc);
+        emitRM_Abs("LDA", PC, savedLoc2, "jump around i/o code");
+        emitRestore();
+        emitComment("End of standard prelude.");
    
 
         //Start generating the code based off the tree
@@ -115,7 +123,7 @@ public class CodeGenerator implements AbsynVisitor{
 
     }
 
-    //visit functions to red define again.... :| 
+    //visit functions to redefine again.... :| 
 
     //here we call the declarations with true flag as dec list only occours in global scope according to grammar in cup files
     public void visit( DecList decList, int offset, boolean flag ){
@@ -130,9 +138,19 @@ public class CodeGenerator implements AbsynVisitor{
 
     }
 
-    public void visit( ExpList exp, int offset, boolean flag );
+    //similar to declist
+    public void visit( ExpList exp, int offset, boolean flag ){
+        while(exp != null && exp.head!=null) {
+            exp.head.accept(this, offset, flag);
+            offset--;
+            exp = exp.tail;
+        }
+    }
 
-    public void visit( AssignExp exp, int offset, boolean flag );
+    public void visit( AssignExp exp, int offset, boolean flag ){
+
+
+    }
   
     public void visit( IfExp exp, int offset, boolean flag );
   
