@@ -208,7 +208,17 @@ public class CodeGenerator implements AbsynVisitor{
         emitComment("<- op");
     }
   
-    public void visit( WhileExp exp, int offset, boolean isAddr );
+    public void visit( WhileExp exp, int offset, boolean isAddr )
+    {
+        emitComment("-> while");
+        emitComment("while: jump after body comes back here");
+
+        exp.test.accept(this, offset, false);
+
+        emitComment("while: jump to end belongs here");
+
+        /*Will add rest later */
+    }
   
     public void visit( VarExp exp, int offset, boolean isAddr );
   
