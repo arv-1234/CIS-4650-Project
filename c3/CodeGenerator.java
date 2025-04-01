@@ -129,7 +129,7 @@ public class CodeGenerator implements AbsynVisitor{
     //visit functions to redefine again.... :| 
 
     //here we call the declarations with true flag as dec list only occours in global scope according to grammar in cup files
-    public void visit( DecList decList, int offset, boolean flag ){
+    public void visit( DecList decList, int offset, boolean isAddr ){
 
         //loop through all declarations and pass true for isGlobal
         while ( decList != null && decList.head != null) {
@@ -142,15 +142,15 @@ public class CodeGenerator implements AbsynVisitor{
     }
 
     //similar to declist
-    public void visit( ExpList exp, int offset, boolean flag ){
+    public void visit( ExpList exp, int offset, boolean isAddr ){
         while(exp != null && exp.head!=null) {
-            exp.head.accept(this, offset, flag);
+            exp.head.accept(this, offset, false);
             offset--;
             exp = exp.tail;
         }
     }
 
-    public void visit( AssignExp exp, int offset, boolean flag ) {
+    public void visit( AssignExp exp, int offset, boolean isAddr ) {
         emitComment("-> op");
 
         //from here we copy the process as described from the lecture slides and from gcd.tm(The lecture slides were very confusing when they were explaining it)
@@ -170,10 +170,10 @@ public class CodeGenerator implements AbsynVisitor{
         emitComment("<- op");
     }
   
-    public void visit( IfExp exp, int offset, boolean flag );
+    public void visit( IfExp exp, int offset, boolean isAddr );
   
     //this is basically a constant, simply load it into AC
-    public void visit( IntExp exp, int offset, boolean flag ){
+    public void visit( IntExp exp, int offset, boolean isAddr ){
 
         emitComment("-> constant");
         emitRM("LDC", AC, exp.value, 0, "load const"); //from gcd.tm I think the 3rd argument is to be the actual value itself
@@ -181,7 +181,7 @@ public class CodeGenerator implements AbsynVisitor{
 
     }
   
-    public void visit( OpExp exp, int offset, boolean flag ){
+    public void visit( OpExp exp, int offset, boolean isAddr ){
         // Handle the opExp emits
         emitComment("-> op");
 
@@ -208,48 +208,48 @@ public class CodeGenerator implements AbsynVisitor{
         emitComment("<- op");
     }
   
-    public void visit( WhileExp exp, int offset, boolean flag );
+    public void visit( WhileExp exp, int offset, boolean isAddr );
   
-    public void visit( VarExp exp, int offset, boolean flag );
+    public void visit( VarExp exp, int offset, boolean isAddr );
   
-    public void visit( ArrayDec arrDec, int offset, boolean flag );
+    public void visit( ArrayDec arrDec, int offset, boolean isAddr );
   
-    public void visit( BoolExp exp , int offset, boolean flag );
+    public void visit( BoolExp exp , int offset, boolean isAddr );
   
-    public void visit( CallExp exp, int offset, boolean flag );
+    public void visit( CallExp exp, int offset, boolean isAddr );
   
-    public void visit( CompoundExp exp, int offset, boolean flag );
+    public void visit( CompoundExp exp, int offset, boolean isAddr );
   
-    public void visit( FunctionDec FunDec, int offset, boolean flag );
+    public void visit( FunctionDec FunDec, int offset, boolean isAddr );
   
-    public void visit( IndexVar var, int offset, boolean flag );
+    public void visit( IndexVar var, int offset, boolean isAddr );
   
     // Can leave definition empty 
-    public void visit( NameTy type, int offset, boolean flag ){
+    public void visit( NameTy type, int offset, boolean isAddr ){
 
     }
 
     // Can leave definition empty
-    public void visit( NilExp exp, int offset, boolean flag ){
+    public void visit( NilExp exp, int offset, boolean isAddr ){
 
     }
   
-    public void visit( ReturnExp exp, int offset, boolean flag )
+    public void visit( ReturnExp exp, int offset, boolean isAddr )
     {
         emitComment("-> return");
 
-        exp.exp.accept(this, offset, flag);
+        exp.exp.accept(this, offset, isAddr);
 
         emitRM("LD", PC, returnOffset, FP, "return to caller");
 
         emitComment("<- return");
     }
   
-    public void visit( SimpleDec dec, int offset, boolean flag ) {
+    public void visit( SimpleDec dec, int offset, boolean isAddr ) {
         emitComment("processing local var: " + dec.name);
     }
   
-    public void visit( SimpleVar var, int offset, boolean flag ){
+    public void visit( SimpleVar var, int offset, boolean isAddr ){
 
         //follow the format from gcd.tm
         emitComment("->id");
@@ -261,7 +261,7 @@ public class CodeGenerator implements AbsynVisitor{
             tmpOffset = framePtr.get(var.name);
 
             //if isAddress is true load its address into AC from the lecture slides
-            if (flag) {
+            if (isAddr) {
                 emitRM("LDA",AC, tmpOffset, FP, "Load id Address");
             }
             else{ //load its value
@@ -273,7 +273,7 @@ public class CodeGenerator implements AbsynVisitor{
         else{//not in framePtr so must be global, use GP
 
             //if isAddress is true load its address into AC from the lecture slides
-            if (flag) {
+            if (isAddr) {
                 emitRM("LDA", AC, offset, GP, "Load id Address");
             }
             else{ //load its value
@@ -285,7 +285,7 @@ public class CodeGenerator implements AbsynVisitor{
         emitComment("<-id");
     }
   
-    public void visit( VarDecList varDecList, int offset, boolean flag ){
+    public void visit( VarDecList varDecList, int offset, boolean isAddr ){
         while(varDecList != null)
         {
             varDecList.head.accept(this, offset, false);
