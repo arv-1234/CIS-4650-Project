@@ -3,21 +3,24 @@ Names: Justin Palmer (1102541), Jessica Nguyen (1169812), Arvind Palakkal (11418
 Acknowledgment: I used C1-Package's SampleScanner code and modified it for my implementation.
 
 **Intro and compilation**
-The c2 directory contains the symbol table for checkpoint 2. To run the program you must first open the terminal in the directory c2, after doing so you must then type make into the terminal, this should make all the relevant files needed for the semantic analyzer to run( if any errors arise it most likely has something to do with the makefiles classpath value, it should be set to the correct path but if it is not please set it to the correct one to run). After successfully making you can run the parser with any .cm file by doing the following:
+The c3 directory contains the code generator for checkpoint 3. To run the program you must first open the terminal in the directory c3, after doing so you must then type make into the terminal, this should make all the relevant files needed for the code generator to run( if any errors arise it most likely has something to do with the makefiles classpath value, it should be set to the correct path but if it is not please set it to the correct one to run). After successfully making you can run the parser with any .cm file by doing the following:
 
 **TO RUN**
 - In the makefile, make sure the proper class path is uncommented, this will vary from person to person but make sure we leave it at the one that works on nomachine/socs-server.
 
--  cd into the <c2 folder> and <enter make> into the terminal.
+-  cd into the <c3 folder> and <enter make> into the terminal.
 
--  Type in the command, java -cp /usr/share/java/cup.jar:. Main tests/filename.cm [-a,-s]: 
+-  Type in the command, java -cp /usr/share/java/cup.jar:. Main tests/filename.cm [-a,-s,-c]: 
 
     - java -cp /usr/share/java/cup.jar:. Main <tests/filename.cm -a> (This will print the abstract syntax tree to a file with the extension .abs)
 
     - java -cp /usr/share/java/cup.jar:. Main <tests/filename.cm> -s (This will print the symbol table to a file with the extension .sym)
 
+    - java -cp /usr/share/java/cup.jar:. Main <tests/filename.cm> -c (This will print the symbol table to a file with the extension .tm)
 
-- To run the code on the school server type in this command: java -cp /usr/share/java/cup.jar:. Main <Test file name> [-a,-s]
+
+
+- To run the code on the school server type in this command: java -cp /usr/share/java/cup.jar:. Main <Test file name> [-a,-s,-c]
 
 - To run the scanner against any of the test files on the school server: java -cp /usr/share/java/cup.jar:. Scanner  < <tests/filename.cm>
 
@@ -35,6 +38,8 @@ The c2 directory contains the symbol table for checkpoint 2. To run the program 
 - ShowTreeVisitor holds the definition for the visitor function and is mostly in charge as to what is printed out in the abstract syntax tree
 
 - SemanticAnalyzer.java holds the definition for our symbol table, type checking, and visit functions (For the symbol table)
+
+- CodeGenerator.java holds the definitions of the redefined visit functions
 
 **Limitations**
 - Program has trouble dealing with array indicies 
