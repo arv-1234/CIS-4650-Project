@@ -198,11 +198,12 @@ public class CodeGenerator implements AbsynVisitor{
             emitRO(exp.getOpName(), AC, AC1, AC, "op " + exp.getOpSymbol());
         } else {
             // Handle Boolean
+            // Might have to update this to handle APPROX, AND, OR, NOT, and UMINUS (10-14)
             emitRO("SUB", AC, 1, AC, "op " + exp.getOpSymbol());
             emitRM("J" + exp.getOpName(), AC, 2, PC, "br if true");
             emitRM("LDC", AC, 0, AC, "false case");
             emitRM("LDA", PC, 1, PC, "unconditional jmp");
-            emitRM("LDC", AC, 0, AC, "true case");
+            emitRM("LDC", AC, 1, AC, "true case");
         }
 
         emitComment("<- op");
