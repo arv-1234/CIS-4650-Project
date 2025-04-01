@@ -224,11 +224,26 @@ public class CodeGenerator implements AbsynVisitor{
   
     public void visit( IndexVar var, int offset, boolean flag );
   
-    public void visit( NameTy type, int offset, boolean flag );
+    // Can leave definition empty 
+    public void visit( NameTy type, int offset, boolean flag ){
+
+    }
+
+    // Can leave definition empty
+    public void visit( NilExp exp, int offset, boolean flag ){
+
+    }
   
-    public void visit( NilExp exp, int offset, boolean flag );
-  
-    public void visit( ReturnExp exp, int offset, boolean flag );
+    public void visit( ReturnExp exp, int offset, boolean flag )
+    {
+        emitComment("-> return");
+
+        exp.exp.accept(this, offset, flag);
+
+        emitRM("LD", PC, returnOffset, FP, "return to caller");
+
+        emitComment("<- return");
+    }
   
     public void visit( SimpleDec dec, int offset, boolean flag ) {
         emitComment("processing local var: " + dec.name);
@@ -270,7 +285,15 @@ public class CodeGenerator implements AbsynVisitor{
         emitComment("<-id");
     }
   
-    public void visit( VarDecList varDecList, int offset, boolean flag );
+    public void visit( VarDecList varDecList, int offset, boolean flag ){
+        while(varDecList != null)
+        {
+            varDecList.head.accept(this, offset, false);
+            offset = offset - 1;
+
+            varDecList = varDecList.tail;
+        }
+    }
 
 
 
