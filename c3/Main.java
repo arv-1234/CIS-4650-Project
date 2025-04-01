@@ -23,6 +23,7 @@ class Main {
 
     boolean printAST = false;
     boolean printTable = false;
+    boolean printAssembly = false;
 
     for(String commandArgs : argv)
     {
@@ -37,6 +38,10 @@ class Main {
         printTable = true;
       }
       
+      else if(commandArgs.equals("-c"))
+      {
+        printAssembly = false;
+      }
     
     }
     try {
@@ -65,6 +70,15 @@ class Main {
         result.accept(visitor, 1, false);
         //visitor.printTable();//don't need this, prints as we traverse tree as we get rid of the tables as we go along
         System.out.println("Leaving the global scope");
+      }
+
+      if(printAssembly && result != null) {
+        PrintStream fileOutput = new PrintStream(new FileOutputStream("tests/" + fileName + ".tm"));
+        System.setOut(fileOutput);
+        System.out.println("* C-Minus Compilation to TM Code");
+        System.out.println("* File: " + fileName + ".tm");
+        CodeGenerator visitor = new CodeGenerator();
+        visitor.visit(result);
       }
       
     } catch (Exception e) {
