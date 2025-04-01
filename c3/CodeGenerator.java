@@ -183,26 +183,30 @@ public class CodeGenerator implements AbsynVisitor{
     }
   
     public void visit( OpExp exp, int offset, boolean flag ){
-
-        //handle the opExp emits
+        // Handle the opExp emits
         emitComment("-> op");
 
-        //handle the left and right sides
+        // Handle the left and right sides
         exp.left.accept(this, offset-1, false);
         emitRM("ST", AC, offset, FP, "op: push left");
 
-        exp.left.accept(this, offset-2, false);
-        emitRM("LD", AC1, offset, FP, "op: Load left");
+        //exp.left.accept(this, offset-2, false);
+        exp.right.accept(this, offset-1, false);
+        emitRM("LD", AC1, offset, FP, "op: load left");
 
-
-
-        //handle for boolean
-
-        //handle for arithemetic
-
+        if (exp.op <= 3) {
+            // Handle Arithmetic
+            emitRO(exp.getOpName(), AC, AC1, AC, "op " + exp.getOpSymbol());
+        } else {
+            // Handle Boolean
+            emitRO("SUB", AC, 1, AC, "op " + exp.getOpSymbol());
+            emitRM("J" + exp.getOpName(), AC, 2, PC, "br if true");
+            emitRM("LDC", AC, 0, AC, "false case");
+            emitRM("LDA", PC, 1, PC, "unconditional jmp");
+            emitRM("LDC", AC, 0, AC, "true case");
+        }
 
         emitComment("<- op");
-
     }
   
     public void visit( WhileExp exp, int offset, boolean flag );
@@ -227,7 +231,9 @@ public class CodeGenerator implements AbsynVisitor{
   
     public void visit( ReturnExp exp, int offset, boolean flag );
   
-    public void visit( SimpleDec dec, int offset, boolean flag );
+    public void visit( SimpleDec dec, int offset, boolean flag ) {
+        emitComment("processing local var: " + dec.name);
+    }
   
     public void visit( SimpleVar var, int offset, boolean flag ){
 
@@ -254,7 +260,7 @@ public class CodeGenerator implements AbsynVisitor{
 
             //if isAddress is true load its address into AC from the lecture slides
             if (flag) {
-                emitRM("LDA",AC, offset, GP, "Load id Address");
+                emitRM("LDA", AC, offset, GP, "Load id Address");
             }
             else{ //load its value
                 emitRM("LD", AC, offset, GP, "load id value");
