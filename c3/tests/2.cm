@@ -1,26 +1,28 @@
-/* Test 2: Exhibit different kinds of semantic errors (but no more than 3 per program)
+/* Test 2: Compile without errors.*/
 
-  Error 1: line 19, x is declared as an integer a second time.
-  Error 2: line 22, y is assigned a boolean value when it should be assigned an integer value.
-  Error 3: line 23, z doesn't exist outside of scope num().
+int x;
+int y;
+int z;
 
-*/
+int testOne(int a);
+void testTwo(int b);
 
-int num(void) {
-  int z;
-  z = 1;
-  return z;
+void testThree(int c) {
+  y = y - 1;
+}
+
+void testTwo(int b) {
+  b = b - 1;
+  if (b > 0) {
+    y = y - 1;
+  }
 }
 
 int main(void) {
-  int x; 
-  int y;
 
-  int x;
+  testTwo(x);
 
-  x = 1;
-  y = false;
-  z = 2;
+
 
   return 0;
 }
