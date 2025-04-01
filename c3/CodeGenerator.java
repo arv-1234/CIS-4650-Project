@@ -150,8 +150,7 @@ public class CodeGenerator implements AbsynVisitor{
         }
     }
 
-    public void visit( AssignExp exp, int offset, boolean flag ){
-
+    public void visit( AssignExp exp, int offset, boolean flag ) {
         emitComment("-> op");
 
         //from here we copy the process as described from the lecture slides and from gcd.tm(The lecture slides were very confusing when they were explaining it)
@@ -190,8 +189,8 @@ public class CodeGenerator implements AbsynVisitor{
         exp.left.accept(this, offset-1, false);
         emitRM("ST", AC, offset, FP, "op: push left");
 
-        //exp.left.accept(this, offset-2, false);
-        exp.right.accept(this, offset-1, false);
+        //exp.left.accept(this, offset-2, false); // you previously wrote
+        exp.right.accept(this, offset-2, false);
         emitRM("LD", AC1, offset, FP, "op: load left");
 
         if (exp.op <= 3) {
