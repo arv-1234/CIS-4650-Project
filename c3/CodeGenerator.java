@@ -256,8 +256,21 @@ public class CodeGenerator implements AbsynVisitor{
         emitComment("<- return");
     }
   
+    //here we have to add to the hasmap since we are declaring a variable, no need to store an actual value as declarations do not have values in C--
     public void visit( SimpleDec dec, int offset, boolean isAddr ) {
-        emitComment("processing local var: " + dec.name);
+
+        //if it is true, its global
+        if (isAddr) {
+            emitComment("processing global var: " + dec.name);
+            emitComment("<- vardecl");
+        }
+        else{//local dec
+            emitComment("processing local var: " + dec.name);
+        }
+
+        //add it to the hashmap with its offset for either global or local
+        framePtr.put(dec.name, offset);
+
     }
   
     public void visit( SimpleVar var, int offset, boolean isAddr ){
