@@ -311,7 +311,50 @@ public class CodeGenerator implements AbsynVisitor{
 
     }
   
-    public void visit( IndexVar var, int offset, boolean isAddr );
+    public void visit( IndexVar var, int offset, boolean isAddr ){
+        emitComment("-> subs"); // Comments present in the given tm file
+
+        // Checks if array variable exists in the current frame
+        if(framePtr.containsKey(var.name))
+        {
+            // get offset from frame pointer
+            offset = framePtr.get(var.name);
+
+            if(isAddr)
+            {
+                // Need address of array
+                emitRM("LDA", AC, offset, FP, "load id address");
+                emitRM("ST", AC, globalOffset, FP, "store array addr");
+            }
+            else
+            {
+                // Need value of array
+                emitRM("LD", AC, offset, FP, "load id value");
+                emitRM("ST", AC, globalOffset, FP, "store array addr");
+            }
+        }
+        else
+        { // Array is not in the current frame
+
+            if(isAddr)
+            {
+                // Need address of global array
+                offset = framePtr.get(var.name);
+
+                emitRM("LDA", AC, offset, GP, "load id address");
+                emitRM("ST", AC, globalOffset, FP, "store array addr");
+            }
+            else
+            { // Need value of globalArray
+                emitRM("LD", AC, offset, GP, "load id value");
+                emitRM("ST", AC, globalOffset, FP, "store array addr");
+            }
+        }
+
+        // Process the index expression
+        var.index.accept(this, offset, false);
+        emitComment("<- subs"); // Comments present in the given tm file
+    }
   
     // Can leave definition empty 
     public void visit( NameTy type, int offset, boolean isAddr ){
