@@ -171,7 +171,41 @@ public class CodeGenerator implements AbsynVisitor{
         emitComment("<- op");
     }
   
-    public void visit( IfExp exp, int offset, boolean isAddr );
+    public void visit( IfExp exp, int offset, boolean isAddr ) {
+        emitComment("-> if");
+        
+        // if
+        exp.test.accept(this, offset-1, false);
+
+        int skipThen = emitSkip(1);
+
+        // then (true = jump to the end, false = skip & jump to else)
+        if (exp.thenpart != null) {
+            emitComment("-> then");
+            exp.thenpart.accept(this, offset-2, false);
+            emitComment("<- then");
+        }
+        
+        // if then == false, we skip to here
+        emitBackup(skipThen);
+        emitRM_Abs("JEQ", AC, emitLoc, "jump to else, condition == false");
+        emitRestore();
+        int skipElse = emitSkip(1);
+
+        // else (true/false = jump to the end)
+        if (exp.elsepart != null) {
+            emitComment("-> else");
+            exp.elsepart.accept(this, offset-2, false);
+            emitComment("<- else");
+        }
+
+        // if else == false, we skip to here
+        emitBackup(skipElse);
+        emitRM_Abs("LDA", PC, emitLoc, "jump to the end")
+        emitRestore();  
+
+        emitComment("<- if");
+    }
   
     //this is basically a constant, simply load it into AC
     public void visit( IntExp exp, int offset, boolean isAddr ){
