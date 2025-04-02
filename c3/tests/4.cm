@@ -1,24 +1,18 @@
 /* 
-  Error 1: line 18 missing right hand side of the expression
-  Error 2: line 20 assigning type bool with int value 
-  Error 3: line 23 the function nice was never defined
+  Error 1: line 15 invalid indentifier
+  Error 2: line 16 Missing right hand side of the expression
  */
 
-int random(void);
-void applesOrange(int a);
-void nice(void);
-
+int random(void){
+  return 1;
+}
 
 void main(void) {
   int y;  
   int fac;
   int h[10];
-  bool test;
+  boolasdsa test;
 
-  y = ;
+  fac = ;
 
-  test = 21;
-
-
-  y = nice();
 }
