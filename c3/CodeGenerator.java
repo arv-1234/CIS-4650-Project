@@ -201,7 +201,7 @@ public class CodeGenerator implements AbsynVisitor{
 
         // if else == false, we skip to here
         emitBackup(skipElse);
-        emitRM_Abs("LDA", PC, emitLoc, "jump to the end")
+        emitRM_Abs("LDA", PC, emitLoc, "jump to the end");
         emitRestore();  
 
         emitComment("<- if");
@@ -256,11 +256,17 @@ public class CodeGenerator implements AbsynVisitor{
         /*Will add rest later */
     }
   
-    public void visit( VarExp exp, int offset, boolean isAddr );
+    public void visit( VarExp exp, int offset, boolean isAddr ){
+        
+    }
   
-    public void visit( ArrayDec arrDec, int offset, boolean isAddr );
+    public void visit( ArrayDec arrDec, int offset, boolean isAddr ){
+
+    }
   
-    public void visit( BoolExp exp , int offset, boolean isAddr );
+    public void visit( BoolExp exp , int offset, boolean isAddr ){
+
+    }
   
     //handles the function call
     public void visit( CallExp exp, int offset, boolean isAddr ){
