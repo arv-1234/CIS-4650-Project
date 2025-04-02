@@ -40,7 +40,7 @@ class Main {
       
       else if(commandArgs.equals("-c"))
       {
-        printAssembly = false;
+        printAssembly = true;
       }
     
     }
