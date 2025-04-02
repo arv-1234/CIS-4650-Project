@@ -1,4 +1,3 @@
-import absyn.AbsynVisitor;
 import absyn.*;
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -255,7 +254,15 @@ public class CodeGenerator implements AbsynVisitor{
 
     }
   
-    public void visit( CompoundExp exp, int offset, boolean isAddr );
+     public void visit( CompoundExp exp, int offset, boolean isAddr ){
+        emitComment("-> compound statement");
+
+        visit(exp.decs, offset, false);
+
+        visit(exp.exps, offset, false);
+
+        emitComment("<- compound statement");
+    }
   
     public void visit( FunctionDec FunDec, int offset, boolean isAddr ){
 
