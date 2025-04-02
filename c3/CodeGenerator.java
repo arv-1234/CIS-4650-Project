@@ -8,6 +8,8 @@ public class CodeGenerator implements AbsynVisitor{
 
     //add to it whenever we are making declarations, holds the offset value for the respective declaration
     public HashMap<String, Integer> framePtr = new HashMap<String, Integer>();
+    //stores the name of a function and its corresponding address in memory to start the execution of instructions
+    public HashMap<String, Integer> funcAddrMap = new HashMap<String, Integer>();
 
     /*Offsets */
     public int mainEntry = -1; //updated with mains location if a main function is ever defined
@@ -227,11 +229,80 @@ public class CodeGenerator implements AbsynVisitor{
   
     public void visit( BoolExp exp , int offset, boolean isAddr );
   
-    public void visit( CallExp exp, int offset, boolean isAddr );
+    //handles the function call
+    public void visit( CallExp exp, int offset, boolean isAddr ){
+
+        emitComment("-> call of function: " + exp.fun);
+
+        int functionLoc = -emitLoc;
+        if (exp.args != null){ //if arguments were actually passed, utilize the accept function to let it handle it
+            functionLoc++;
+            exp.args.accept( this, offset, false );
+            if (exp.args instanceof ExpList != true) {
+                emitRM("ST", AC, offset + initialOffset, FP, "store arg val");
+                offset--;
+            }
+        }
+
+        //jump to the function and run the functions code, restore FP once we finish processising
+        emitRM("ST", FP, offset, FP, "push ofp");
+        emitRM("LDA", FP, offset, FP, "push frame");
+        emitRM("LDA", AC, 1, PC, "load ac with ret ptr");
+        emitRM("LDA", PC, functionLoc, FP, "jump to fun loc");
+        emitRM("LD", FP, 0, FP, "pop frame");
+
+        emitComment("<- call");
+
+    }
   
     public void visit( CompoundExp exp, int offset, boolean isAddr );
   
-    public void visit( FunctionDec FunDec, int offset, boolean isAddr );
+    public void visit( FunctionDec FunDec, int offset, boolean isAddr ){
+
+        int functionStartAddress = -emitLoc;//need to do this as emitLoc will constantly change, cannot just pass it on its own
+
+        //necessary comments similar to the given tm file
+        emitComment("processing function: " + FunDec.func);
+        emitComment("jump around function body here");
+
+        //if in main set the mainEntry to the current emitloc
+        if("main".equals(FunDec.func)){
+            mainEntry = functionStartAddress;
+        }
+        int savedLoc = emitSkip(1);
+
+        //retrieve the current address with emitLoc and store it into our hashmap of function addresses
+        funcAddrMap.put(FunDec.func, functionStartAddress);
+
+        offset = -2;//move down 2 for return and ofp and start at -2 since we are now in the scope of a function
+
+        //loop through the parameters and store them as declarations within the function
+        //move the offset for each declaration we find as to not overwrite others
+        VarDecList params = FunDec.parameters;
+        while(params != null) {
+            if (params.head instanceof SimpleDec){//if it is an instance of a simple dec, store it as such
+                framePtr.put(((SimpleDec)params.head).name, offset);
+                offset--;
+            }
+            else if (params.head instanceof ArrayDec){//if it is an instance of arrayDec store it as such
+                framePtr.put(((ArrayDec)params.head).name, offset);
+                offset--;
+            }
+            params = params.tail;
+        }
+
+        //let the body handle itself
+        FunDec.body.accept(this,offset,false);
+
+        //handle the functions 'return'
+        int savedLoc2 = emitSkip(0);
+        emitRM("LD", PC, returnOffset, FP, "return to caller");
+        emitBackup(savedLoc);
+        emitRM("LDA", PC, savedLoc2 - savedLoc, PC, "jump around fn body");
+        emitComment("<- fundecl");
+        emitRestore();
+
+    }
   
     public void visit( IndexVar var, int offset, boolean isAddr );
   
