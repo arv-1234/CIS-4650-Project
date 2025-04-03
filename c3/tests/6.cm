@@ -1,0 +1,24 @@
+/* 
+    Error 11: line 9 missing right bracket
+    Error 19: line 18 missing closing bracket
+    Error 23: line 22 output not defined
+
+ */
+
+int x;
+int y;
+
+void g(int n;    /* prototype for mutual recursions */
+
+void f(int n) {
+   g(n);
+   y = y - 1;
+
+
+
+int main(void) {
+  x = input();
+
+
+  output(y);
+}
