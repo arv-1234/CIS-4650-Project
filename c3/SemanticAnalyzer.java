@@ -405,8 +405,8 @@ public class SemanticAnalyzer implements AbsynVisitor {
                 }
             }
 
-            //went through all matching names in scope, if prevDef is still null never found so throw error and return
-            if(prevDef == null){
+            //went through all matching names in scope, if prevDef is still null never found so throw error and return and make it so it doesn't throw an error for input/output
+            if(prevDef == null && !"output".equals(exp.fun) && !"input".equals(exp.fun)){
                 System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) 
                             + ": Function '" + exp.fun + "' was never defined");
                 return;
@@ -414,9 +414,11 @@ public class SemanticAnalyzer implements AbsynVisitor {
 
 
         } else {
-            // CHANGE 3: Consistent error message formatting
-            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) 
-                            + ": Function '" + exp.fun + "' was never defined");
+            // CHANGE 3: Consistent error message formatting and make it so it doesn't throw an error for input/output
+            if( !"output".equals(exp.fun) && !"input".equals(exp.fun)){
+                System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) 
+                                + ": Function '" + exp.fun + "' was never defined");
+            }
             return;
         }
     
