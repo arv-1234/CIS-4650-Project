@@ -1,0 +1,23 @@
+/* Test 8: Exhibit various syntactic and semantic errors (but no more than 3 per program)
+
+  Error 1: line 9 has a function declaration with a missing semicolon.
+  Error 2: line 15 has a duplicate variable declaration of x.
+  Error 3: line 18 uses assignment (=) instead of equals (==).
+
+*/
+
+bool void helloWorld
+
+int main(void) {
+    int x;
+    int y;
+
+    int x;
+    x = 5;
+    
+    if (x = 5) {
+        y = 5;
+    }
+
+    return 0;
+}
