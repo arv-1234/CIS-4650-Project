@@ -1,0 +1,36 @@
+/* Test 0: Exhibit various syntactic and semantic errors
+
+  Synactic:
+  Error 1: line 24 invalid variable declaration due to '!'.
+  Error 2: line 25 can't have any leading 0s.
+  Error 3: line 26 was not assigned (=) but compared (==) to 5.
+
+  Semantic: 
+  Error 4: line 29 isNum is an integer variable being assigned a boolean value.
+  Error 5: line 31 has y assignment but y doesn't exist outside of its num() function.
+  Error 6: line 33 world() was never fully defined.
+
+*/
+
+int world(int z);
+
+int num(void) {
+    int y;
+    y = 5;
+    return y;
+}
+
+int main(void) {
+    int !hello; 
+    int num = 0123; 
+    bool x == 5;
+    
+    int isNum;
+    isNum = false;
+
+    y = 10;
+
+    isNum = world(5);
+
+    return 0;
+}

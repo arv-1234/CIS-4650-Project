@@ -1,0 +1,29 @@
+/* Test 9: Exhibit various syntactic and semantic errors
+
+  Synactic:
+  Error 1: line 16 only has a boolean datatype but no variable name.
+  Error 2: line 17 is missing a square bracket.
+  Error 3: line 22 is missing a number or int variable to be added to.
+
+  Semantic: 
+  Error 4: line 24 y has no value attached.
+  Error 5: line 28 d is being assigned a value outside of its if statement block.
+  Error 6: line 29 doesn't return a value although main is type int.
+
+*/
+
+int main(void) {
+    bool ;
+    int array[5;
+    int x = 5;
+    int y;
+
+    int sum;
+    sum = 1 + ;
+
+    if (x < y) {
+        int d;
+    }
+
+    d = 10;
+}
