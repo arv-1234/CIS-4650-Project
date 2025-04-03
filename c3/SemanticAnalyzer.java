@@ -160,8 +160,9 @@ public class SemanticAnalyzer implements AbsynVisitor {
             if(!"".equals(varName)){
             
                 tempVarList = lookup(varName, exp.row, exp.col);
-                return tempVarList.get(0).def.getType();//get the type value of the time it was declared
-
+                if(tempVarList!=null){
+                    return tempVarList.get(0).def.getType();//get the type value of the time it was declared
+                }
 
             }
             else{//not found, simply default
@@ -173,8 +174,10 @@ public class SemanticAnalyzer implements AbsynVisitor {
             varName = ((CallExp)exp).fun;
 
             tempVarList = lookup(varName, exp.row, exp.col);
-            FunctionDec tempFunDec = (FunctionDec)tempVarList.get(0).def;//prototype or not will still have the type 
-            return tempFunDec.result.typeVal;//return the declared return type
+            if(tempVarList!=null){
+               FunctionDec tempFunDec = (FunctionDec)tempVarList.get(0).def;//prototype or not will still have the type 
+               return tempFunDec.result.typeVal;//return the declared return type
+            }
         }
         else if(exp instanceof OpExp){//expression passed is an operator expression
 
@@ -195,6 +198,9 @@ public class SemanticAnalyzer implements AbsynVisitor {
         else{
             return  exp.getType();
         }
+
+        return -1;//can't determine type, return -1
+
     }
 
 
@@ -250,10 +256,10 @@ public class SemanticAnalyzer implements AbsynVisitor {
     public void visit(IfExp exp, int level, boolean flag) {
 
         int expType = getExpType(exp.test);
-
+        System.err.println("EXP TYPE " + expType);
         //check if the test is an integer or boolean, if not either give an error
         if(expType!=3 && expType!=0){
-            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: if Conditional statement is not of the boolean type\n");
+            System.err.println("Error in line " + (exp.row + 1) + ", column " + (exp.col + 1) + " Semantic Error: if Conditional statement is incorrect\n");
         }
 
         // Conditional statement
@@ -454,8 +460,9 @@ public class SemanticAnalyzer implements AbsynVisitor {
                        
                         ArrayList<NodeType> tempVarList;
                         tempVarList = lookup(varName, exp.row, exp.col);
-                        tempArgType = tempVarList.get(0).def.getType();//get the type value of the time it was declared
-
+                        if(tempVarList!=null){
+                            tempArgType = tempVarList.get(0).def.getType();//get the type value of the time it was declared
+                        }
 
                     }
                     else{
@@ -632,6 +639,9 @@ public class SemanticAnalyzer implements AbsynVisitor {
         }
         else if(typeInt == 3){
             typeStr = "Boolean";
+        }
+        else if(typeInt == 1){
+            typeStr = "Void";
         }
 
         //print out the return type
