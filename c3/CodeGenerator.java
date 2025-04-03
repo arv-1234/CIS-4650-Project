@@ -244,16 +244,39 @@ public class CodeGenerator implements AbsynVisitor{
         emitComment("<- op");
     }
   
-    public void visit( WhileExp exp, int offset, boolean isAddr )
-    {
+    public void visit(WhileExp exp, int offset, boolean isAddr) {
         emitComment("-> while");
-        emitComment("while: jump after body comes back here");
 
-        exp.test.accept(this, offset, false);
+        int startCondition = emitLoc; // The start address of condition check
 
-        emitComment("while: jump to end belongs here");
+        exp.test.accept(this, offset, false); // evaluate the condition
 
-        /*Will add rest later */
+        emitComment("Result of condition stored in AC");
+
+        // Dont know the exit address yet 
+        // Will reserve space for the exit instruction for later
+        int locExitLoop = emitSkip(1); // Save location for loop exit
+
+        emitComment("JEQ to exit loop if the condition fails");
+
+        // Help generate the body of the loop
+        int loopBodyStart = emitLoc;
+        exp.body.accept(this, offset, false);
+        emitComment("The body of the loop ends at " + emitLoc);
+
+        // Jump backwards to check the condition again
+        // After the body, we need to jump back to re-evaluate the condition
+        emitRM_Abs("LDA", PC, startCondition, "Jump back to conditon check at " + startCondition);
+
+        // Backpatch
+        // Now that we know when the loop wends we can add the JEQ instruction that was mentioned earlier
+        int endOfLoop = emitLoc; // Address after the loop 
+        emitBackup(locExitLoop); // Return to JEQ instruction
+        emitRM("JEQ", AC, endOfLoop - locExitLoop, PC, "Loop exits if the condition is false");
+        emitRestore();
+
+        emitComment("<- while");
+
     }
   
     public void visit( VarExp exp, int offset, boolean isAddr ){
