@@ -288,7 +288,24 @@ public class CodeGenerator implements AbsynVisitor{
     }
   
     public void visit( BoolExp exp , int offset, boolean isAddr ){
+        emitComment("-> boolean");
 
+        int valueBool;
+
+        // Determine the boolean value 
+        if(exp.value)
+        {
+            valueBool = 1;
+        }
+        else
+        {
+            valueBool = 0;
+        }
+        
+        // Load constant
+        emitRM("LDC", AC, valueBool, 0, "load " + exp.value.toString());
+
+        emitComment("<- boolean");
     }
   
     //handles the function call
