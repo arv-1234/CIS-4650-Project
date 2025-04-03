@@ -284,8 +284,15 @@ public class CodeGenerator implements AbsynVisitor{
     }
   
     public void visit( ArrayDec arrDec, int offset, boolean isAddr ){
-
+        if(isAddr) {
+            emitComment("allocating global var: " + arrDec.name);
+        } else {
+            emitComment("processing local var: " + arrDec.name);
+            framePtr.put(arrDec.name, offset);
+        }
+        emitComment("<- vardecl");
     }
+    
   
     public void visit( BoolExp exp , int offset, boolean isAddr ){
         emitComment("-> boolean");
