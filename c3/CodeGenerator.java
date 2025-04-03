@@ -188,7 +188,7 @@ public class CodeGenerator implements AbsynVisitor{
         
         // if then == false, we skip to here
         emitBackup(skipThen);
-        emitRM_Abs("JEQ", AC, emitLoc, "jump to else, condition == false");
+        emitRM_Abs("JEQ", AC, emitLoc, "jmp to else, false case");
         emitRestore();
         int skipElse = emitSkip(1);
 
@@ -201,7 +201,7 @@ public class CodeGenerator implements AbsynVisitor{
 
         // if else == false, we skip to here
         emitBackup(skipElse);
-        emitRM_Abs("LDA", PC, emitLoc, "jump to the end");
+        emitRM_Abs("LDA", PC, emitLoc, "jmp to end");
         emitRestore();  
 
         emitComment("<- if");
