@@ -6,24 +6,31 @@
   Error 3: line 22 is missing a number or int variable to be added to.
 
   Semantic: 
-  Error 4: line 24 y has no value attached.
-  Error 5: line 28 d is being assigned a value outside of its if statement block.
-  Error 6: line 29 doesn't return a value although main is type int.
+  Error 4: line 25 integer x is being compared to a boolean y.
+  Error 5: line 31 d is being assigned a value outside of its if statement block.
+  Error 6: line 33 there is no function() that exists.
 
 */
 
 int main(void) {
     bool ;
     int array[5;
-    int x = 5;
-    int y;
+    int x;
+    bool y;
 
     int sum;
     sum = 1 + ;
 
-    if (x < y) {
+    x = 5;
+    y = false;
+    if (x > y) {
         int d;
+        d = 5;
     }
 
     d = 10;
+    
+    int z = function();
+
+    return 0;
 }
